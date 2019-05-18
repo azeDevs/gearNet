@@ -21,7 +21,7 @@ class MainStyle : Stylesheet() {
 
     init {
         appContainer {
-            backgroundImage += getRes("gn_background.png")
+            backgroundImage += getRes("gn_background2.png")
             alignment = Pos.TOP_CENTER
         }
 

@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
 
 class MemHandler : XrdApi {
     override fun getLobbyData(): LobbyData {
-        TODO("not implemented")
+        return LobbyData()
     }
 
     var GG_PROC: Win32Process? = null

@@ -1,5 +1,6 @@
 package session
 
+import javafx.geometry.Rectangle2D
 import memscan.PlayerData
 import session.Character.getCharacterName
 import utils.addCommas
@@ -11,9 +12,9 @@ import kotlin.math.min
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
-    private var bounty = 0
+    private var bounty = 1234
     private var change = 0
-    private var chain = 0
+    private var chain = 2
     private var idle = 8
     private var data = Pair(playerData, playerData)
 
@@ -154,7 +155,34 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (getMatchesWon() >= 21 && getRating() >= 1.2f) grade = "A+"
         if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
         if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
+        return grade
+    }
 
+    fun getRatingImage(matchesWon:Int = getMatchesWon(), rating:Float = getRating()): Rectangle2D {
+        var grade = Rectangle2D(0.0, 640.0, 128.0, 64.0)
+        if (matchesWon >= 1 && rating > 0.0f) grade  = Rectangle2D(0.0, 0.0, 128.0, 64.0)  // D
+        if (matchesWon >= 1 && rating >= 0.1f) grade = Rectangle2D(0.0, 64.0, 128.0, 64.0)  // D+
+        if (matchesWon >= 2 && rating >= 0.2f) grade = Rectangle2D(0.0, 128.0, 128.0, 64.0)  // C
+        if (matchesWon >= 3 && rating >= 0.3f) grade  = Rectangle2D(0.0, 192.0, 128.0, 64.0)  // C+
+        if (matchesWon >= 5 && rating >= 0.4f) grade  = Rectangle2D(0.0, 256.0, 128.0, 64.0)  // B
+        if (matchesWon >= 8 && rating >= 0.6f) grade  = Rectangle2D(0.0, 320.0, 128.0, 64.0)  // B+
+        if (matchesWon >= 13 && rating >= 1.0f) grade = Rectangle2D(0.0, 384.0, 128.0, 64.0)  // A
+        if (matchesWon >= 21 && rating >= 1.2f) grade = Rectangle2D(0.0, 448.0, 128.0, 64.0)  // A+
+        if (matchesWon >= 34 && rating >= 1.4f) grade = Rectangle2D(0.0, 512.0, 128.0, 64.0)  // S
+        if (matchesWon >= 55 && rating >= 1.6f) grade = Rectangle2D(0.0, 576.0, 128.0, 64.0)  // S+
+        return grade
+    }
+
+    fun getChainImage(chain:Int = getChain()): Rectangle2D {
+        var grade = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+        if (chain == 1) grade = Rectangle2D(128.0, 0.0, 64.0, 64.0)
+        if (chain == 2) grade = Rectangle2D(128.0, 64.0, 64.0, 64.0)
+        if (chain == 3) grade = Rectangle2D(128.0, 128.0, 64.0, 64.0)
+        if (chain == 4) grade = Rectangle2D(128.0, 192.0, 64.0, 64.0)
+        if (chain == 5) grade = Rectangle2D(128.0, 256.0, 64.0, 64.0)
+        if (chain == 6) grade = Rectangle2D(128.0, 320.0, 64.0, 64.0)
+        if (chain == 7) grade = Rectangle2D(128.0, 384.0, 64.0, 64.0)
+        if (chain == 8) grade = Rectangle2D(128.0, 448.0, 64.0, 64.0)
         return grade
     }
 
@@ -174,7 +202,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 //    }
 //
 //    fun getChainColor(): Vec4 {
-//        when (getChain()) {
+//        when (getChain()) {z
 //            1 -> return Vec4(0.55,0.65,0.66,1.00) // D+
 //            2 -> return Vec4(0.50,0.70,0.68,1.00) // C
 //            3 -> return Vec4(0.45,0.75,0.70,1.00) // C+

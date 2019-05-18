@@ -5,6 +5,7 @@ import memscan.MemHandler
 import memscan.PlayerData
 import memscan.XrdApi
 import tornadofx.Controller
+import utils.Duo
 import kotlin.math.max
 
 
@@ -12,7 +13,8 @@ class Session: Controller() {
     val xrdApi: XrdApi = MemHandler()
     val dataApi: DatabaseHandler = DatabaseHandler("","","")
     val players: HashMap<Long, Player> = HashMap()
-    val match = Match() //var matches: HashMap<Long, Match> = HashMap()
+    val matches: HashMap<Long, Match> = HashMap()
+    var match = Match(0, 0x0)
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
@@ -39,20 +41,41 @@ class Session: Controller() {
         // Pay the winner
         playerData.forEach { resolveTheWinner(it, bountyReward) }
 
+        // New match underway?
+        val matchPending = Duo(PlayerData(), PlayerData())
+        playerData.forEach { data ->
+            if (data.loadingPct > 0 &&
+                data.loadingPct < 100
+            ) {
+                if (data.cabinetLoc.toInt().equals(0) && data.playerSide.toInt().equals(0)) matchPending.p1 = data
+                if (data.cabinetLoc.toInt().equals(0) && data.playerSide.toInt().equals(1)) matchPending.p2 = data
+            }
+        }
+        if (match.matchId != matches.size.toLong() && matchPending.p1.steamUserId > 0L && matchPending.p2.steamUserId > 0L) {
+            match = Match(matches.size.toLong(), 0x0, matchPending)
+            println("SESSION: EMPTY MATCH GENERATED WITH ID ${match.matchId}")
+        }
+
         return somethingChanged
     }
 
     fun updateMatch(): Boolean {
         val matchData = xrdApi.getMatchData()
-        return match.updateMatchData(matchData)
+        val updated = match.updateMatchData(matchData)
+        return updated
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
         players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
+            // Archive the completed match
+            if (match.getWinner() > -1 ) {
+                matches.put(match.matchId, match)
+                println("SESSION: MATCH ID ${match.matchId} ARCHIVED AT INDEX ${matches.size-1}")
+            }
+
             w.changeChain(1)
             val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
             w.changeBounty(payout)
-//            matches.put(matches.size.toLong(), Match())
         }
     }
 
@@ -69,5 +92,7 @@ class Session: Controller() {
     }
 
     fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
+
+    fun isMatchVisible(): Boolean = match.isMatchOngoing()
 
 }

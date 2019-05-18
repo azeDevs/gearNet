@@ -76,7 +76,8 @@ data class MatchData(
 }
 
 data class LobbyData(
-    val lobbyName: String = ""
+    val lobbyName: String = "",
+    val roundWins: Int = 2
     // Open cabinets? : Int
     // Points for win? : Int
     // Time per match? : Int

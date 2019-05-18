@@ -1,7 +1,9 @@
 import application.MainStyle
 import application.MainView
 import application.match.MatchStyle
+import application.player.BountyStyle
 import application.player.PlayerStyle
+import application.player.StreamStyle
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
@@ -9,7 +11,7 @@ import tornadofx.launch
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 
-class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class) {
+class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class) {
 
     init {
 //        reloadStylesheetsOnFocus()
@@ -23,7 +25,7 @@ class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerSt
 
     override fun start(stage: Stage) {
         super.start(stage)
-        stage.width  = 976.0 // 960
+        stage.width  = 1296.0 // 1280
         stage.height = 759.0 // 720
         stage.isResizable = false
     }
