@@ -83,6 +83,9 @@ class MemHandler : XrdApi {
         var p1offs = longArrayOf(0x1B18C78L,0L)
         var p2offs = longArrayOf(0x1B18C78L,0L)
         p2offs[0] += 4L
+        val p1roundoffset = longArrayOf(0x1A3BA38L)
+        val p2roundoffset = longArrayOf(0x1A3BA3CL)
+        val timeroffs = longArrayOf(0x177A8ACL, 0x450L, 0x4CL, 0x708L)
         try {
             p1offs[1] = sortedStructOffs[0]
             p2offs[1] = sortedStructOffs[0]
@@ -99,9 +102,11 @@ class MemHandler : XrdApi {
             p1offs[1] = sortedStructOffs[4]
             p2offs[1] = sortedStructOffs[4]
             var tensions = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
-            return MatchData(tensions, healths, burstReadies, riscs, isHits)
+            var timer = getByteBufferFromAddress(timeroffs, 4)!!.getInt()
+            var rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.getInt(), getByteBufferFromAddress(p2roundoffset, 4)!!.getInt())
+            return MatchData(tensions, healths, burstReadies, riscs, isHits, timer, rounds)
         } catch (e : NullPointerException) {
-            return MatchData(Pair(0,0), Pair(0,0), Pair(false, false), Pair(0,0), Pair(false, false))
+            return MatchData(Pair(-1,-1), Pair(-1,-1), Pair(false, false), Pair(-1,-1), Pair(false, false), -1, Pair(-1,-1))
         }
     }
 
