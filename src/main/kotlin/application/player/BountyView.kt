@@ -1,14 +1,12 @@
 package application.player
 
+import RANDOM_VALUES
 import javafx.application.Platform
-import javafx.geometry.Insets
-import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
-import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import session.Character.getCharacterPortrait
 import session.Player
@@ -70,7 +68,7 @@ class BountyView(override val root: Parent) : Fragment() {
                     blendMode = BlendMode.HARD_LIGHT
                 }
                 handle = label {
-                    addClass(BountyStyle.handleText)
+                    addClass(BountyStyle.bountyHandleText)
                     translateX -= 65
                     translateY -= 36
                     opacity = 0.8
@@ -82,7 +80,7 @@ class BountyView(override val root: Parent) : Fragment() {
                     translateX -= 110.0
                     translateY += 12.0
                     bounty2 = label("") {
-                        addClass(BountyStyle.bountyShadow)
+                        addClass(BountyStyle.bountyBountyShadow)
                         scaleX += 0.05
                         scaleY += 0.25
                         rotate -= 0.5
@@ -90,7 +88,7 @@ class BountyView(override val root: Parent) : Fragment() {
                         text
                     }
                     bounty1 = label("") {
-                        addClass(BountyStyle.bountyText)
+                        addClass(BountyStyle.bountyBountyText)
                         translateY += 1.0
                         rotate += 0.5
                         blendMode = BlendMode.ADD
@@ -110,7 +108,7 @@ class BountyView(override val root: Parent) : Fragment() {
                     translateX += 252
                     translateY -= 40
                     rotate += 1
-                    addClass(BountyStyle.changeText)
+                    addClass(BountyStyle.bountyChangeText)
                     blendMode = BlendMode.HARD_LIGHT
                 }
 
@@ -123,7 +121,7 @@ class BountyView(override val root: Parent) : Fragment() {
     }
 
     fun applyData(p: Player) = Platform.runLater {
-        if (false) applyRandomData(p) else
+        if (RANDOM_VALUES) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
                 handle.text = p.getNameString(); handle.isVisible = true

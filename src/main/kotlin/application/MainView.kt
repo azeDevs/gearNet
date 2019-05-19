@@ -1,7 +1,6 @@
 package application
 
 import application.match.MatchView
-import application.player.BountyView
 import application.player.PlayerView
 import application.player.StreamView
 import application.tools.ToolsView
@@ -52,9 +51,9 @@ class MainView : View() {
             .sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
         for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i])
         else playersGui[i].applyData(Player())
-
         matchesGui[0].applyMatch(session.match)
         streamView.updateStreamLeaderboard(uiUpdate, session.match)
+        println("redraw (${streamView.showhud})")
     }
 
     init {

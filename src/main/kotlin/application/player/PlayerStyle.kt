@@ -16,18 +16,18 @@ class PlayerStyle : Stylesheet() {
         val fontRED = loadFont("/fonts/RED.ttf", 16.0)
 
         val playerContainer by cssclass()
-        val bountyBackdrop by cssclass()
-        val statsBackdrop by cssclass()
+        val playerBountyBackdrop by cssclass()
+        val playerStatsBackdrop by cssclass()
 
-        val handleText by cssclass()
-        val statusBar by cssclass()
-        val bountyText by cssclass()
-        val bountyShadow by cssclass()
-        val changeText by cssclass()
-        val statusText by cssclass()
-        val recordText by cssclass()
-        val chainText by cssclass()
-        val chainShadow by cssclass()
+        val playerHandleText by cssclass()
+        val playerStatusBar by cssclass()
+        val playerBountyText by cssclass()
+        val playerBountyShadow by cssclass()
+        val playerChangeText by cssclass()
+        val playerStatusText by cssclass()
+        val playerRecordText by cssclass()
+        val playerChainText by cssclass()
+        val playerChainShadow by cssclass()
     }
 
     init {
@@ -41,7 +41,7 @@ class PlayerStyle : Stylesheet() {
             maxHeight = 64.px
         }
 
-        bountyBackdrop {
+        playerBountyBackdrop {
             minWidth = 200.px
             maxWidth = 200.px
             minHeight = 36.px
@@ -50,7 +50,7 @@ class PlayerStyle : Stylesheet() {
             alignment = Pos.CENTER_LEFT
         }
 
-        statsBackdrop {
+        playerStatsBackdrop {
             minWidth = 134.px
             maxWidth = 134.px
             minHeight = 36.px
@@ -58,7 +58,7 @@ class PlayerStyle : Stylesheet() {
             alignment = Pos.CENTER_LEFT
         }
 
-        statusBar {
+        playerStatusBar {
             backgroundColor += c("#02627eee")
         }
 
@@ -67,7 +67,7 @@ class PlayerStyle : Stylesheet() {
             textFill = c("#78cbab")
             fontSize = 10.px
 
-            and(handleText) {
+            and(playerHandleText) {
                 fontFiraCodeBold?.let { font = it }
                 fontSize = 16.px
                 textFill = c("#3befaa")
@@ -77,7 +77,7 @@ class PlayerStyle : Stylesheet() {
                 minWidth = 335.px
                 alignment = Pos.CENTER_LEFT
             }
-            and(bountyText) {
+            and(playerBountyText) {
                 fontRED?.let { font = it }
                 fontSize = 25.px
                 textFill = c("#ffcc33")
@@ -85,7 +85,7 @@ class PlayerStyle : Stylesheet() {
                 minWidth = 200.px
                 alignment = Pos.CENTER_LEFT
             }
-            and(bountyShadow) {
+            and(playerBountyShadow) {
                 fontRED?.let { font = it }
                 fontSize = 25.px
                 textFill = c("#9b332acc")
@@ -93,27 +93,27 @@ class PlayerStyle : Stylesheet() {
                 minWidth = 200.px
                 alignment = Pos.CENTER_LEFT
             }
-            and(changeText) {
+            and(playerChangeText) {
                 fontRED?.let { font = it }
                 fontSize = 16.px
                 maxWidth = 200.px
                 minWidth = 200.px
                 alignment = Pos.BOTTOM_RIGHT
             }
-            and(statusText) {
+            and(playerStatusText) {
                 padding = box(0.0.px, 8.0.px)
                 textFill = c("#0094a4")
                 fontSize = 10.px
                 alignment = Pos.CENTER_RIGHT
             }
-            and(recordText) {
+            and(playerRecordText) {
                 fontFiraCodeBold?.let { font = it }
                 fontSize = 9.px
                 minWidth = 200.px
                 maxWidth = 200.px
                 alignment = Pos.CENTER_LEFT
             }
-            and(chainText) {
+            and(playerChainText) {
                 fontPaladinsStraight?.let { font = it }
                 fontSize = 26.px
                 textFill = c("#16d8d7ee")
@@ -121,7 +121,7 @@ class PlayerStyle : Stylesheet() {
                 minWidth = 200.px
                 alignment = Pos.CENTER
             }
-            and(chainShadow) {
+            and(playerChainShadow) {
                 fontPaladinsStraight?.let { font = it }
                 fontSize = 24.px
                 textFill = c("#0094a4cc")

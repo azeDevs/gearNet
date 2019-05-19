@@ -1,5 +1,6 @@
 package application.player
 
+import RANDOM_VALUES
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -18,7 +19,7 @@ import kotlin.random.Random
 
 class PlayerView(override val root: Parent) : Fragment() {
 
-    private lateinit var wholeThing: HBox
+    private var wholeThing: HBox
 
     private lateinit var character: ImageView
     private lateinit var statusBar: HBox
@@ -52,17 +53,17 @@ class PlayerView(override val root: Parent) : Fragment() {
                 minWidth = 340.0
                 maxWidth = 340.0
                 stackpane { alignment = Pos.CENTER_LEFT
-                    statusBar = hbox { addClass(PlayerStyle.statusBar)
+                    statusBar = hbox { addClass(PlayerStyle.playerStatusBar)
                         translateY += 1.0
                         maxWidth = 0.0
                     }
                     hbox {
                         handle = label("") {
-                            addClass(PlayerStyle.handleText)
+                            addClass(PlayerStyle.playerHandleText)
                             translateY += 1.0
                         }
                         status = label("") {
-                            addClass(PlayerStyle.statusText)
+                            addClass(PlayerStyle.playerStatusText)
                             translateX -= 160.0
                             translateY += 4.0
                             maxWidth = 160.0
@@ -72,42 +73,42 @@ class PlayerView(override val root: Parent) : Fragment() {
                 }
 
                 hbox {
-                    vbox { addClass(PlayerStyle.bountyBackdrop)
+                    vbox { addClass(PlayerStyle.playerBountyBackdrop)
                         translateY += 2.0
                         stackpane {
                             translateX += 10.0
                             translateY -= 5.0
-                            bounty2 = label("") { addClass(PlayerStyle.bountyShadow)
+                            bounty2 = label("") { addClass(PlayerStyle.playerBountyShadow)
                                 scaleX += 0.05
                                 scaleY += 0.20
                             }
-                            bounty1 = label("") { addClass(PlayerStyle.bountyText) }
+                            bounty1 = label("") { addClass(PlayerStyle.playerBountyText) }
                         }
                     }
                     vbox {
                         stackpane {
                             translateX -= 64.0
-                            chain2 = label("") { addClass(PlayerStyle.chainShadow)
+                            chain2 = label("") { addClass(PlayerStyle.playerChainShadow)
                                 translateY += 6.0
                                 scaleY += 0.20
                             }
-                            chain1 = label("") { addClass(PlayerStyle.chainText)
+                            chain1 = label("") { addClass(PlayerStyle.playerChainText)
                                 translateY += 6.0
                                 scaleX -= 0.20
                             }
                         }
                     }
-                    vbox { addClass(PlayerStyle.statsBackdrop)
+                    vbox { addClass(PlayerStyle.playerStatsBackdrop)
                         translateX -= 142.0
                         translateY += 2.0
-                        record = label("") { addClass(PlayerStyle.recordText) }
-                        cabinet = label("") { addClass(PlayerStyle.recordText) }
-                        location = label("") { addClass(PlayerStyle.recordText) }
+                        record = label("") { addClass(PlayerStyle.playerRecordText) }
+                        cabinet = label("") { addClass(PlayerStyle.playerRecordText) }
+                        location = label("") { addClass(PlayerStyle.playerRecordText) }
                     }
                     vbox { padding = Insets(0.0,0.0,0.0,8.0)
                         translateX -= 525.0
                         translateY += 5.0
-                        change = label("") { addClass(PlayerStyle.changeText) }
+                        change = label("") { addClass(PlayerStyle.playerChangeText) }
                     }
                 }
             }
@@ -115,7 +116,7 @@ class PlayerView(override val root: Parent) : Fragment() {
     } }
 
     fun applyData(p: Player) = Platform.runLater {
-        if (false) applyRandomData(p) else
+        if (RANDOM_VALUES) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
@@ -138,6 +139,7 @@ class PlayerView(override val root: Parent) : Fragment() {
                 location.text = p.getPlaySideString()
 
             } else {
+                wholeThing.opacity = 0.4
                 character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                 handle.text = ""; handle.isVisible = false
                 statusBar.maxWidth = 0.0
@@ -160,6 +162,7 @@ class PlayerView(override val root: Parent) : Fragment() {
         val chainInt = Random.nextInt(0, 9)
         val winsInt = Random.nextInt(44)
         val cabId = Random.nextInt(5)
+        wholeThing.opacity = 1.0
         character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle.text = generateRandomName()
         statusBar.maxWidth = 335.0 * (loadingInt * 0.01)

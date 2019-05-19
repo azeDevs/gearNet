@@ -1,6 +1,5 @@
 package application.player
 
-import application.MainStyle
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
@@ -17,15 +16,17 @@ class StreamView(override val root: Parent) : Fragment() {
     lateinit var lobbyView: StackPane
 
     fun updateStreamLeaderboard(players: List<Player>, match: Match) {
-        if (match.isRoundOngoing()) showhud = false
-        if (match.getWinner() > -1) showhud = true
+        showhud = !(match.isMatchOngoing() || match.isRoundOngoing())
+        println("match.isMatchOngoing() = ${match.isMatchOngoing()}")
+        println("match.isRoundOngoing() = ${match.isRoundOngoing()}")
+        println("showhud = $showhud")
         lobbyView.isVisible = showhud
 
         for (i in 0..3) {
             if (players.size > i) bountiesGui[i].applyData(players[i])
             else bountiesGui[i].applyData(Player())
 
-            if (players.size > i && players[i].getChain() > 0) bountiesGui[i].setVisibility(showhud)
+            if (players.size > i && players[i].getBounty() > 0) bountiesGui[i].setVisibility(showhud)
             else bountiesGui[i].setVisibility(false)
         }
     }

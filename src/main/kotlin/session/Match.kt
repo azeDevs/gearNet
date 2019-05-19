@@ -5,22 +5,20 @@ import memscan.MatchData
 import memscan.PlayerData
 import utils.Duo
 import utils.keepInRange
-import javax.swing.text.html.HTML.Tag.P
 
 
-class Match(val matchId: Long, cabinetId: Byte, val players: Duo<PlayerData, PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
+class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<PlayerData, PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
 
     private val P1 = 0
     private val P2 = 1
 
     private var winner = -1
     private var roundStarted = false
-    private val cabinetId = cabinetId
-    private var allData = hashMapOf(Pair(-1, matchData))
+    private var allData = arrayListOf(matchData)
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
-    private var character = Duo(-1,-1)
-    private var handle = Duo("", "")
+    private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
+    private var handle = Duo(players.p1.displayName, players.p2.displayName)
     private var rounds = Duo(0, 0)
     private var health = Duo(-1, -1)
 
@@ -31,18 +29,12 @@ class Match(val matchId: Long, cabinetId: Byte, val players: Duo<PlayerData, Pla
     private var isHit = Duo(false, false)
     private var risc = Duo(-1, -1)
 
-    init {
-        character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
-        handle = Duo(players.p1.displayName, players.p2.displayName)
-    }
-
-    fun getData() = allData.values.last()
+    fun getData() = allData.last()
 
     fun updateMatchData(updatedData: MatchData): Boolean {
         if (!getData().equals(updatedData)) {
 
-            matchTimer++
-            allData.put(matchTimer, updatedData)
+            allData.add(updatedData)
 
             health.p1 = keepInRange(getData().health.first)//, 0, 420)
             tension.p1 = keepInRange(getData().tension.first)//, 0, 10000)
@@ -66,14 +58,14 @@ class Match(val matchId: Long, cabinetId: Byte, val players: Duo<PlayerData, Pla
             if (roundStarted && winner==-1 && health.p2 == 0 && health.p1 > 0) {
                 roundStarted = false
                 rounds.p1++
-                println("MATCH $matchId: ROUND SLASH - PLAYER 1 WINS THE ROUND ... (${getHandleString(P1)}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
+                println("MATCH $matchId: ROUND SLASH - PLAYER 1 WINS THE ROUND ... (${players.p1.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
             }
 
             // Has the round ended, and did player 2 win?
             if (roundStarted && winner==-1 && getHealth(P1) == 0 && getHealth(P2) > 0) {
                 roundStarted = false
                 rounds.p2++
-                println("MATCH $matchId: ROUND SLASH - PLAYER 2 WINS THE ROUND ... (${getHandleString(P2)}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
+                println("MATCH $matchId: ROUND SLASH - PLAYER 2 WINS THE ROUND ... (${players.p2.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
             }
 
             // Did somebody win the match?
@@ -91,7 +83,7 @@ class Match(val matchId: Long, cabinetId: Byte, val players: Duo<PlayerData, Pla
         } else return false
     }
 
-    fun isMatchOngoing():Boolean = winner > -1
+    fun isMatchOngoing():Boolean = winner == -1
     fun isRoundOngoing():Boolean = roundStarted
 
     fun getWinner():Int = winner

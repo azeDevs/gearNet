@@ -1,5 +1,6 @@
 package application
 
+import TRACE_BORDERS
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
@@ -40,9 +41,11 @@ class MainStyle : Stylesheet() {
             alignment = Pos.BOTTOM_LEFT
         }
 
-        star {
-//            /**** Comment out to toggle debug view ****/  borderColor += box(c("#00CC44DD")); backgroundColor += c("#22664411"); borderWidth += box(1.px); borderStyle += BorderStrokeStyle(
-//            StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
+        if (TRACE_BORDERS) star {
+            borderColor += box(c("#00CC44DD"))
+            backgroundColor += c("#22664411")
+            borderWidth += box(1.px)
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
         }
 
         label {

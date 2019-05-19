@@ -12,9 +12,9 @@ import kotlin.math.min
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
-    private var bounty = 1234
+    private var bounty = 100
     private var change = 0
-    private var chain = 2
+    private var chain = 0
     private var idle = 8
     private var data = Pair(playerData, playerData)
 
@@ -44,13 +44,13 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun isIdle() = idle <= 0
 
-    fun incrementIdle() {
+    fun incrementIdle(activePlayerCount:Int) {
         changeBounty(0)
         if (--idle <= 0) {
             if (changeChain(-1) == 0) {
                 present = false
                 idle = 0
-            }
+            } else idle = activePlayerCount
 
         }
     }

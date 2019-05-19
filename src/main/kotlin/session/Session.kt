@@ -82,7 +82,7 @@ class Session: Controller() {
     private fun resolveEveryoneElse(data: PlayerData): Int {
         var loserChange = 0
         players.values.filter { it.getSteamId().equals(data.steamUserId) && it.hasLost() }.forEach { l ->
-            players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle() }
+            players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle(getActivePlayerCount()) }
             l.changeChain(-1)
             if (l.getBounty() > 0) loserChange = l.getBounty().div(3)
             l.changeBounty(-loserChange)

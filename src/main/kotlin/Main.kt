@@ -9,18 +9,17 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
+val RANDOM_VALUES = false
+val BOUNTIES_MODE = false
+val TRACE_BORDERS = false
+
 fun main(args: Array<String>) { launch<MyApp>(args) }
 
 class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class) {
 
-    init {
-//        reloadStylesheetsOnFocus()
-    }
-
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
         view.title = "ＧｅａｒＮｅｔ  //  0.5.6"
-
     }
 
     override fun start(stage: Stage) {
