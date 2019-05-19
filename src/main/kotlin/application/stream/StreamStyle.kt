@@ -1,4 +1,4 @@
-package application.player
+package application.stream
 
 import BOUNTIES_MODE
 import javafx.geometry.Pos
@@ -15,7 +15,7 @@ class StreamStyle : Stylesheet() {
     init {
         streamContainer {
             if (!BOUNTIES_MODE) visibility = FXVisibility.COLLAPSE
-            backgroundColor += c("#FF00FF33")
+            backgroundColor += c("#FF00FFff")
             alignment = Pos.CENTER
             maxWidth = 1280.px
             minWidth = 1280.px

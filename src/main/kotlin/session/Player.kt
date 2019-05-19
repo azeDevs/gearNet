@@ -36,13 +36,13 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getCharacterId() = getData().characterId
 
-    fun getCharacter() = getCharacterName(getData().characterId)
+    fun getCharacterName() = getCharacterName(getData().characterId)
 
-    fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
+    fun isScoreboardWorthy() = getBounty() > 0 && getIdle() > 0 && getMatchesWon() > 0
 
     fun getIdle() = idle
 
-    fun isIdle() = idle <= 0
+    fun isIdle() = getIdle() <= 0
 
     fun incrementIdle(activePlayerCount:Int) {
         changeBounty(0)
@@ -93,10 +93,6 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getMatchesWonString() = if (getMatchesWon()>0) "Wins: ${getMatchesWon()}" else "Wins: -"
-
-    fun getMatchesPlayedString() = if (getMatchesPlayed()>0) "Games: ${getMatchesPlayed()}" else "Games: -"
-
     fun getCabinet() = getData().cabinetLoc
 
     fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
@@ -124,9 +120,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    val MAX_IDLE = 8
     fun getStatusString() = if (idle == 0) "Idle: ${idle} [${getLoadPercent()}%]" else "Standby: ${idle} [${getLoadPercent()}%]"
-
 
     fun getLoadPercent() = getData().loadingPct
 

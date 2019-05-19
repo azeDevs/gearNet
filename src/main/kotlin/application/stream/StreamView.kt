@@ -1,4 +1,4 @@
-package application.player
+package application.stream
 
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -16,17 +16,15 @@ class StreamView(override val root: Parent) : Fragment() {
     lateinit var lobbyView: StackPane
 
     fun updateStreamLeaderboard(players: List<Player>, match: Match) {
-        showhud = !(match.isMatchOngoing() || match.isRoundOngoing())
-        println("match.isMatchOngoing() = ${match.isMatchOngoing()}")
-        println("match.isRoundOngoing() = ${match.isRoundOngoing()}")
-        println("showhud = $showhud")
+        showhud = true //!(match.isMatchOngoing() || match.isRoundOngoing())
+        println("showHud = $showhud | inMatch = ${match.isMatchOngoing()} | inRound = ${match.isRoundOngoing()}")
         lobbyView.isVisible = showhud
 
         for (i in 0..3) {
             if (players.size > i) bountiesGui[i].applyData(players[i])
             else bountiesGui[i].applyData(Player())
 
-            if (players.size > i && players[i].getBounty() > 0) bountiesGui[i].setVisibility(showhud)
+            if (players.size > i /*&& players[i].isScoreboardWorthy()*/) bountiesGui[i].setVisibility(showhud)
             else bountiesGui[i].setVisibility(false)
         }
     }
@@ -41,7 +39,6 @@ class StreamView(override val root: Parent) : Fragment() {
                         translateY += 380
                         fitWidth = 1280.0
                         fitHeight = 400.0
-//                    blendMode = BlendMode.HARD_LIGHT
                     }
                     imageview(getRes("gn_stream.png").toString()) {
                         viewport = Rectangle2D(0.0, 704.0, 1024.0, 320.0)
@@ -49,11 +46,14 @@ class StreamView(override val root: Parent) : Fragment() {
                         translateY -= 410
                         fitWidth = 1280.0
                         fitHeight = 400.0
-//                    blendMode = BlendMode.HARD_LIGHT
                     }
                     vbox {
                         // BOUNTY VIEWS
-                        for (i in 0..3) hbox { bountiesGui.add(BountyView(parent)) }
+                        for (i in 0..3) {
+                            hbox {
+                                bountiesGui.add(BountyView(parent, i))
+                            }
+                        }
                     }
                 }
 

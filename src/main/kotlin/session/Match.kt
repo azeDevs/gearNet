@@ -51,31 +51,31 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
             // Has the round started?
             if (roundStarted == false && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
                 roundStarted = true
-                println("MATCH $matchId: ROUND START - DUEL ${getRounds(P1) + getRounds(P2) + 1}, LET'S ROCK! ... ${lobbyData.roundWins} rounds to win")
+                println("Match[$matchId]: Round Start - DUEL ${getRounds(P1) + getRounds(P2) + 1}, LET'S ROCK! ... ${lobbyData.roundWins} rounds to win")
             }
 
             // Has the round ended, and did player 1 win?
             if (roundStarted && winner==-1 && health.p2 == 0 && health.p1 > 0) {
                 roundStarted = false
                 rounds.p1++
-                println("MATCH $matchId: ROUND SLASH - PLAYER 1 WINS THE ROUND ... (${players.p1.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
+                println("Match[$matchId]: Round Completed - Player 1 wins the round ... (${players.p1.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
             }
 
             // Has the round ended, and did player 2 win?
             if (roundStarted && winner==-1 && getHealth(P1) == 0 && getHealth(P2) > 0) {
                 roundStarted = false
                 rounds.p2++
-                println("MATCH $matchId: ROUND SLASH - PLAYER 2 WINS THE ROUND ... (${players.p2.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
+                println("Match[$matchId]: Round Completed - Player 2 wins the round ... (${players.p2.displayName}) needs ${getRounds(P2)}/${lobbyData.roundWins} rounds to win")
             }
 
             // Did somebody win the match?
             if (getRounds(P1) == lobbyData.roundWins && winner == -1) {
                 winner = 0
-                println("MATCH $matchId: CONCLUSION - PLAYER 1 HAS TAKEN THE MATCH! (${getHandleString(P1)})")
+                println("Match[$matchId]: Match CONCLUSION - Player 1 has taken the match ... (${getHandleString(P1)})")
             }
             if (getRounds(P2) == lobbyData.roundWins && winner == -1) {
                 winner = 1
-                println("MATCH $matchId: CONCLUSION - PLAYER 2 HAS TAKEN THE MATCH! (${getHandleString(P2)})")
+                println("Match[$matchId]]: Match CONCLUSION - Player 2 has taken the match ... (${getHandleString(P2)})")
             }
 
             return true

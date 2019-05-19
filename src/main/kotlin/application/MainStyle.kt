@@ -14,6 +14,7 @@ class MainStyle : Stylesheet() {
     companion object {
         val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
+
         val utilsContainer by cssclass()
         val appContainer by cssclass()
         val moduleTitle by cssclass()
@@ -22,7 +23,7 @@ class MainStyle : Stylesheet() {
 
     init {
         appContainer {
-            backgroundImage += getRes("gn_background2.png")
+            backgroundImage += getRes("gn_background.png")
             alignment = Pos.TOP_CENTER
         }
 

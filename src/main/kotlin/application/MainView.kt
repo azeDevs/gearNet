@@ -2,7 +2,7 @@ package application
 
 import application.match.MatchView
 import application.player.PlayerView
-import application.player.StreamView
+import application.stream.StreamView
 import application.tools.ToolsView
 import javafx.geometry.Pos
 import kotlinx.coroutines.GlobalScope

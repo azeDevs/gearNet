@@ -1,9 +1,9 @@
 import application.MainStyle
 import application.MainView
 import application.match.MatchStyle
-import application.player.BountyStyle
 import application.player.PlayerStyle
-import application.player.StreamStyle
+import application.stream.BountyStyle
+import application.stream.StreamStyle
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
