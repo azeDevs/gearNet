@@ -4,11 +4,10 @@ import org.jdbi.v3.core.ConnectionException
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
-import org.postgresql.util.PSQLException
 import java.util.*
 
 //Soon to be Deprecated in favor of Web API
-class DatabaseHandler(host: String, password: String, username: String = "arcNet", port: Int = 5432) : SqlApi {
+class DatabaseHandler(host: String = "", password: String = "", username: String = "arcNet", port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 

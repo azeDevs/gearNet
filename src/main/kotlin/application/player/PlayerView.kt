@@ -1,6 +1,5 @@
 package application.player
 
-import RANDOM_VALUES
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -11,6 +10,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import session.Character.getCharacterPortrait
 import session.Player
+import session.Session
 import tornadofx.*
 import utils.addCommas
 import utils.generateRandomName
@@ -115,8 +115,8 @@ class PlayerView(override val root: Parent) : Fragment() {
         }
     } }
 
-    fun applyData(p: Player) = Platform.runLater {
-        if (RANDOM_VALUES) applyRandomData(p) else
+    fun applyData(p: Player, session: Session) = Platform.runLater {
+        if (session.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
@@ -131,6 +131,8 @@ class PlayerView(override val root: Parent) : Fragment() {
                 status.text = p.getStatusString()
 
                 bounty1.text = p.getBountyString()
+                if (p.isIdle()) bounty1.textFill = c("#a95d29")
+                else bounty1.textFill = c("#ffcc33")
                 bounty2.text = p.getBountyString()
 
                 chain1.text = p.getChainString()

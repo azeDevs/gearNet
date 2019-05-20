@@ -70,7 +70,7 @@ class MainStyle : Stylesheet() {
                 fontFiraCodeLight?.let { font = it }
                 alignment = Pos.BOTTOM_LEFT
                 textFill = c("#521833")
-                fontSize = 9.px
+                fontSize = 10.px
             }
 
             and(lobbyName) {

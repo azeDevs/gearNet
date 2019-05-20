@@ -12,39 +12,41 @@ import utils.getRes
 class StreamView(override val root: Parent) : Fragment() {
 
     var showHud = true
-    var lockHud = false
+    var lockHud = -1
     private val bountiesGui: MutableList<BountyView> = ArrayList()
     lateinit var lobbyView: StackPane
     var streamView: VBox
 
     fun updateStreamLeaderboard(players: List<Player>, s: Session) {
-        if (lockHud) lobbyView.isVisible = showHud
+        if (s.sessionMode == lockHud) lobbyView.isVisible = showHud
         else {
+            lockHud = -1
             if (s.sessionMode == s.LOBBY_MODE || s.sessionMode == s.LOADING_MODE || s.sessionMode == s.VICTORY_MODE) lobbyView.isVisible = true
             else if (s.sessionMode == s.MATCH_MODE || s.sessionMode == s.SLASH_MODE) lobbyView.isVisible = false
         }
 
         for (i in 0..3) {
             if (players.size > i) {
-                bountiesGui[i].applyData(players[i])
+                bountiesGui[i].applyData(players[i], s)
                 bountiesGui[i].setVisibility(showHud)
             } else {
-                bountiesGui[i].applyData(Player())
+                bountiesGui[i].applyData(Player(), s)
                 bountiesGui[i].setVisibility(false)
             }
         }
     }
 
+    fun toggleScoreboardMode(session:Session) {
+        lockHud = session.sessionMode
+        showHud = !showHud
+        session.log("C: Scoreboard Toggle = $showHud")
+        updateStreamLeaderboard(session.getPlayersList(), session)
+    }
+
     fun toggleStreamerMode(session:Session) {
-        if (lockHud) {
-            showHud = !showHud
-            session.log("CONSOLE: Scoreboard Toggle = $showHud")
-            updateStreamLeaderboard(session.getPlayersList(), session)
-        } else {
-            streamView.isVisible = !streamView.isVisible
-            session.log("CONSOLE: Streaming Toggle = ${streamView.isVisible}")
-            updateStreamLeaderboard(session.getPlayersList(), session)
-        }
+        streamView.isVisible = !streamView.isVisible
+        session.log("C: Streaming Toggle = ${streamView.isVisible}")
+        updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
     init {

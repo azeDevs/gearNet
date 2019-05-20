@@ -1,6 +1,5 @@
 package application.stream
 
-import RANDOM_VALUES
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -13,6 +12,7 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import session.Character.getCharacterPortrait
 import session.Player
+import session.Session
 import tornadofx.*
 import utils.addCommas
 import utils.generateRandomName
@@ -220,8 +220,8 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         wholeThing.isVisible = flag
     }
 
-    fun applyData(p: Player) = Platform.runLater {
-        if (RANDOM_VALUES) applyRandomData(p) else
+    fun applyData(p: Player, s: Session) = Platform.runLater {
+        if (s.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
                 handle1.text = p.getNameString(); handle1.isVisible = true

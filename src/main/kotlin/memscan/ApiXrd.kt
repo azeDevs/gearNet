@@ -13,6 +13,11 @@ interface XrdApi {
     fun isConnected(): Boolean
 
     /**
+     * @return the Steam ID of the local player client
+     */
+    fun getClientSteamId(): Long
+
+    /**
      * @return a List of the Xrd lobby's active players and their data
      */
     fun getPlayerData(): List<PlayerData>

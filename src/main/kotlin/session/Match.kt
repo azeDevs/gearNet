@@ -7,7 +7,7 @@ import utils.Duo
 import utils.keepInRange
 
 
-class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<PlayerData, PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
+class Match(val matchId: Long = -1, private val cabinetId: Byte = -0x1, val players: Duo<PlayerData, PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
 
     private val P1 = 0
     private val P2 = 1
@@ -15,6 +15,7 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
     private var winner = -1
     private var roundStarted = false
     private var allData = arrayListOf(matchData)
+    private val snaps = arrayListOf<Snap>()
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
@@ -113,11 +114,11 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
     fun getCabinet():Byte = cabinetId
     fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
         when(cabId) {
-            0 -> return "CABINET A (Snaps ${allData.size})"
-            1 -> return "CABINET B (Snaps ${allData.size})"
-            2 -> return "CABINET C (Snaps ${allData.size})"
-            3 -> return "CABINET D (Snaps ${allData.size})"
-            else -> return "CABINET $cabId (Snaps ${allData.size})"
+            0 -> return "CABINET A"
+            1 -> return "CABINET B"
+            2 -> return "CABINET C"
+            3 -> return "CABINET D"
+            else -> return "$cabId"
         }
     }
 }
