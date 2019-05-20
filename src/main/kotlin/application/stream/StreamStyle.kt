@@ -1,6 +1,5 @@
 package application.stream
 
-import BOUNTIES_MODE
 import javafx.geometry.Pos
 import tornadofx.*
 
@@ -14,13 +13,13 @@ class StreamStyle : Stylesheet() {
 
     init {
         streamContainer {
-            if (!BOUNTIES_MODE) visibility = FXVisibility.COLLAPSE
             backgroundColor += c("#FF00FFff")
             alignment = Pos.CENTER
             maxWidth = 1280.px
             minWidth = 1280.px
             maxHeight = 720.px
             minHeight = 720.px
+            visibility = FXVisibility.HIDDEN
         }
 
         label {

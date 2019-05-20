@@ -12,10 +12,11 @@ import kotlin.math.min
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
-    private var bounty = 100
+
+    private var bounty = 0
     private var change = 0
     private var chain = 0
-    private var idle = 8
+    private var idle = 1
     private var data = Pair(playerData, playerData)
 
     private fun oldData() = data.first
@@ -25,7 +26,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-            idle = playersActive
+            idle = max(1,playersActive)
         }
     }
 
@@ -38,20 +39,20 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getCharacterName() = getCharacterName(getData().characterId)
 
-    fun isScoreboardWorthy() = getBounty() > 0 && getIdle() > 0 && getMatchesWon() > 0
-
     fun getIdle() = idle
 
     fun isIdle() = getIdle() <= 0
 
-    fun incrementIdle(activePlayerCount:Int) {
+    fun incrementIdle(s: Session) {
         changeBounty(0)
         if (--idle <= 0) {
-            if (changeChain(-1) == 0) {
+            if (changeChain(-1) <= 0) {
                 present = false
                 idle = 0
-            } else idle = activePlayerCount
-
+            } else {
+                idle = max(1,s.getActivePlayerCount())
+                s.log("P: ID ${getSteamId()} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
+            }
         }
     }
 
@@ -67,7 +68,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
-        if (bounty < 100) bounty = 0
+        if (bounty < 10) bounty = 0
     }
 
     fun getChain() = chain
@@ -120,7 +121,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    fun getStatusString() = if (idle == 0) "Idle: ${idle} [${getLoadPercent()}%]" else "Standby: ${idle} [${getLoadPercent()}%]"
+    fun getStatusString() = if (idle == 0) "Idle: ${idle}" else "Standby: ${idle} [${getLoadPercent()}%]"
 
     fun getLoadPercent() = getData().loadingPct
 

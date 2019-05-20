@@ -4,7 +4,9 @@ import application.match.MatchView
 import application.player.PlayerView
 import application.stream.StreamView
 import application.tools.ToolsView
+import javafx.application.Platform
 import javafx.geometry.Pos
+import javafx.scene.control.Label
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -14,12 +16,19 @@ import tornadofx.*
 
 class MainView : View() {
 
+    fun updateConsole() = Platform.runLater {
+        val sb = StringBuilder()
+        session.consoleLog.forEach { sb.append("\n${it}") }
+        consoleView.setText(sb.toString())
+    }
+
     override val root: Form = Form()
     private val playersGui: MutableList<PlayerView> = ArrayList()
     private val matchesGui: MutableList<MatchView> = ArrayList()
     private val session: Session by inject()
     lateinit private var utilsGui: ToolsView
     lateinit private var streamView: StreamView
+    lateinit private var consoleView: Label
 
     private fun cycleDatabase() {
         GlobalScope.launch {
@@ -40,6 +49,7 @@ class MainView : View() {
     private fun cycleUi() {
         GlobalScope.launch {
             utilsGui.applyData(session)
+            updateConsole()
             delay(64); cycleUi()
         }
     }
@@ -47,25 +57,30 @@ class MainView : View() {
     private fun redrawAppUi() {
         utilsGui.blinkGearNetIndicator(session)
         // Sort and redraw PlayerViews
-        val uiUpdate: List<Player> = session.players.values.toList().sortedByDescending { item -> item.getRating() }
-            .sortedByDescending { item -> item.getBounty() }.sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
+        val uiUpdate: List<Player> = session.getPlayersList()
         for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i])
         else playersGui[i].applyData(Player())
         matchesGui[0].applyMatch(session.match)
-        streamView.updateStreamLeaderboard(uiUpdate, session.match)
-        println("redraw (${streamView.showhud})")
+        streamView.updateStreamLeaderboard(uiUpdate, session)
     }
 
     init {
         with(root) {
             addClass(MainStyle.appContainer)
-            translateY -= 5.0
             stackpane {
-                vbox {
+                consoleView = label { addClass(MainStyle.consoleField)
+                    minWidth = 1250.0
+                    maxWidth = 1250.0
+                    minHeight = 700.0
+                    maxHeight = 700.0
+                    translateY -= 26
+                    translateX += 6
+                }
+                vbox { translateX -= 10
                     hbox {
-                        alignment = Pos.TOP_CENTER
+                        alignment = Pos.TOP_RIGHT
 
-                        // ======== LEFT SIDE COLUMN ========
+                        // ======== MIDDLE COLUMN ========
                         vbox {
                             alignment = Pos.TOP_CENTER; spacing = 2.0
                             minWidth = 520.0
@@ -97,11 +112,33 @@ class MainView : View() {
                     // ======== BOTTOM UTILS ========
                     hbox { utilsGui = ToolsView(parent) }
 
-
                 }
 
-
                 vbox { streamView = StreamView(parent) }
+
+                button { addClass(MainStyle.toggleStreamButton)
+                    translateY -= 15
+                    minWidth = 1240.0
+                    maxWidth = 1240.0
+                    minHeight = 680.0
+                    maxHeight = 680.0
+                    shortpress {
+                        if (streamView.streamView.isVisible) streamView.toggleStreamerMode(session)
+                    }
+                    longpress {
+                        if (streamView.streamView.isVisible) {
+                            if (streamView.lockHud) {
+                                streamView.lockHud = false
+                                text = ""
+                                session.log("C: HUD lock disabled")
+                            } else {
+                                streamView.lockHud = true
+                                text = "\uD83D\uDD12"
+                                session.log("C: HUD lock enabled")
+                            }
+                        } else streamView.toggleStreamerMode(session)
+                    }
+                }
 
             }
 

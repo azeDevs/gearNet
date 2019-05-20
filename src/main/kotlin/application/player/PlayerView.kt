@@ -58,11 +58,11 @@ class PlayerView(override val root: Parent) : Fragment() {
                         maxWidth = 0.0
                     }
                     hbox {
-                        handle = label("") {
+                        handle = label {
                             addClass(PlayerStyle.playerHandleText)
                             translateY += 1.0
                         }
-                        status = label("") {
+                        status = label {
                             addClass(PlayerStyle.playerStatusText)
                             translateX -= 160.0
                             translateY += 4.0
@@ -78,21 +78,21 @@ class PlayerView(override val root: Parent) : Fragment() {
                         stackpane {
                             translateX += 10.0
                             translateY -= 5.0
-                            bounty2 = label("") { addClass(PlayerStyle.playerBountyShadow)
+                            bounty2 = label { addClass(PlayerStyle.playerBountyShadow)
                                 scaleX += 0.05
                                 scaleY += 0.20
                             }
-                            bounty1 = label("") { addClass(PlayerStyle.playerBountyText) }
+                            bounty1 = label { addClass(PlayerStyle.playerBountyText) }
                         }
                     }
                     vbox {
                         stackpane {
                             translateX -= 64.0
-                            chain2 = label("") { addClass(PlayerStyle.playerChainShadow)
+                            chain2 = label { addClass(PlayerStyle.playerChainShadow)
                                 translateY += 6.0
                                 scaleY += 0.20
                             }
-                            chain1 = label("") { addClass(PlayerStyle.playerChainText)
+                            chain1 = label { addClass(PlayerStyle.playerChainText)
                                 translateY += 6.0
                                 scaleX -= 0.20
                             }
@@ -101,14 +101,14 @@ class PlayerView(override val root: Parent) : Fragment() {
                     vbox { addClass(PlayerStyle.playerStatsBackdrop)
                         translateX -= 142.0
                         translateY += 2.0
-                        record = label("") { addClass(PlayerStyle.playerRecordText) }
-                        cabinet = label("") { addClass(PlayerStyle.playerRecordText) }
-                        location = label("") { addClass(PlayerStyle.playerRecordText) }
+                        record = label { addClass(PlayerStyle.playerRecordText) }
+                        cabinet = label { addClass(PlayerStyle.playerRecordText) }
+                        location = label { addClass(PlayerStyle.playerRecordText) }
                     }
                     vbox { padding = Insets(0.0,0.0,0.0,8.0)
                         translateX -= 525.0
-                        translateY += 5.0
-                        change = label("") { addClass(PlayerStyle.playerChangeText) }
+                        translateY += 8.0
+                        change = label { addClass(PlayerStyle.playerChangeText) }
                     }
                 }
             }
@@ -121,8 +121,13 @@ class PlayerView(override val root: Parent) : Fragment() {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
 
-                handle.text = p.getNameString(); handle.isVisible = true
-                statusBar.maxWidth = 335.0 * (p.getLoadPercent()*0.01)
+                handle.text = p.getNameString()
+                if (p.isIdle()) handle.textFill = c("#3befaa88")
+                else handle.textFill = c("#3befaa")
+
+                if (p.isIdle()) statusBar.maxWidth = 0.0
+                else statusBar.maxWidth = 335.0 * (p.getLoadPercent()*0.01)
+
                 status.text = p.getStatusString()
 
                 bounty1.text = p.getBountyString()
@@ -131,7 +136,9 @@ class PlayerView(override val root: Parent) : Fragment() {
                 chain1.text = p.getChainString()
                 chain2.text = p.getChainString()
 
-                if (p.getChange() > 0) change.textFill = c("#84c928") else change.textFill = c("#d22e44")
+                if (p.getChange() > 0) change.textFill = c("#84c928")
+                else if (p.getChange() < 0) change.textFill = c("#d22e44")
+                else change.textFill = c("#521833")
                 change.text = p.getChangeString()
 
                 record.text = p.getRecordString()
@@ -141,7 +148,7 @@ class PlayerView(override val root: Parent) : Fragment() {
             } else {
                 wholeThing.opacity = 0.4
                 character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
-                handle.text = ""; handle.isVisible = false
+                handle.text = ""
                 statusBar.maxWidth = 0.0
                 status.text = ""
                 bounty1.text = ""
@@ -170,7 +177,9 @@ class PlayerView(override val root: Parent) : Fragment() {
         bounty2.text = "$bountyStr W$"
         chain1.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
         chain2.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
-        if (changeInt > 0) change.textFill = c("#84c928") else change.textFill = c("#d22e44")
+        if (changeInt > 0) change.textFill = c("#84c928")
+        else if (changeInt < 0) change.textFill = c("#d22e44")
+        else change.textFill = c("#e0af1a")
         change.text = p.getChangeString(1f, changeInt)
         record.text = "W:$winsInt  /  M:${winsInt + Random.nextInt(44)}"
         location.text = p.getPlaySideString(cabId, Random.nextInt(8))

@@ -19,13 +19,13 @@ class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerSt
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.5.6"
+        view.title = "ＧｅａｒＮｅｔ  //  0.5.15"
     }
 
     override fun start(stage: Stage) {
         super.start(stage)
         stage.width  = 1296.0 // 1280
-        stage.height = 759.0 // 720
+        stage.height = 759.0  // 720
         stage.isResizable = false
     }
 
