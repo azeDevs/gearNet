@@ -1,5 +1,6 @@
 package session
 
+import javafx.geometry.Rectangle2D
 import memscan.PlayerData
 import session.Character.getCharacterName
 import utils.addCommas
@@ -11,10 +12,11 @@ import kotlin.math.min
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
+
     private var bounty = 0
     private var change = 0
     private var chain = 0
-    private var idle = 8
+    private var idle = 1
     private var data = Pair(playerData, playerData)
 
     private fun oldData() = data.first
@@ -24,7 +26,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         data = Pair(getData(), updatedData)
         if (hasLoaded()) {
             present = true
-            idle = playersActive
+            idle = max(1,playersActive)
         }
     }
 
@@ -35,22 +37,22 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getCharacterId() = getData().characterId
 
-    fun getCharacter() = getCharacterName(getData().characterId)
-
-    fun isScoreboardWorthy() = getBounty() > 0 && idle > 0 && getMatchesWon() > 0
+    fun getCharacterName() = getCharacterName(getData().characterId)
 
     fun getIdle() = idle
 
-    fun isIdle() = idle <= 0
+    fun isIdle() = getIdle() <= 0
 
-    fun incrementIdle() {
+    fun incrementIdle(s: Session) {
         changeBounty(0)
         if (--idle <= 0) {
-            if (changeChain(-1) == 0) {
+            if (changeChain(-1) <= 0) {
                 present = false
                 idle = 0
+            } else {
+                idle = max(1,s.getActivePlayerCount())
+                s.log("P: ID ${getSteamId()} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
             }
-
         }
     }
 
@@ -66,7 +68,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun changeBounty(amount:Int) {
         change = amount
         bounty += amount
-        if (bounty < 100) bounty = 0
+        if (bounty < 10) bounty = 0
     }
 
     fun getChain() = chain
@@ -91,10 +93,6 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getMatchesWon() = getData().matchesWon
 
     fun getMatchesPlayed() = getData().matchesSum
-
-    fun getMatchesWonString() = if (getMatchesWon()>0) "Wins: ${getMatchesWon()}" else "Wins: -"
-
-    fun getMatchesPlayedString() = if (getMatchesPlayed()>0) "Games: ${getMatchesPlayed()}" else "Games: -"
 
     fun getCabinet() = getData().cabinetLoc
 
@@ -123,9 +121,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    val MAX_IDLE = 8
-    fun getStatusString() = if (idle == 0) "Idle: ${idle} [${getLoadPercent()}%]" else "Standby: ${idle} [${getLoadPercent()}%]"
-
+    fun getStatusString() = if (idle == 0) "Idle: ${idle}" else "Standby: ${idle} [${getLoadPercent()}%]"
 
     fun getLoadPercent() = getData().loadingPct
 
@@ -154,7 +150,34 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (getMatchesWon() >= 21 && getRating() >= 1.2f) grade = "A+"
         if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
         if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
+        return grade
+    }
 
+    fun getRatingImage(matchesWon:Int = getMatchesWon(), rating:Float = getRating()): Rectangle2D {
+        var grade = Rectangle2D(0.0, 640.0, 128.0, 64.0)
+        if (matchesWon >= 1 && rating > 0.0f) grade  = Rectangle2D(0.0, 0.0, 128.0, 64.0)  // D
+        if (matchesWon >= 1 && rating >= 0.1f) grade = Rectangle2D(0.0, 64.0, 128.0, 64.0)  // D+
+        if (matchesWon >= 2 && rating >= 0.2f) grade = Rectangle2D(0.0, 128.0, 128.0, 64.0)  // C
+        if (matchesWon >= 3 && rating >= 0.3f) grade  = Rectangle2D(0.0, 192.0, 128.0, 64.0)  // C+
+        if (matchesWon >= 5 && rating >= 0.4f) grade  = Rectangle2D(0.0, 256.0, 128.0, 64.0)  // B
+        if (matchesWon >= 8 && rating >= 0.6f) grade  = Rectangle2D(0.0, 320.0, 128.0, 64.0)  // B+
+        if (matchesWon >= 13 && rating >= 1.0f) grade = Rectangle2D(0.0, 384.0, 128.0, 64.0)  // A
+        if (matchesWon >= 21 && rating >= 1.2f) grade = Rectangle2D(0.0, 448.0, 128.0, 64.0)  // A+
+        if (matchesWon >= 34 && rating >= 1.4f) grade = Rectangle2D(0.0, 512.0, 128.0, 64.0)  // S
+        if (matchesWon >= 55 && rating >= 1.6f) grade = Rectangle2D(0.0, 576.0, 128.0, 64.0)  // S+
+        return grade
+    }
+
+    fun getChainImage(chain:Int = getChain()): Rectangle2D {
+        var grade = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+        if (chain == 1) grade = Rectangle2D(128.0, 0.0, 64.0, 64.0)
+        if (chain == 2) grade = Rectangle2D(128.0, 64.0, 64.0, 64.0)
+        if (chain == 3) grade = Rectangle2D(128.0, 128.0, 64.0, 64.0)
+        if (chain == 4) grade = Rectangle2D(128.0, 192.0, 64.0, 64.0)
+        if (chain == 5) grade = Rectangle2D(128.0, 256.0, 64.0, 64.0)
+        if (chain == 6) grade = Rectangle2D(128.0, 320.0, 64.0, 64.0)
+        if (chain == 7) grade = Rectangle2D(128.0, 384.0, 64.0, 64.0)
+        if (chain == 8) grade = Rectangle2D(128.0, 448.0, 64.0, 64.0)
         return grade
     }
 
@@ -174,7 +197,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 //    }
 //
 //    fun getChainColor(): Vec4 {
-//        when (getChain()) {
+//        when (getChain()) {z
 //            1 -> return Vec4(0.55,0.65,0.66,1.00) // D+
 //            2 -> return Vec4(0.50,0.70,0.68,1.00) // C
 //            3 -> return Vec4(0.45,0.75,0.70,1.00) // C+

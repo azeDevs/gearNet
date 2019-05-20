@@ -57,7 +57,7 @@ class MatchStyle : Stylesheet() {
 
             and(matchTitle) {
                 fontPaladinsStraight?.let { font = it }
-                fontSize = 20.px
+                fontSize = 18.px
                 textFill = c("#04a4c4")
             }
 

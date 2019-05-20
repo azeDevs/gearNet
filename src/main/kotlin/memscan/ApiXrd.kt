@@ -60,7 +60,7 @@ data class MatchData(
     val isHit: Pair<Boolean, Boolean> = Pair(false,false),
     //val beats: Pair<Int, Int>,
     val timer: Int = -1,
-    val rounds: Pair<Int, Int>= Pair(-1,-1)
+    val rounds: Pair<Int, Int> = Pair(-1,-1)
     // Connection? : Int
     // Score marks? : Pair<Int, Int>
     // Damage taken? : Pair<Int, Int>
@@ -75,13 +75,14 @@ data class MatchData(
             other.risc == risc &&
             other.isHit == isHit &&
             other.timer == timer &&
-            other.rounds == rounds
+            other.rounds == rounds &&
             other.isHit == isHit
 
 }
 
 data class LobbyData(
-    val lobbyName: String = ""
+    val lobbyName: String = "",
+    val roundWins: Int = 2
     // Open cabinets? : Int
     // Points for win? : Int
     // Time per match? : Int

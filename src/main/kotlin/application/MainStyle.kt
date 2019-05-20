@@ -1,5 +1,6 @@
 package application
 
+import TRACE_BORDERS
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
@@ -12,11 +13,15 @@ class MainStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
+        val fontFiraCodeLight = loadFont("/fonts/FiraCode-Light.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
+
         val utilsContainer by cssclass()
         val appContainer by cssclass()
         val moduleTitle by cssclass()
         val lobbyName by cssclass()
+        val consoleField by cssclass()
+        val toggleStreamButton by cssclass()
     }
 
     init {
@@ -27,7 +32,7 @@ class MainStyle : Stylesheet() {
 
         utilsContainer {
             borderWidth += box(2.px)
-            borderColor += box(c("#34081c"))
+            borderColor += box(c("#34081c88"))
             borderStyle += BorderStrokeStyle(
                 StrokeType.INSIDE,
                 StrokeLineJoin.ROUND,
@@ -40,15 +45,33 @@ class MainStyle : Stylesheet() {
             alignment = Pos.BOTTOM_LEFT
         }
 
-        star {
-//            /**** Comment out to toggle debug view ****/  borderColor += box(c("#00CC44DD")); backgroundColor += c("#22664411"); borderWidth += box(1.px); borderStyle += BorderStrokeStyle(
-//            StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
+        if (TRACE_BORDERS) star {
+            borderColor += box(c("#00CC44DD"))
+            backgroundColor += c("#22664411")
+            borderWidth += box(1.px)
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
+        }
+
+        button {
+            and(toggleStreamButton) {
+                opacity = 0.4
+                textFill = c("#52141f")
+                backgroundColor += c("#00000000")
+                alignment = Pos.BOTTOM_RIGHT
+            }
         }
 
         label {
             fontFiraCodeRegular?.let { font = it }
             textFill = c("#cccccc")
             fontSize = 14.px
+
+            and(consoleField) {
+                fontFiraCodeLight?.let { font = it }
+                alignment = Pos.BOTTOM_LEFT
+                textFill = c("#521833")
+                fontSize = 9.px
+            }
 
             and(lobbyName) {
                 fontPaladins?.let { font = it }
