@@ -4,12 +4,10 @@ import application.MainStyle
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import session.Session
 import tornadofx.*
-import utils.getRes
 
 class ToolsView(override val root: Parent) : Fragment() {
 
@@ -23,10 +21,10 @@ class ToolsView(override val root: Parent) : Fragment() {
             translateY += 10
             translateX -= 10
             alignment = Pos.TOP_RIGHT
-            imageview(getRes("gn_atlas.png").toString()) {
-                viewport = Rectangle2D(20.0, 910.0, 920.0, 100.0)
-                opacity = 0.5
-            }
+//            imageview(getRes("gn_atlas.png").toString()) {
+//                viewport = Rectangle2D(20.0, 910.0, 920.0, 100.0)
+//                opacity = 0.5
+//            }
             hbox {
                 addClass(MainStyle.utilsContainer); padding = Insets(10.0,10.0,10.0,15.0)
                 minWidth = 920.0
@@ -67,7 +65,7 @@ class ToolsView(override val root: Parent) : Fragment() {
     fun applyData(session: Session) = Platform.runLater {
         matchesPlayedLabel.minWidth = 125.0
         playersActiveLabel.minWidth = 125.0
-        matchesPlayedLabel.text = "Matches: 1 / ${session.matches.size+1}"
+        matchesPlayedLabel.text = "Matches: 1 / ${session.archiveMatches.size}"
         playersActiveLabel.text = "Players: ${session.getActivePlayerCount()} / ${session.players.size}"
         for (i in 0..4) if (i == session.sessionMode) modeGui[i].reset(true) else modeGui[i].reset(false)
         modeGui.forEach { it.nextFrame() }

@@ -4,6 +4,7 @@ import javafx.geometry.Rectangle2D
 
 object Character {
 
+    const val NULL: Byte = -0x1
     const val SO: Byte = 0x00 // 0
     const val KY: Byte = 0x01 // 1
     const val MA: Byte = 0x02 // 2
@@ -98,6 +99,7 @@ object Character {
     fun getCharacterPortrait(byte: Byte = -0x1, idle: Boolean = false): Rectangle2D {
         val offsetX = if (idle) 512 else 0
         when (byte) {
+            NULL -> return Rectangle2D(576.0, 192.0, 64.0, 64.0)
             SO -> return Rectangle2D(offsetX + 0.0, 0.0, 64.0, 64.0)
             KY -> return Rectangle2D(offsetX + 64.0, 0.0, 64.0, 64.0)
             MA -> return Rectangle2D(offsetX + 128.0, 0.0, 64.0, 64.0)
@@ -124,6 +126,39 @@ object Character {
             BA -> return Rectangle2D(offsetX + 448.0, 128.0, 64.0, 64.0)
             AN -> return Rectangle2D(offsetX + 0.0, 192.0, 64.0, 64.0)
             else -> return Rectangle2D(offsetX + 64.0, 192.0, 64.0, 64.0)
+        }
+    }
+
+    fun getCharacterTrademark(integer: Int) = getCharacterPortrait(integer.toByte())
+    fun getCharacterTrademark(byte: Byte = -0x1): Rectangle2D {
+        when (byte) {
+            NULL -> return Rectangle2D(128.0, 896.0, 128.0, 128.0)
+            SO -> return Rectangle2D(0.0, 512.0, 128.0, 128.0)
+            KY -> return Rectangle2D(128.0, 512.0, 128.0, 128.0)
+            MA -> return Rectangle2D(256.0, 512.0, 128.0, 128.0)
+            MI -> return Rectangle2D(384.0, 512.0, 128.0, 128.0)
+            ZA -> return Rectangle2D(512.0, 512.0, 128.0, 128.0)
+            PO -> return Rectangle2D(640.0, 512.0, 128.0, 128.0)
+            CH -> return Rectangle2D(768.0, 512.0, 128.0, 128.0)
+            FA -> return Rectangle2D(896.0, 512.0, 128.0, 128.0)
+            AX -> return Rectangle2D(0.0, 640.0, 128.0, 128.0)
+            VE -> return Rectangle2D(128.0, 640.0, 128.0, 128.0)
+            SL -> return Rectangle2D(256.0, 640.0, 128.0, 128.0)
+            IN -> return Rectangle2D(384.0, 640.0, 128.0, 128.0)
+            BE -> return Rectangle2D(512.0, 640.0, 128.0, 128.0)
+            RA -> return Rectangle2D(640.0, 640.0, 128.0, 128.0)
+            SI -> return Rectangle2D(768.0, 640.0, 128.0, 128.0)
+            EL -> return Rectangle2D(896.0, 640.0, 128.0, 128.0)
+            LE -> return Rectangle2D(0.0, 768.0, 128.0, 128.0)
+            JO -> return Rectangle2D(128.0, 768.0, 128.0, 128.0)
+            JC -> return Rectangle2D(256.0, 768.0, 128.0, 128.0)
+            JM -> return Rectangle2D(384.0, 768.0, 128.0, 128.0)
+            KU -> return Rectangle2D(512.0, 768.0, 128.0, 128.0)
+            RV -> return Rectangle2D(640.0, 768.0, 128.0, 128.0)
+            DI -> return Rectangle2D(768.0, 768.0, 128.0, 128.0)
+            BA -> return Rectangle2D(896.0, 768.0, 128.0, 128.0)
+            AN -> return Rectangle2D(0.0, 896.0, 128.0, 128.0)
+            else -> return Rectangle2D(128.0, 896.0, 128.0, 128.0)
         }
     }
 

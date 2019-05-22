@@ -29,3 +29,5 @@ private val rn1 = arrayListOf("a","ze","st","ar","Koov","er","Te","chno","Lost",
 private val rn2 = arrayListOf("b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","z")
 private val rn3 = arrayListOf("a","e","i","o","u","a","e","i","o","u","y")
 private fun randStr(rn: ArrayList<String>) = rn[Random.nextInt(rn.size)]
+
+fun getIdString(id:Long) = if (id.toString().length > 8) "ID${id.toString().substring(id.toString().length-8, id.toString().length)}" else "ID${id}"

@@ -1,5 +1,6 @@
 package application
 
+import GHOST_OPACITY
 import TRACE_BORDERS
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
@@ -31,8 +32,9 @@ class MainStyle : Stylesheet() {
         }
 
         utilsContainer {
+            opacity = GHOST_OPACITY
             borderWidth += box(2.px)
-            borderColor += box(c("#34081c88"))
+            borderColor += box(c("#34081c"))
             borderStyle += BorderStrokeStyle(
                 StrokeType.INSIDE,
                 StrokeLineJoin.ROUND,
@@ -41,7 +43,7 @@ class MainStyle : Stylesheet() {
                 0.0,
                 arrayListOf(1.0)
             )
-            backgroundColor += c("#23041288")
+            backgroundColor += c("#230412")
             alignment = Pos.BOTTOM_LEFT
         }
 
@@ -54,7 +56,7 @@ class MainStyle : Stylesheet() {
 
         button {
             and(toggleStreamButton) {
-                opacity = 0.4
+                opacity = GHOST_OPACITY
                 textFill = c("#52141f")
                 backgroundColor += c("#00000000")
                 alignment = Pos.BOTTOM_RIGHT
@@ -69,8 +71,8 @@ class MainStyle : Stylesheet() {
             and(consoleField) {
                 fontFiraCodeLight?.let { font = it }
                 alignment = Pos.BOTTOM_LEFT
-                textFill = c("#521833")
-                fontSize = 9.px
+                textFill = c("#522230")
+                fontSize = 10.px
             }
 
             and(lobbyName) {

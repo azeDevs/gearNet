@@ -181,7 +181,7 @@ fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : Time
  * @param length soon.
  */
 fun truncate(name: String, length: Int): String {
-    val re = Regex("[^A-Za-z0-9_!@#$%^&*()`~|.,\\-=+\\[\\]<>/ ]")
+    val re = Regex("[^A-Za-z0-9_!@#$%^&*()`'~|.,\\-=+\\[\\]{}\\\\<>/「」 ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９]")
     if (name.length > length) return re.replace(name, "?").substring(0, length)
     else return re.replace(name, "?")
 }
@@ -242,7 +242,7 @@ fun getRes(fileName: String): URI {
  *
  * This is basically the same as Pair(), except mutable and unsafe.
  */
-class Duo<F, S>(
-    var p1: F,
-    var p2: S
+class Duo<T>(
+    var p1: T,
+    var p2: T
 ) { fun p(p:Int) = if (p==0) p1 else p2 }

@@ -7,14 +7,14 @@ import utils.Duo
 import utils.keepInRange
 
 
-class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<PlayerData, PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
+class Match(val matchId: Long = -1, private val cabinetId: Byte = -0x1, val players: Duo<PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
 
     private val P1 = 0
     private val P2 = 1
 
     private var winner = -1
     private var roundStarted = false
-    private var allData = arrayListOf(matchData)
+    private val snaps = arrayListOf(matchData)
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
@@ -25,35 +25,35 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
     // Gotten from MatchData, else considered useless (MATCH QUALITY DATA)
     private var matchTimer = matchData.timer
     private var tension = Duo(matchData.tension.first, matchData.tension.second)
-    private var burst = Duo(matchData.burst.first, matchData.burst.second)
-    private var isHit = Duo(matchData.isHit.first, matchData.isHit.second)
-    private var risc = Duo(matchData.risc.first, matchData.risc.second)
+    private var canBurst = Duo(matchData.canBurst.first, matchData.canBurst.second)
+    private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
+    private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
-    fun getData() = allData.last()
-    fun allData() = allData
+    fun getData() = snaps.last()
+    fun allData() = snaps
 
-    fun updateMatchData(updatedData: MatchData, session:Session): Boolean {
+    fun updateMatchSnap(updatedData: MatchData, session:Session): Boolean {
         if (!getData().equals(updatedData)) {
 
-            allData.add(updatedData)
+            snaps.add(updatedData)
             matchTimer = updatedData.timer
 
             health.p1 = keepInRange(getData().health.first)//, 0, 420)
             tension.p1 = keepInRange(getData().tension.first)//, 0, 10000)
-            risc.p1 = keepInRange(getData().risc.first)//, 0, 12800)
+            guardGauge.p1 = keepInRange(getData().guardGauge.first)//, 0, 12800)
             rounds.p1 = updatedData.rounds.first
-            burst.p1 = getData().burst.first
-            isHit.p1 = getData().isHit.first
+            canBurst.p1 = getData().canBurst.first
+            strikeStun.p1 = getData().strikeStun.first
 
             health.p2 = keepInRange(getData().health.second)//, 0, 420)
             tension.p2 = keepInRange(getData().tension.second)//, 0, 10000)
-            risc.p2 = keepInRange(getData().risc.second)//, 0, 12800)
+            guardGauge.p2 = keepInRange(getData().guardGauge.second)//, 0, 12800)
             rounds.p2 = updatedData.rounds.second
-            burst.p2 = getData().burst.second
-            isHit.p2 = getData().isHit.second
+            canBurst.p2 = getData().canBurst.second
+            strikeStun.p2 = getData().strikeStun.second
 
             // Has the round started?
-            if (roundStarted == false && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
+            if (!roundStarted && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
                 roundStarted = true
                 session.log("M[$matchId]: Round Start - DUEL ${getRounds(P1) + getRounds(P2) + 1}, LET'S ROCK! ... ${lobbyData.roundWins} rounds to win")
                 session.setMode(session.MATCH_MODE)
@@ -94,15 +94,15 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
 
     fun getWinner():Int = winner
     fun getTimer():Int = matchTimer
-    fun getRounds(side:Int):Int = rounds.p(side) as Int
-    fun getHealth(side:Int):Int = health.p(side) as Int
-    fun getCharacter(side:Int):Int = character.p(side) as Int
-    fun getTension(side:Int):Int = tension.p(side) as Int
-    fun getRisc(side:Int):Int = risc.p(side) as Int
-    fun getBurst(side:Int):Boolean = burst.p(side) as Boolean
-    fun getHitStun(side:Int):Boolean = isHit.p(side) as Boolean
+    fun getRounds(side:Int):Int = rounds.p(side)
+    fun getHealth(side:Int):Int = health.p(side)
+    fun getCharacter(side:Int):Int = character.p(side)
+    fun getTension(side:Int):Int = tension.p(side)
+    fun getRisc(side:Int):Int = guardGauge.p(side)
+    fun getBurst(side:Int):Boolean = canBurst.p(side)
+    fun getHitStun(side:Int):Boolean = strikeStun.p(side)
 
-    fun getHandleString(side:Int):String = handle.p(side) as String
+    fun getHandleString(side:Int):String = handle.p(side)
     fun getHealthString(side:Int):String = "HP: ${getHealth(side)} / 420"
     fun getRoundsString(side:Int):String = "Rounds: ${getRounds(side)} / ${lobbyData.roundWins}"
     fun getTensionString(side:Int):String = "Tension: ${getTension(side)} / 10000"
@@ -112,12 +112,12 @@ class Match(val matchId: Long, private val cabinetId: Byte, val players: Duo<Pla
 
     fun getCabinet():Byte = cabinetId
     fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
-        when(cabId) {
-            0 -> return "CABINET A (Snaps ${allData.size})"
-            1 -> return "CABINET B (Snaps ${allData.size})"
-            2 -> return "CABINET C (Snaps ${allData.size})"
-            3 -> return "CABINET D (Snaps ${allData.size})"
-            else -> return "CABINET $cabId (Snaps ${allData.size})"
+        return when(cabId) {
+            0 -> "CABINET A"
+            1 -> "CABINET B"
+            2 -> "CABINET C"
+            3 -> "CABINET D"
+            else -> "$cabId"
         }
     }
 }

@@ -4,6 +4,7 @@ import javafx.geometry.Rectangle2D
 import memscan.PlayerData
 import session.Character.getCharacterName
 import utils.addCommas
+import utils.getIdString
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -51,7 +52,7 @@ class Player(playerData: PlayerData = PlayerData()) {
                 idle = 0
             } else {
                 idle = max(1,s.getActivePlayerCount())
-                s.log("P: ID ${getSteamId()} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
+                s.log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
             }
         }
     }
@@ -106,7 +107,9 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    fun getPlaySideString(cabId:Int = getCabinet().toInt(), sideId:Int = getData().playerSide.toInt()): String {
+    fun getPlaySide() = getData().playerSide
+
+    fun getPlaySideString(cabId:Int = getCabinet().toInt(), sideId:Int = getPlaySide().toInt()): String {
         if (cabId > 3) return ""
         when(sideId) {
             0 -> return "Player One"
@@ -117,7 +120,7 @@ class Player(playerData: PlayerData = PlayerData()) {
             5 -> return "5th"
             6 -> return "6th"
             7 -> return "Spectating"
-            else -> return "[${getData().playerSide.toInt()}]"
+            else -> return "[${getPlaySide().toInt()}]"
         }
     }
 
