@@ -122,7 +122,7 @@ class PlayerView(override val root: Parent) : Fragment() {
         if (session.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 wholeThing.opacity = 1.0
-                character.viewport = getCharacterTrademark(p.getData().characterId, p.isIdle())
+                character.viewport = getCharacterTrademark(p.getData().characterId)
 
                 handle.text = p.getNameString()
                 if (p.isIdle()) handle.textFill = c("#3befaa88")
@@ -175,7 +175,8 @@ class PlayerView(override val root: Parent) : Fragment() {
         val winsInt = Random.nextInt(44)
         val cabId = Random.nextInt(5)
         wholeThing.opacity = 1.0
-        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
+        character.viewport = Rectangle2D(Random.nextInt(8) * 128.0, 512 + Random.nextInt(4) * 128.0, 128.0, 128.0)
+//        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle.text = generateRandomName()
         statusBar.maxWidth = 335.0 * (loadingInt * 0.01)
         bounty1.text = "$bountyStr W$"

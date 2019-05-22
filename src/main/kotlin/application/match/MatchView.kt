@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import session.Character.NULL
 import session.Character.getCharacterPortrait
+import session.Character.getCharacterTrademark
 import session.Match
 import session.Session
 import tornadofx.*
@@ -130,7 +131,7 @@ class MatchView(override val root: Parent) : Fragment() {
                 timer.text = m.getTimer().toString()
                 cabinet.text = m.getCabinetString()
 
-                character.p1.setViewport(getCharacterPortrait(m.getCharacter(P1)))
+                character.p1.setViewport(getCharacterTrademark(m.getCharacter(P1)))
                 handle.p1.text = m.getHandleString(P1)
                 tension.p1.text = m.getTensionString(P1)
                 health.p1.text = m.getHealthString(P1)

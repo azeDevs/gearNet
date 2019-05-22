@@ -23,7 +23,7 @@ class Session: Controller() {
     var clientMatch = Match()
 
     var consoleLog = arrayListOf("C: GearNet started")
-    var randomValues = false
+    var randomValues = true
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false

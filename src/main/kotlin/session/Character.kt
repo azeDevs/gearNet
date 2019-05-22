@@ -129,7 +129,8 @@ object Character {
         }
     }
 
-    fun getCharacterTrademark(byte: Byte = -0x1, idle: Boolean = false): Rectangle2D {
+    fun getCharacterTrademark(integer: Int) = getCharacterPortrait(integer.toByte())
+    fun getCharacterTrademark(byte: Byte = -0x1): Rectangle2D {
         when (byte) {
             NULL -> return Rectangle2D(128.0, 896.0, 128.0, 128.0)
             SO -> return Rectangle2D(0.0, 512.0, 128.0, 128.0)
