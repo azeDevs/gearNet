@@ -1,5 +1,6 @@
 package application.player
 
+import GHOST_OPACITY
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -8,7 +9,7 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
-import session.Character.getCharacterPortrait
+import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
 import tornadofx.*
@@ -42,11 +43,13 @@ class PlayerView(override val root: Parent) : Fragment() {
         wholeThing = hbox { addClass(PlayerStyle.playerContainer)
             minWidth = 400.0
             maxWidth = 400.0
-            opacity = 0.4
+            opacity = GHOST_OPACITY
             character = imageview(getRes("gn_atlas.png").toString()) {
                 viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                 translateY -= 2.0
                 translateX -= 2.0
+                fitWidth = 64.0
+                fitHeight = 64.0
             }
             vbox {
                 translateX -= 4.0
@@ -119,7 +122,7 @@ class PlayerView(override val root: Parent) : Fragment() {
         if (session.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 wholeThing.opacity = 1.0
-                character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
+                character.viewport = getCharacterTrademark(p.getData().characterId, p.isIdle())
 
                 handle.text = p.getNameString()
                 if (p.isIdle()) handle.textFill = c("#3befaa88")
@@ -148,7 +151,7 @@ class PlayerView(override val root: Parent) : Fragment() {
                 location.text = p.getPlaySideString()
 
             } else {
-                wholeThing.opacity = 0.4
+                wholeThing.opacity = GHOST_OPACITY
                 character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                 handle.text = ""
                 statusBar.maxWidth = 0.0

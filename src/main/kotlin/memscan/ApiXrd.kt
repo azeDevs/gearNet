@@ -35,6 +35,9 @@ interface XrdApi {
 }
 
 data class PlayerData(
+    //val miniHealth: Pair<Int, Int>,
+    //val miniRounds: Pair<Int, Int>,
+    //val readiedUp: Pair<Boolean, Boolean>,
     val steamUserId: Long = -1L,
     val displayName: String = "",
     val characterId: Byte = -0x1,
@@ -43,11 +46,7 @@ data class PlayerData(
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
-    // Lobby mini-health?
-    // Lobby score marks?
-    // Readied up?
-) {
-    fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
+) { fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
                 other.characterId == characterId &&
                 other.cabinetLoc == cabinetLoc &&
                 other.playerSide == playerSide &&
@@ -57,49 +56,58 @@ data class PlayerData(
 }
 
 data class MatchData(
-    //val players: Pair<PlayerData, PlayerData>, TBA, maybe yoink steam id through login + DB or something
-    val tension: Pair<Int, Int> = Pair(-1,-1),
-    val health: Pair<Int, Int> = Pair(-1,-1),
-    val burst: Pair<Boolean, Boolean> = Pair(false,false),
-    val risc: Pair<Int, Int> = Pair(-1,-1),
-    val isHit: Pair<Boolean, Boolean> = Pair(false,false),
-    //val beats: Pair<Int, Int>,
+    //val frameDelay: Int = -1,
+    //val comboBeats: Pair<Int, Int>,
+    //val comboDamage: Pair<Int, Int>,
+    //val tensionPulse: Pair<Float, Float>,
+    //val stunProgress: Pair<Int, Int>,
+    //val inputMotions: Pair<?, ?>,
+    //val inputButtons: Pair<?, ?>,
     val timer: Int = -1,
-    val rounds: Pair<Int, Int> = Pair(-1,-1)
-    // Connection? : Int
-    // Score marks? : Pair<Int, Int>
-    // Damage taken? : Pair<Int, Int>
-    // Button(s) pressed? : Pair<?, ?>
-    // Direction pressed? : Pair<?, ?>
-    // Tension Pulse? : Pair<Float, Float>
-    // Stun level? : Pair<Int, Int>
-) {
-    fun equals(other: MatchData) = other.tension == tension &&
-            other.health == health &&
-            other.burst == burst &&
-            other.risc == risc &&
-            other.isHit == isHit &&
-            other.timer == timer &&
-            other.rounds == rounds &&
-            other.isHit == isHit
+    val health: Pair<Int, Int> = Pair(-1,-1),
+    val rounds: Pair<Int, Int> = Pair(-1,-1),
+    val tension: Pair<Int, Int> = Pair(-1,-1),
+    val canBurst: Pair<Boolean, Boolean> = Pair(false,false),
+    val strikeStun: Pair<Boolean, Boolean> = Pair(false,false),
+    val guardGauge: Pair<Int, Int> = Pair(-1,-1)
+) { fun equals(other: MatchData) = timer == other.timer &&
+            health.first == other.health.first &&
+            rounds.first == other.rounds.first &&
+            tension.first == other.tension.first &&
+            canBurst.first == other.canBurst.first &&
+            strikeStun.first == other.strikeStun.first &&
+            guardGauge.first == other.guardGauge.first &&
+            health.second == other.health.second &&
+            rounds.second == other.rounds.second &&
+            tension.second == other.tension.second &&
+            canBurst.second == other.canBurst.second &&
+            strikeStun.second == other.strikeStun.second &&
+            guardGauge.second == other.guardGauge.second
 
 }
 
+//class LobbyMessage(
+//    val userId: Long = -1L,
+//    val text: String = ""
+//)
+
 data class LobbyData(
+    //val matchTime: Int = -1
+    //val restriction: Int = -1     // Connection restriction
+    //val matchType: Int = -1       // Serious, Casual, Training
+    //val matchRule: Int = -1       // Winner stays, Loser, etc
+    //val passworded: Boolean = false
+    //val chatText: List<LobbyMessage> = arrayListOf()
+    val cabinets: List<CabinetData> = emptyList(),
     val lobbyName: String = "",
     val roundWins: Int = 2
-    // Open cabinets? : Int
-    // Points for win? : Int
-    // Time per match? : Int
-    // Passworded? : Boolean
-    // Winner/Loser Stays? : Int
-    // Quality restriction? : Int
-    // Serious/Casual match? : Boolean
-    // Chat messages? : List<LobbyMessage>
 )
 
-class LobbyMessage(
-    val userId: Long = -1L,
-    val text: String = ""
+data class CabinetData(
+    val readiedUp: Pair<Boolean, Boolean> = Pair(false,false),
+    val miniHealth: Pair<Int, Int> = Pair(-1,-1),
+    val miniRounds: Pair<Int, Int> = Pair(-1,-1)
 )
+
+
 

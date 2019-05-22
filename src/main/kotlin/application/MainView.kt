@@ -41,7 +41,7 @@ class MainView : View() {
         GlobalScope.launch {
             utilsGui.blinkGuiltyGearIndicator(session)
             if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
-            if (session.xrdApi.isConnected() && session.updateMatch()) redrawAppUi()
+            if (session.xrdApi.isConnected() && session.updateClientMatch()) redrawAppUi()
             delay(128); cycleMemScan()
         }
     }
@@ -58,9 +58,13 @@ class MainView : View() {
         utilsGui.blinkGearNetIndicator(session)
         // Sort and redraw PlayerViews
         val uiUpdate: List<Player> = session.getPlayersList()
-        for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i], session)
-        else playersGui[i].applyData(Player(), session)
-        matchesGui[0].applyMatch(session.match)
+        for (i in 0..7) {
+            if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i], session)
+            else playersGui[i].applyData(Player(), session)
+        }
+        for (i in 0..3) {
+            matchesGui[i].applyMatch(session.lobbyMatches[i].second, session)
+        }
         streamView.updateStreamLeaderboard(uiUpdate, session)
     }
 
@@ -124,7 +128,6 @@ class MainView : View() {
                     maxHeight = 680.0
                     shortpress {
                         if (streamView.streamView.isVisible) streamView.toggleScoreboardMode(session)
-                        session.log("C: Click!")
                     }
                     longpress {
                         streamView.toggleStreamerMode(session)

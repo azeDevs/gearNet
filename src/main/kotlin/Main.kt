@@ -9,9 +9,8 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-val RANDOM_VALUES = false
-val BOUNTIES_MODE = false
 val TRACE_BORDERS = false
+val GHOST_OPACITY = 0.64
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 

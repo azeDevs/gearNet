@@ -11,25 +11,27 @@ import java.nio.ByteBuffer
 
 
 class MemHandler : XrdApi {
+
     override fun getLobbyData(): LobbyData {
         return LobbyData()
     }
 
-    var GG_PROC: Win32Process? = null
+    private var GG_PROC: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            return true
+        return try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            true
         } catch (e: IllegalStateException) {
-            return false
+            false
         }
     }
 
-    override fun getClientSteamId(): Long {
-        try { val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.getLong()
-            return id
-        } catch (e : NullPointerException) { return -1L }
-    }
+    override fun getClientSteamId(): Long =
+        try { val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.long
+            id
+        } catch (e : NullPointerException) {
+            -1L
+        }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
@@ -60,8 +62,7 @@ class MemHandler : XrdApi {
         val offs = longArrayOf(0x1C25AB4L, 0x44CL)
         val pDatas = ArrayList<PlayerData>()
         for (i in 0..7) {
-            val bb = getByteBufferFromAddress(offs, 0x48)
-            if (bb == null) return ArrayList()
+            val bb = getByteBufferFromAddress(offs, 0x48) ?: return ArrayList()
             val dispbytes = ByteArray(0x24)
             val steamid = bb.getLong(0)
             val totalmatch = bb.get(8).toInt()
@@ -93,24 +94,24 @@ class MemHandler : XrdApi {
         try {
             p1offs[1] = sortedStructOffs[0]
             p2offs[1] = sortedStructOffs[0]
-            val healths = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
+            val health = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             p1offs[1] = sortedStructOffs[1]
             p2offs[1] = sortedStructOffs[1]
-            val isHits = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt() == 1, getByteBufferFromAddress(p2offs, 4)!!.getInt() == 1)
+            val strikeStun = Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
             p1offs[1] = sortedStructOffs[2]
             p2offs[1] = sortedStructOffs[2]
-            val burstReadies = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt() == 1, getByteBufferFromAddress(p2offs, 4)!!.getInt() == 1)
+            val canBurst = Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
             p1offs[1] = sortedStructOffs[3]
             p2offs[1] = sortedStructOffs[3]
-            val riscs = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
+            val guardGauge = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             p1offs[1] = sortedStructOffs[4]
             p2offs[1] = sortedStructOffs[4]
-            val tensions = Pair(getByteBufferFromAddress(p1offs, 4)!!.getInt(), getByteBufferFromAddress(p2offs, 4)!!.getInt())
-            val timer = getByteBufferFromAddress(timeroffs, 4)!!.getInt()
-            val rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.getInt(), getByteBufferFromAddress(p2roundoffset, 4)!!.getInt())
-            return MatchData(tensions, healths, burstReadies, riscs, isHits, timer, rounds)
+            val tension = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
+            val timer = getByteBufferFromAddress(timeroffs, 4)!!.int
+            val rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
+            return MatchData(timer, health, rounds, tension, canBurst, strikeStun, guardGauge)
         } catch (e : NullPointerException) {
-            return MatchData(Pair(-1,-1), Pair(-1,-1), Pair(false, false), Pair(-1,-1), Pair(false, false), -1, Pair(-1,-1))
+            return MatchData()
         }
     }
 

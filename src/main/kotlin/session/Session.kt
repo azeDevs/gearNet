@@ -18,8 +18,9 @@ class Session: Controller() {
 
     var clientId: Long = -1
     val players: HashMap<Long, Player> = HashMap()
-    val matches: HashMap<Long, Match> = HashMap()
-    var match = Match()
+    val archiveMatches: HashMap<Long, Match> = HashMap()
+    var lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
+    var clientMatch = Match()
 
     var consoleLog = arrayListOf("C: GearNet started")
     var randomValues = false
@@ -51,7 +52,7 @@ class Session: Controller() {
         // Define the GearNet client player
         if (clientId == -1L && playerData.size > 0) {
             clientId = xrdApi.getClientSteamId()
-            log("C: GearNet client defined as ${getIdString(clientId)} ... (${getClient().getNameString()})")
+            log("C: GearNet client defined ${getIdString(clientId)} ... (${getClient().getNameString()})")
         }
 
         // Pay the winner
@@ -71,34 +72,39 @@ class Session: Controller() {
                 if (it.getCabinet() == getClient().getCabinet() && it.getPlaySide().toInt() == 1) matchPlayersPending.p2 = it.getData()
             }
         }
-        if (match.matchId == -1L && matchPlayersPending.p1.steamUserId > 0L && matchPlayersPending.p2.steamUserId > 0L) {
-            match = Match(matches.size.toLong(), getClient().getCabinet(), matchPlayersPending)
-            log("S: Generated Match ${getIdString(matches.size.toLong())}")
+        if (clientMatch.matchId == -1L && matchPlayersPending.p1.steamUserId > 0L && matchPlayersPending.p2.steamUserId > 0L) {
+            clientMatch = Match(archiveMatches.size.toLong(), getClient().getCabinet(), matchPlayersPending)
+            log("S: Generated Match ${getIdString(archiveMatches.size.toLong())}")
+            somethingChanged = true
             setMode(LOADING_MODE)
         }
-        if (sessionMode != LOBBY_MODE && sessionMode != LOADING_MODE && match.getHealth(0)<0 && match.getHealth(1)<0 && match.getRisc(0)<0 && match.getRisc(1)<0 && match.getTension(0)<0 && match.getTension(1)<0) {
-            match = Match()
+        if (sessionMode != LOBBY_MODE && sessionMode != LOADING_MODE && clientMatch.getHealth(0)<0 && clientMatch.getHealth(1)<0 && clientMatch.getRisc(0)<0 && clientMatch.getRisc(1)<0 && clientMatch.getTension(0)<0 && clientMatch.getTension(1)<0) {
+            clientMatch = Match()
+            somethingChanged = true
             setMode(LOBBY_MODE)
         }
 
         return somethingChanged
     }
 
-    fun updateMatch(): Boolean {
+    fun updateClientMatch(): Boolean {
         val matchData = xrdApi.getMatchData()
-        return match.updateMatchData(matchData, this)
+        val updatedMatchSnap = clientMatch.updateMatchSnap(matchData, this)
+        for (i in 0..3) lobbyMatches.set(i, Pair(-1L, Match()))
+        if (clientMatch.matchId != -1L) lobbyMatches.set(clientMatch.getCabinet().toInt(), Pair(clientMatch.matchId, clientMatch))
+        return updatedMatchSnap
     }
 
     private fun resolveTheWinner(data: PlayerData, loserChange: Int) {
         players.values.filter { it.getSteamId() == data.steamUserId && it.hasWon() }.forEach { w ->
             // Archive the completed match
-            if (match.getWinner() > -1 ) {
-                matches[match.matchId] = match
-                log("S: Archived Match ${getIdString(match.matchId)} ... Snapshots ${match.allData().size}")
+            if (clientMatch.getWinner() > -1 ) {
+                archiveMatches[clientMatch.matchId] = clientMatch
+                log("S: Archived Match ${getIdString(clientMatch.matchId)} ... Snapshots ${clientMatch.allData().size}")
             }
 
             w.changeChain(1)
-            val payout = w.getChain() * w.getMatchesWon() + w.getMatchesPlayed() + loserChange + (w.getChain() * w.getChain() * 100)
+            val payout = (w.getChain() * w.getMatchesWon()) + w.getMatchesPlayed() + loserChange + (w.getChain() * 1000)
             w.changeBounty(payout)
             log("S: Player ${getIdString(w.getSteamId())} won ${w.getChangeString()} with ${w.getBountyFormatted()} total ... (${data.displayName})")
 
@@ -150,7 +156,7 @@ class Session: Controller() {
 
 
     fun log(text:String) {
-        if (consoleLog.size>52) consoleLog.removeAt(0)
+        if (consoleLog.size>50) consoleLog.removeAt(0)
         consoleLog.add(text)
         println(text)
     }

@@ -226,10 +226,11 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
                 handle1.text = p.getNameString(); handle1.isVisible = true
                 handle2.text = p.getNameString(); handle2.isVisible = true
-                riskRating.viewport = p.getRatingImage()
-                chain.viewport = p.getChainImage()
+                riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
+                chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
                 bounty2.text = p.getBountyString()
+                change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())
                 if (p.getChain() > 0) chains1.isVisible = true else chains1.isVisible = false
                 if (p.getChain() > 1) chains2.isVisible = true else chains2.isVisible = false

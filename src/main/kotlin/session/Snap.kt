@@ -1,11 +1,15 @@
 package session
 
-data class Snap(
-    val health: Pair<Int, Int>,
-    val rounds: Pair<Int, Int>,
-    val timer: Int,
-    val tension: Int = -1,
-    val canBurst: Boolean = false,
-    val strikeStun: Boolean = false,
-    val guardGauge: Pair<Int, Int>
-)
+import memscan.LobbyData
+import memscan.MatchData
+import memscan.PlayerData
+
+class Snap(val lobby: LobbyData, val players:List<PlayerData>, val match:List<MatchData>, val clientId:Long) {
+    
+    fun getMatchSnapshots():List<Match> {
+        val snaps = arrayListOf<Match>()
+        
+        return snaps
+    }
+    
+}
