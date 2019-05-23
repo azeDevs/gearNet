@@ -65,7 +65,7 @@ class ToolsView(override val root: Parent) : Fragment() {
     fun applyData(session: Session) = Platform.runLater {
         matchesPlayedLabel.minWidth = 125.0
         playersActiveLabel.minWidth = 125.0
-        matchesPlayedLabel.text = "Matches: 1 / ${session.archiveMatches.size}"
+        matchesPlayedLabel.text = "Matches: 1 / ${session.matchHandler.archiveMatches.size}"
         playersActiveLabel.text = "Players: ${session.getActivePlayerCount()} / ${session.players.size}"
         for (i in 0..4) if (i == session.sessionMode) modeGui[i].reset(true) else modeGui[i].reset(false)
         modeGui.forEach { it.nextFrame() }

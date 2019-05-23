@@ -63,7 +63,7 @@ class MainView : View() {
             else playersGui[i].applyData(Player(), session)
         }
         for (i in 0..3) {
-            matchesGui[i].applyMatch(session.lobbyMatches[i].second, session)
+            matchesGui[i].applyMatch(session.matchHandler.lobbyMatches[i].second, session)
         }
         streamView.updateStreamLeaderboard(uiUpdate, session)
     }

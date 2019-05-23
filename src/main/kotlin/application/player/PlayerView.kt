@@ -14,7 +14,7 @@ import session.Player
 import session.Session
 import tornadofx.*
 import utils.addCommas
-import utils.generateRandomName
+import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
@@ -177,7 +177,7 @@ class PlayerView(override val root: Parent) : Fragment() {
         wholeThing.opacity = 1.0
         character.viewport = Rectangle2D(Random.nextInt(8) * 128.0, 512 + Random.nextInt(4) * 128.0, 128.0, 128.0)
 //        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
-        handle.text = generateRandomName()
+        handle.text = getRandomName()
         statusBar.maxWidth = 335.0 * (loadingInt * 0.01)
         bounty1.text = "$bountyStr W$"
         bounty2.text = "$bountyStr W$"

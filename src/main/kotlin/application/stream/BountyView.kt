@@ -15,7 +15,7 @@ import session.Player
 import session.Session
 import tornadofx.*
 import utils.addCommas
-import utils.generateRandomName
+import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
@@ -271,7 +271,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         val chainInt = Random.nextInt(9)
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val changeInt = Random.nextInt(-444555, 666777)
-        val dispName = generateRandomName()
+        val dispName = getRandomName()
         character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle1.text = dispName
         handle2.text = dispName

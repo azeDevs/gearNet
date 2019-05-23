@@ -7,7 +7,7 @@ import utils.Duo
 import utils.keepInRange
 
 
-class Match(val matchId: Long = -1, private val cabinetId: Byte = -0x1, val players: Duo<PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
+class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val players: Duo<PlayerData> = Duo(PlayerData(), PlayerData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
 
     private val P1 = 0
     private val P2 = 1

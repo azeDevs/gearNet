@@ -2,7 +2,7 @@ package utils
 
 import kotlin.random.Random
 
-fun generateRandomName():String {
+fun getRandomName():String {
     val out = StringBuilder("${randStr(rn2).toUpperCase()}${randStr(rn3)}")
     var nameStep = 0
     for (i in 0..Random.nextInt(2,4)) { var part = StringBuilder()
