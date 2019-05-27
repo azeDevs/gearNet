@@ -98,9 +98,9 @@ data class LobbyData(
     //val matchRule: Int = -1       // Winner stays, Loser, etc
     //val passworded: Boolean = false
     //val chatText: List<LobbyMessage> = arrayListOf()
-    val cabinets: List<CabinetData> = emptyList(),
     val lobbyName: String = "",
-    val roundWins: Int = 2
+    val roundWins: Int = 2,
+    val openCabinets: Int = 4
 )
 
 data class CabinetData(

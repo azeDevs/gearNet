@@ -1,5 +1,6 @@
 package session
 
+import SIMULATE_MODE
 import database.DatabaseHandler
 import database.SqlApi
 import memscan.MemHandler
@@ -12,18 +13,21 @@ import utils.getIdString
 import kotlin.math.max
 
 
+const val LOBBY_MODE = 0
+const val LOADING_MODE = 1
+const val MATCH_MODE = 2
+const val SLASH_MODE = 3
+const val VICTORY_MODE = 4
+
 class Session: Controller() {
 
-    val xrdApi: XrdApi = MemRandomizer()
-//    val xrdApi: XrdApi = MemHandler()
+    val api = ApiHandler()
+    val xrdApi: XrdApi = if (SIMULATE_MODE) MemRandomizer() else MemHandler()
     val dataApi: SqlApi = DatabaseHandler()
     val matchHandler = MatchHandler()
 
-    var clientId: Long = -1
+    private var clientId: Long = -1
     val players: HashMap<Long, Player> = HashMap()
-//    val archiveMatches: HashMap<Long, Match> = HashMap()
-//    var lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
-//    var clientMatch = Match()
 
     var consoleLog = arrayListOf("C: GearNet started")
     var randomValues = false
@@ -51,7 +55,7 @@ class Session: Controller() {
         }
 
         // Define the GearNet client player
-        if (clientId == -1L && playerData.size > 0) {
+        if (clientId == -1L && playerData.isNotEmpty()) {
             clientId = xrdApi.getClientSteamId()
             log("C: GearNet client defined ${getIdString(clientId)} ... (${getClient().getNameString()})")
         }
@@ -110,26 +114,21 @@ class Session: Controller() {
 
     fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
 
-    fun getClient(): Player {
-        if (clientId == -1L) return Player()
-        else return players[clientId] ?: Player()
+    private fun getClient(): Player {
+        return if (clientId == -1L) Player()
+        else players[clientId] ?: Player()
     }
 
-    val LOBBY_MODE = 0
-    val LOADING_MODE = 1
-    val MATCH_MODE = 2
-    val SLASH_MODE = 3
-    val VICTORY_MODE = 4
     var sessionMode: Int = 0
 
     fun setMode(mode:Int) {
         sessionMode = mode
         when (mode) {
-            0 -> log("S: sessionMode = LOBBY_MODE")
-            1 -> log("S: sessionMode = LOADING_MODE")
-            2 -> log("S: sessionMode = MATCH_MODE")
-            3 -> log("S: sessionMode = SLASH_MODE")
-            4 -> log("S: sessionMode = VICTORY_MODE")
+            LOBBY_MODE -> log("S: sessionMode = LOBBY_MODE")
+            LOADING_MODE -> log("S: sessionMode = LOADING_MODE")
+            MATCH_MODE -> log("S: sessionMode = MATCH_MODE")
+            SLASH_MODE -> log("S: sessionMode = SLASH_MODE")
+            VICTORY_MODE -> log("S: sessionMode = VICTORY_MODE")
         }
     }
 
@@ -146,3 +145,4 @@ class Session: Controller() {
     }
 
 }
+

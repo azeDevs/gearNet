@@ -4,8 +4,7 @@ import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import session.Player
-import session.Session
+import session.*
 import tornadofx.*
 import utils.getRes
 
@@ -27,23 +26,23 @@ class StreamView(override val root: Parent) : Fragment() {
         else {
             lockHud = -1
             when (s.sessionMode) {
-                s.LOBBY_MODE -> {
+                LOBBY_MODE -> {
                     lobbyView.isVisible = true
                     matchView.isVisible = false
                 }
-                s.LOADING_MODE -> {
+                LOADING_MODE -> {
                     lobbyView.isVisible = true
                     matchView.isVisible = false
                 }
-                s.MATCH_MODE -> {
+                MATCH_MODE -> {
                     lobbyView.isVisible = false
                     matchView.isVisible = true
                 }
-                s.SLASH_MODE -> {
+                SLASH_MODE -> {
                     lobbyView.isVisible = false
                     matchView.isVisible = true
                 }
-                s.VICTORY_MODE -> {
+                VICTORY_MODE -> {
                     lobbyView.isVisible = true
                     matchView.isVisible = false
                 }

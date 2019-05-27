@@ -71,7 +71,8 @@ class MainStyle : Stylesheet() {
             and(consoleField) {
                 fontFiraCodeLight?.let { font = it }
                 alignment = Pos.BOTTOM_LEFT
-                textFill = c("#522230")
+//                textFill = c("#522230")
+                textFill = c("#966674")
                 fontSize = 10.px
             }
 
