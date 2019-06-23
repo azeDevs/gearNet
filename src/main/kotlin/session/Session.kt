@@ -1,12 +1,6 @@
 package session
 
-import SIMULATE_MODE
-import database.DatabaseHandler
-import database.SqlApi
-import memscan.MemHandler
-import memscan.MemRandomizer
 import memscan.PlayerData
-import memscan.XrdApi
 import tornadofx.Controller
 import utils.Duo
 import utils.getIdString
@@ -22,50 +16,45 @@ const val VICTORY_MODE = 4
 class Session: Controller() {
 
     val api = ApiHandler()
-    val xrdApi: XrdApi = if (SIMULATE_MODE) MemRandomizer() else MemHandler()
-    val dataApi: SqlApi = DatabaseHandler()
     val matchHandler = MatchHandler()
-
-    private var clientId: Long = -1
     val players: HashMap<Long, Player> = HashMap()
 
     var consoleLog = arrayListOf("C: GearNet started")
-    var randomValues = false
+    var randomValues = true
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
-        val playerData = xrdApi.getPlayerData().filter { it.steamUserId != 0L }
 
-        playerData.forEach { data ->
-            if (data.steamUserId != 0L) {
+        // Define the GearNet client player
+        api.defineClientId(this)
+
+        val snap = api.getSnap()
+        snap.getLobbyPlayers().forEach { data ->
+
                 // Add player if they aren't already stored
                 if (!players.containsKey(data.steamUserId)) {
-                    players[data.steamUserId] = Player(data); somethingChanged = true
+                    players[data.steamUserId] = Player(data)
+                    somethingChanged = true
                     log("S: New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
                 }
 
                 // The present is now the past, and the future is now the present
                 val player = players[data.steamUserId] ?: Player()
-                if (!player.getData().equals(data)) { somethingChanged = true }
+                if (!player.getData().equals(data)) somethingChanged = true
                 player.updatePlayerData(data, getActivePlayerCount())
 
                 // Resolve if a game occured and what the reward will be
                 if (matchHandler.resolveEveryone(players, this, data)) somethingChanged = true
-            }
-        }
 
-        // Define the GearNet client player
-        if (clientId == -1L && playerData.isNotEmpty()) {
-            clientId = xrdApi.getClientSteamId()
-            log("C: GearNet client defined ${getIdString(clientId)} ... (${getClient().getNameString()})")
         }
 
         // New match underway?
         // TODO: MAKE CABINETS TO HOUSE THESE
+        // NOTE: THIS IS WEHRE YOU LEFT OFF
         val lobbyMatchPlayers = Duo(PlayerData(), PlayerData())
         val clientMatchPlayers = Duo(PlayerData(), PlayerData())
-        playerData.forEach { data ->
-            if (data.loadingPct in 1..99) {
+
+        snap.getLoadingPlayers().forEach { data ->
 
                 // Lobby Match stuff --------
                 if (data.playerSide.toInt() == 0) lobbyMatchPlayers.p1 = data else lobbyMatchPlayers.p1 = PlayerData()
@@ -99,25 +88,17 @@ class Session: Controller() {
                 }
 
             }
-        }
-
-
-
-
 
         return somethingChanged
     }
 
     fun updateClientMatch(): Boolean {
-        return matchHandler.updateClientMatch(xrdApi.getMatchData(), this)
+        return matchHandler.updateClientMatch(api.getMatchData(), this)
     }
 
     fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
 
-    private fun getClient(): Player {
-        return if (clientId == -1L) Player()
-        else players[clientId] ?: Player()
-    }
+
 
     var sessionMode: Int = 0
 
@@ -137,12 +118,15 @@ class Session: Controller() {
         .sortedByDescending { item -> item.getBounty() }
         .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
-
     fun log(text:String) {
         if (consoleLog.size>50) consoleLog.removeAt(0)
         consoleLog.add(text)
         println(text)
     }
 
+    fun getClient(): Player {
+        if (players.isEmpty()) return Player()
+        return players.values.first { it.getSteamId() == api.getClientId() }
+    }
 }
 

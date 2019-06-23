@@ -3,6 +3,8 @@ package application.stream
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
+import javafx.scene.control.Label
+import javafx.scene.effect.BlendMode
 import javafx.scene.layout.StackPane
 import session.*
 import tornadofx.*
@@ -15,6 +17,8 @@ class StreamView(override val root: Parent) : Fragment() {
     private val bountiesGui: MutableList<BountyView> = ArrayList()
     lateinit var lobbyView: StackPane
     lateinit var matchView: StackPane
+    lateinit var bounty0: Label
+    lateinit var bounty1: Label
     var streamView: StackPane
 
     fun updateStreamLeaderboard(allPlayers: List<Player>, s: Session) {
@@ -115,22 +119,38 @@ class StreamView(override val root: Parent) : Fragment() {
                     hbox {
                         alignment = Pos.TOP_CENTER
                         hbox {
-                            imageview(getRes("gn_stream.png").toString()) {
-                                viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
-                                fitWidth = 225.0
-                                fitHeight = 50.0
-                                translateY += 58
-                                translateX -= 300
+                            stackpane {
+                                imageview(getRes("gn_stream.png").toString()) {
+                                    viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
+                                    fitWidth = 225.0
+                                    fitHeight = 50.0
+                                    translateY += 58
+                                    translateX -= 300
+                                }
+                                bounty0 = label("TEXT") {
+                                    addClass(BountyStyle.bountyBountyText)
+                                    translateY += 1.0
+                                    rotate += 0.5
+                                    blendMode = BlendMode.ADD
+                                }
                             }
                         }
                         hbox {
-                            imageview(getRes("gn_stream.png").toString()) {
-                                viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
-                                fitWidth = 225.0
-                                fitHeight = 50.0
-                                translateY += 58
-                                translateX += 300
-                                rotate += 180.0
+                            stackpane {
+                                imageview(getRes("gn_stream.png").toString()) {
+                                    viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
+                                    fitWidth = 225.0
+                                    fitHeight = 50.0
+                                    translateY += 58
+                                    translateX += 300
+                                    rotate += 180.0
+                                }
+                                bounty1 = label("TEXT") {
+                                    addClass(BountyStyle.bountyBountyText)
+                                    translateY += 1.0
+                                    rotate += 0.5
+                                    blendMode = BlendMode.ADD
+                                }
                             }
                         }
                     }

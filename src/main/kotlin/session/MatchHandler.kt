@@ -35,7 +35,6 @@ class MatchHandler {
 
         if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
             println("----------------------------------------- WE HAVE A WINNER")
-
             println("loserPlayer = ${loser.displayName} // winnerPlayer = ${winner.displayName}")
 
             if ((loser.steamUserId == clientMatch.players.p1.steamUserId || loser.steamUserId == clientMatch.players.p2.steamUserId) && (winner.steamUserId == clientMatch.players.p1.steamUserId || winner.steamUserId == clientMatch.players.p2.steamUserId)) {
@@ -43,11 +42,8 @@ class MatchHandler {
             } else resolveLobbyMatchResults(players)
 
             println("loserChain = ${players[loser.steamUserId]!!.getChain()} // winnerChain = ${players[winner.steamUserId]!!.getChain()}")
-
             players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle(s) }
-
             println("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
-
             println("-----------------------------------------")
 
             loser = PlayerData()
@@ -91,7 +87,7 @@ class MatchHandler {
         val loserBounty = players[loser.steamUserId]!!.getBounty()
         val winnerBounty = players[winner.steamUserId]!!.getBounty()
 
-        println(message = "loserBounty = $loserBounty // winnerBounty = $winnerBounty")
+        println("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 
         val bonusLoserPayout = (players[loser.steamUserId]!!.getChain() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getChain() * 100)
         val bonusWinnerPayout = (players[winner.steamUserId]!!.getChain() * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getChain() * 1000)
@@ -104,7 +100,7 @@ class MatchHandler {
         println("loserPayout = $loserPayout // winnerPayout = $winnerPayout")
 
         players[loser.steamUserId]!!.changeBounty(loserPayout - winnerPayout)
-        players[loser.steamUserId]!!.changeChain(-1)
+        players[loser.steamUserId]!!.changeChain(-2)
         players[winner.steamUserId]!!.changeBounty(winnerPayout - loserPayout)
         players[winner.steamUserId]!!.changeChain(1)
     }

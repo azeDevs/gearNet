@@ -73,15 +73,15 @@ class ToolsView(override val root: Parent) : Fragment() {
     }
 
     fun blinkGuiltyGearIndicator(session: Session) {
-        modulesGui[0].reset(session.xrdApi.isConnected())
+        modulesGui[0].reset(session.api.isXrdApiConnected())
     }
 
     fun blinkGearNetIndicator(session: Session) {
-        modulesGui[1].reset(session.xrdApi.isConnected())
+        modulesGui[1].reset(session.api.isXrdApiConnected())
     }
 
     fun blinkDatabaseIndicator(session: Session) {
-        modulesGui[2].reset(session.dataApi.isConnected())
+        modulesGui[2].reset(session.api.isXrdApiConnected())
     }
 
 }

@@ -10,7 +10,8 @@ class LobbySnap(private val players: List<PlayerData> = emptyList(), lobbyData: 
 
     fun getLobbyName() = name
     fun getLobbyWins() = wins
-    fun getPlayers() = players
-    fun getCabinet(i:Int) = cabs[i]
+    fun getLobbyPlayers() = players.filter { it.steamUserId > 0L }
+    fun getCabinetPlayers(i:Int) = cabs[i]
+    fun getLoadingPlayers() = getLobbyPlayers().filter { it.loadingPct in 1..99 }
 
 }

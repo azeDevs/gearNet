@@ -1,0 +1,5 @@
+package session
+
+class Cabinet {
+
+}
