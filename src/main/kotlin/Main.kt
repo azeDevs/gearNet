@@ -9,7 +9,7 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-const val SIMULATE_MODE = false
+const val SIMULATE_MODE = true
 const val TRACE_BORDERS = false
 const val GHOST_OPACITY = 0.64
 

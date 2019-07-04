@@ -36,7 +36,7 @@ class ToolsView(override val root: Parent) : Fragment() {
                         alignment = Pos.BOTTOM_LEFT
                         minWidth = 384.0
                         maxWidth = 384.0
-                        hbox { modeGui.add(ModuleView(parent, "Lobby")) }
+                        hbox { modeGui.add(ModuleView(parent, "XrdLobby")) }
                         hbox { modeGui.add(ModuleView(parent, "Loading")) }
                         hbox { modeGui.add(ModuleView(parent, "Match")) }
                         hbox { modeGui.add(ModuleView(parent, "Slash")) }

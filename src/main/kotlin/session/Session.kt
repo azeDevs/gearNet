@@ -56,7 +56,7 @@ class Session: Controller() {
 
         snap.getLoadingPlayers().forEach { data ->
 
-                // Lobby Match stuff --------
+                // XrdLobby Match stuff --------
                 if (data.playerSide.toInt() == 0) lobbyMatchPlayers.p1 = data else lobbyMatchPlayers.p1 = PlayerData()
                 if (data.playerSide.toInt() == 1) lobbyMatchPlayers.p2 = data else lobbyMatchPlayers.p2 = PlayerData()
 
