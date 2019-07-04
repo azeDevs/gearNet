@@ -1,5 +1,6 @@
 package application.stream
 
+import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -22,7 +23,7 @@ class StreamView(override val root: Parent) : Fragment() {
     var streamView: StackPane
 
     fun updateStreamLeaderboard(allPlayers: List<Player>, s: Session) {
-        val players = allPlayers.filter { it.getBounty() > 0 }
+        val players = allPlayers//.filter { it.getChain() > 0 }
         if (s.sessionMode == lockHud) {
             lobbyView.isVisible = showHud
             matchView.isVisible = !showHud
@@ -54,15 +55,20 @@ class StreamView(override val root: Parent) : Fragment() {
             }
         }
 
+        val p1 = players.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Player()
+        val p2 = players.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Player()
+        applyData(p1, p2, s)
         for (i in 0..3) {
             if (players.size > i) {
                 bountiesGui[i].applyData(players[i], s)
                 bountiesGui[i].setVisibility(showHud)
-            } else {
-                bountiesGui[i].applyData(Player(), s)
-                bountiesGui[i].setVisibility(false)
             }
         }
+    }
+
+    fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
+        if (p1.getSteamId() > 0L) bounty0.text = p1.getBountyString()
+        if (p2.getSteamId() > 0L) bounty1.text = p2.getBountyString()
     }
 
     fun toggleScoreboardMode(session: Session) {
@@ -116,10 +122,9 @@ class StreamView(override val root: Parent) : Fragment() {
                     maxHeight = 720.0
                     minHeight = 720.0
                     isVisible = false
-                    hbox {
-                        alignment = Pos.TOP_CENTER
-                        hbox {
-                            stackpane {
+                    hbox { alignment = Pos.TOP_CENTER
+                        hbox { alignment = Pos.TOP_CENTER
+                            stackpane { alignment = Pos.TOP_CENTER
                                 imageview(getRes("gn_stream.png").toString()) {
                                     viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
                                     fitWidth = 225.0
@@ -127,16 +132,16 @@ class StreamView(override val root: Parent) : Fragment() {
                                     translateY += 58
                                     translateX -= 300
                                 }
-                                bounty0 = label("TEXT") {
-                                    addClass(BountyStyle.bountyBountyText)
-                                    translateY += 1.0
-                                    rotate += 0.5
+                                bounty0 = label("FREE") { alignment = Pos.CENTER_LEFT
+                                    addClass(BountyStyle.bountyMatchText)
+                                    translateY += 66.0
+                                    translateX -= 300.0
                                     blendMode = BlendMode.ADD
                                 }
                             }
                         }
-                        hbox {
-                            stackpane {
+                        hbox { alignment = Pos.TOP_CENTER
+                            stackpane { alignment = Pos.TOP_CENTER
                                 imageview(getRes("gn_stream.png").toString()) {
                                     viewport = Rectangle2D(448.0, 192.0, 576.0, 128.0)
                                     fitWidth = 225.0
@@ -145,11 +150,12 @@ class StreamView(override val root: Parent) : Fragment() {
                                     translateX += 300
                                     rotate += 180.0
                                 }
-                                bounty1 = label("TEXT") {
-                                    addClass(BountyStyle.bountyBountyText)
-                                    translateY += 1.0
-                                    rotate += 0.5
+                                bounty1 = label("FREE") { alignment = Pos.CENTER_RIGHT
+                                    addClass(BountyStyle.bountyMatchText)
+                                    translateY += 66.0
+                                    translateX += 300.0
                                     blendMode = BlendMode.ADD
+
                                 }
                             }
                         }

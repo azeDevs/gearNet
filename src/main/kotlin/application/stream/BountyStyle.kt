@@ -17,6 +17,7 @@ class BountyStyle : Stylesheet() {
         val bountyHandleText by cssclass()
         val bountyHandleShadow by cssclass()
         val bountyBountyText by cssclass()
+        val bountyMatchText by cssclass()
         val bountyBountyShadow by cssclass()
         val bountyChangeText by cssclass()
     }
@@ -52,11 +53,18 @@ class BountyStyle : Stylesheet() {
             and(bountyBountyText) {
                 fontRED?.let { font = it }
                 fontSize = 40.px
-//                textFill = c("#ffcc33")
                 textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.96, 0.96, 0.45)), Stop(0.45, c(0.96, 0.96, 0.45)), Stop(0.55, c(0.96, 0.76, 0.0)), Stop(1.0, c(0.91, 0.69, 0.0)))
                 maxWidth = 200.px
                 minWidth = 200.px
                 alignment = Pos.CENTER_LEFT
+            }
+            and(bountyMatchText) {
+                fontRED?.let { font = it }
+                fontSize = 23.px
+                textFill = c("#ffcc33")
+                textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.96, 0.96, 0.45)), Stop(0.45, c(0.96, 0.96, 0.45)), Stop(0.55, c(0.96, 0.76, 0.0)), Stop(1.0, c(0.91, 0.69, 0.0)))
+                maxWidth = 160.px
+                minWidth = 160.px
             }
             and(bountyBountyShadow) {
                 fontRED?.let { font = it }

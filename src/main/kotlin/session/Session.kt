@@ -20,7 +20,7 @@ class Session: Controller() {
     val players: HashMap<Long, Player> = HashMap()
 
     var consoleLog = arrayListOf("C: GearNet started")
-    var randomValues = true
+    var randomValues = false
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
