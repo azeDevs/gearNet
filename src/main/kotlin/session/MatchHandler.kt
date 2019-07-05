@@ -21,8 +21,8 @@ class MatchHandler {
     }
 
     fun resolveEveryone(players: HashMap<Long, Player>, s: Session, data: PlayerData): Boolean {
-        val loserPlayer = players.values.firstOrNull { it.getSteamId() == data.steamUserId && it.hasLost() } ?: Player()
-        val winnerPlayer = players.values.firstOrNull { it.getSteamId() == data.steamUserId && it.hasWon() } ?: Player()
+        val loserPlayer = players.values.firstOrNull { it.getSteamId() == data.steamUserId && it.isLoser() } ?: Player()
+        val winnerPlayer = players.values.firstOrNull { it.getSteamId() == data.steamUserId && it.isWinner() } ?: Player()
 
         if (loserPlayer.getSteamId() != -1L) {
             println("******** loserPlayer = ${loserPlayer.getNameString()}")

@@ -25,7 +25,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun updatePlayerData(updatedData: PlayerData, playersActive: Int) {
         data = Pair(getData(), updatedData)
-        if (hasLoaded()) {
+        if (isLoading()) {
             present = true
             idle = max(1,playersActive)
         }
@@ -128,13 +128,13 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getLoadPercent() = getData().loadingPct
 
-    fun hasLoaded() = getData().loadingPct > 0 && getData().loadingPct < 100
+    fun isLoading() = getData().loadingPct > 0 && getData().loadingPct < 100
 
     fun hasPlayed() = getData().matchesSum > oldData().matchesSum
 
-    fun hasLost() = getData().matchesWon == oldData().matchesWon && hasPlayed()
+    fun isLoser() = getData().matchesWon == oldData().matchesWon && hasPlayed()
 
-    fun hasWon() = getData().matchesWon > oldData().matchesWon && hasPlayed()
+    fun isWinner() = getData().matchesWon > oldData().matchesWon && hasPlayed()
 
     fun getRating():Float {
         if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getChain()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()
