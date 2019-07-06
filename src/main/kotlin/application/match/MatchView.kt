@@ -14,7 +14,7 @@ import session.Match
 import session.Session
 import tornadofx.*
 import utils.Duo
-import utils.generateRandomName
+import utils.getRandomName
 import utils.getRes
 import utils.isInRange
 import kotlin.random.Random
@@ -187,7 +187,7 @@ class MatchView(override val root: Parent) : Fragment() {
         cabinet.text = m.getCabinetString(Random.nextInt(3))
 
         character.p1.setViewport(getCharacterPortrait(Random.nextInt(25)))
-        handle.p1.text = generateRandomName()
+        handle.p1.text = getRandomName()
         tension.p1.text = m.getTensionString(P1)
         health.p1.text = m.getHealthString(P1)
         rounds.p1.text = m.getRoundsString(P1)
@@ -196,7 +196,7 @@ class MatchView(override val root: Parent) : Fragment() {
         isHit.p1.text = m.getHitStunString(P1)
 
         character.p2.setViewport(getCharacterPortrait(Random.nextInt(25)))
-        handle.p2.text = generateRandomName()
+        handle.p2.text = getRandomName()
         tension.p2.text = m.getTensionString(P2)
         health.p2.text = m.getHealthString(P2)
         rounds.p2.text = m.getRoundsString(P2)

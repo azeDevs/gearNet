@@ -40,9 +40,12 @@ class MainView : View() {
     private fun cycleMemScan() {
         GlobalScope.launch {
             utilsGui.blinkGuiltyGearIndicator(session)
-            if (session.xrdApi.isConnected() && session.updatePlayers()) redrawAppUi()
-            if (session.xrdApi.isConnected() && session.updateClientMatch()) redrawAppUi()
-            delay(128); cycleMemScan()
+            if (session.api.isXrdApiConnected()) {
+                session.updatePlayers()
+                session.updateClientMatch()
+            }
+            redrawAppUi()
+            delay(32); cycleMemScan()
         }
     }
 
@@ -63,7 +66,7 @@ class MainView : View() {
             else playersGui[i].applyData(Player(), session)
         }
         for (i in 0..3) {
-            matchesGui[i].applyMatch(session.lobbyMatches[i].second, session)
+            matchesGui[i].applyMatch(session.matchHandler.lobbyMatches[i].second, session)
         }
         streamView.updateStreamLeaderboard(uiUpdate, session)
     }

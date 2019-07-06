@@ -36,7 +36,7 @@ class ToolsView(override val root: Parent) : Fragment() {
                         alignment = Pos.BOTTOM_LEFT
                         minWidth = 384.0
                         maxWidth = 384.0
-                        hbox { modeGui.add(ModuleView(parent, "Lobby")) }
+                        hbox { modeGui.add(ModuleView(parent, "XrdLobby")) }
                         hbox { modeGui.add(ModuleView(parent, "Loading")) }
                         hbox { modeGui.add(ModuleView(parent, "Match")) }
                         hbox { modeGui.add(ModuleView(parent, "Slash")) }
@@ -65,7 +65,7 @@ class ToolsView(override val root: Parent) : Fragment() {
     fun applyData(session: Session) = Platform.runLater {
         matchesPlayedLabel.minWidth = 125.0
         playersActiveLabel.minWidth = 125.0
-        matchesPlayedLabel.text = "Matches: 1 / ${session.archiveMatches.size}"
+        matchesPlayedLabel.text = "Matches: 1 / ${session.matchHandler.archiveMatches.size}"
         playersActiveLabel.text = "Players: ${session.getActivePlayerCount()} / ${session.players.size}"
         for (i in 0..4) if (i == session.sessionMode) modeGui[i].reset(true) else modeGui[i].reset(false)
         modeGui.forEach { it.nextFrame() }
@@ -73,15 +73,15 @@ class ToolsView(override val root: Parent) : Fragment() {
     }
 
     fun blinkGuiltyGearIndicator(session: Session) {
-        modulesGui[0].reset(session.xrdApi.isConnected())
+        modulesGui[0].reset(session.api.isXrdApiConnected())
     }
 
     fun blinkGearNetIndicator(session: Session) {
-        modulesGui[1].reset(session.xrdApi.isConnected())
+        modulesGui[1].reset(session.api.isXrdApiConnected())
     }
 
     fun blinkDatabaseIndicator(session: Session) {
-        modulesGui[2].reset(session.dataApi.isConnected())
+        modulesGui[2].reset(session.api.isXrdApiConnected())
     }
 
 }

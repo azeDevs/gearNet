@@ -9,8 +9,9 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-val TRACE_BORDERS = false
-val GHOST_OPACITY = 0.64
+const val SIMULATE_MODE = false
+const val TRACE_BORDERS = false
+const val GHOST_OPACITY = 0.64
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 

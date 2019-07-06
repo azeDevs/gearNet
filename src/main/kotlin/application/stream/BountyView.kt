@@ -10,12 +10,12 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import session.Character.getCharacterPortrait
+import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
 import tornadofx.*
 import utils.addCommas
-import utils.generateRandomName
+import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
@@ -59,6 +59,8 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                     translateX -= 260
                     translateY += 18
+                    fitWidth = 64.0
+                    fitHeight = 64.0
                 }
                 imageview(getRes("gn_stream.png").toString()) {
                     viewport = Rectangle2D(192.0, 0.0, 832.0, 192.0)
@@ -223,7 +225,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     fun applyData(p: Player, s: Session) = Platform.runLater {
         if (s.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
-                character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
+                character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
                 handle2.text = p.getNameString(); handle2.isVisible = true
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
@@ -232,14 +234,14 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())
-                if (p.getChain() > 0) chains1.isVisible = true else chains1.isVisible = false
-                if (p.getChain() > 1) chains2.isVisible = true else chains2.isVisible = false
-                if (p.getChain() > 2) chains3.isVisible = true else chains3.isVisible = false
-                if (p.getChain() > 3) chains4.isVisible = true else chains4.isVisible = false
-                if (p.getChain() > 4) chains5.isVisible = true else chains5.isVisible = false
-                if (p.getChain() > 5) chains6.isVisible = true else chains6.isVisible = false
-                if (p.getChain() > 6) chains7.isVisible = true else chains7.isVisible = false
-                if (p.getChain() > 7) chains8.isVisible = true else chains8.isVisible = false
+                chains1.isVisible = p.getChain() > 0
+                chains2.isVisible = p.getChain() > 1
+                chains3.isVisible = p.getChain() > 2
+                chains4.isVisible = p.getChain() > 3
+                chains5.isVisible = p.getChain() > 4
+                chains6.isVisible = p.getChain() > 5
+                chains7.isVisible = p.getChain() > 6
+                chains8.isVisible = p.getChain() > 7
 
 
                 chains1.fitWidth = 44.0 + ((8+p.getChain()) * p.getChain())
@@ -271,7 +273,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         val chainInt = Random.nextInt(9)
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val changeInt = Random.nextInt(-444555, 666777)
-        val dispName = generateRandomName()
+        val dispName = getRandomName()
         character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
         handle1.text = dispName
         handle2.text = dispName
@@ -281,14 +283,14 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         change.text = p.getChangeString(1f, changeInt)
         riskRating.viewport = p.getRatingImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
         chain.viewport = p.getChainImage(chainInt)
-        if (chainInt > 0) chains1.isVisible = true else chains1.isVisible = false
-        if (chainInt > 1) chains2.isVisible = true else chains2.isVisible = false
-        if (chainInt > 2) chains3.isVisible = true else chains3.isVisible = false
-        if (chainInt > 3) chains4.isVisible = true else chains4.isVisible = false
-        if (chainInt > 4) chains5.isVisible = true else chains5.isVisible = false
-        if (chainInt > 5) chains6.isVisible = true else chains6.isVisible = false
-        if (chainInt > 6) chains7.isVisible = true else chains7.isVisible = false
-        if (chainInt > 7) chains8.isVisible = true else chains8.isVisible = false
+        chains1.isVisible = chainInt > 0
+        chains2.isVisible = chainInt > 1
+        chains3.isVisible = chainInt > 2
+        chains4.isVisible = chainInt > 3
+        chains5.isVisible = chainInt > 4
+        chains6.isVisible = chainInt > 5
+        chains7.isVisible = chainInt > 6
+        chains8.isVisible = chainInt > 7
         chains1.fitWidth = 44.0 + ((8+chainInt) * chainInt)
         chains1.fitHeight = 44.0 + ((8+chainInt) * chainInt)
         wholeThing.isVisible = true
