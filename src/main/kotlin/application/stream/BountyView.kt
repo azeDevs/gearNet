@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import session.Character.getCharacterPortrait
+import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
 import tornadofx.*
@@ -59,6 +59,8 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                     translateX -= 260
                     translateY += 18
+                    fitWidth = 64.0
+                    fitHeight = 64.0
                 }
                 imageview(getRes("gn_stream.png").toString()) {
                     viewport = Rectangle2D(192.0, 0.0, 832.0, 192.0)
@@ -223,7 +225,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     fun applyData(p: Player, s: Session) = Platform.runLater {
         if (s.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
-                character.viewport = getCharacterPortrait(p.getData().characterId, p.isIdle())
+                character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
                 handle2.text = p.getNameString(); handle2.isVisible = true
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true

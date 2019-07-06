@@ -40,9 +40,12 @@ class MainView : View() {
     private fun cycleMemScan() {
         GlobalScope.launch {
             utilsGui.blinkGuiltyGearIndicator(session)
-            if (session.api.isXrdApiConnected() && session.updatePlayers()) redrawAppUi()
-            if (session.api.isXrdApiConnected() && session.updateClientMatch()) redrawAppUi()
-            delay(128); cycleMemScan()
+            if (session.api.isXrdApiConnected()) {
+                session.updatePlayers()
+                session.updateClientMatch()
+            }
+            redrawAppUi()
+            delay(32); cycleMemScan()
         }
     }
 
