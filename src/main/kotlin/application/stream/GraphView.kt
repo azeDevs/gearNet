@@ -1,6 +1,6 @@
-package application.graphs
+package application.stream
 
-import application.match.MatchStyle
+import application.tools.ToolsMatchStyle
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -22,7 +22,7 @@ class GraphView(override val root: Parent) : Fragment() {
     init { with(root) {
             stackpane {
                 imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(6.0, 768.0, 500.0, 128.0)) }
-                label("GRAPH") { addClass(MatchStyle.matchTitle) }
+                label("GRAPH") { addClass(ToolsMatchStyle.matchTitle) }
                 }
             }
     }

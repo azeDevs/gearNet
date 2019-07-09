@@ -1,5 +1,6 @@
 package application.stream
 
+import application.ApplicationStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -9,17 +10,23 @@ import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
-import session.*
+import session.Player
+import session.Session
+import session.Session.Companion.LOADING_MODE
+import session.Session.Companion.LOBBY_MODE
+import session.Session.Companion.MATCH_MODE
+import session.Session.Companion.SLASH_MODE
+import session.Session.Companion.VICTORY_MODE
 import tornadofx.*
 import utils.getRes
 
-class StreamView(override val root: Parent) : Fragment() {
+class StreamViewLayout(override val root: Parent) : Fragment() {
 
     var showHud = true
     var lockHud = -1
 
     var streamView: StackPane
-    private val bountiesGui: MutableList<BountyView> = ArrayList()
+    private val bountiesGui: MutableList<BigScoreView> = ArrayList()
     private lateinit var lobbyView: StackPane
     private lateinit var statsView: StackPane
     private lateinit var matchView: HBox
@@ -96,8 +103,8 @@ class StreamView(override val root: Parent) : Fragment() {
     fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
         if (p1.getSteamId() > 0L) {
             bounty0.text = p1.getBountyString()
-            if (p1.getBounty()>0) bounty0.addClass(SpectatingStyle.matchBountyText)
-            else bounty0.addClass(SpectatingStyle.matchFreeText)
+            if (p1.getBounty()>0) bounty0.addClass(InMatchStyle.matchBountyText)
+            else bounty0.addClass(InMatchStyle.matchFreeText)
 
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
             else health0.text = ""
@@ -110,7 +117,7 @@ class StreamView(override val root: Parent) : Fragment() {
             else round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         } else {
             bounty0.text = "FREE"
-            bounty0.addClass(SpectatingStyle.matchFreeText)
+            bounty0.addClass(InMatchStyle.matchFreeText)
             health0.isVisible = false
             rating0.isVisible = false
             chains0.isVisible = false
@@ -120,8 +127,8 @@ class StreamView(override val root: Parent) : Fragment() {
         }
         if (p2.getSteamId() > 0L) {
             bounty1.text = p2.getBountyString()
-            if (p2.getBounty()>0) bounty1.addClass(SpectatingStyle.matchBountyText)
-            else bounty1.addClass(SpectatingStyle.matchFreeText)
+            if (p2.getBounty()>0) bounty1.addClass(InMatchStyle.matchBountyText)
+            else bounty1.addClass(InMatchStyle.matchFreeText)
 
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
             else health1.text = ""
@@ -134,7 +141,7 @@ class StreamView(override val root: Parent) : Fragment() {
             else round21.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         } else {
             bounty1.text = "FREE"
-            bounty1.addClass(SpectatingStyle.matchFreeText)
+            bounty1.addClass(InMatchStyle.matchFreeText)
             health1.isVisible = false
             rating1.isVisible = false
             chains1.isVisible = false
@@ -147,20 +154,19 @@ class StreamView(override val root: Parent) : Fragment() {
     fun toggleScoreboardMode(session: Session) {
         lockHud = session.sessionMode
         showHud = !showHud
-        session.log("C: Scoreboard Toggle = $showHud")
         updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
     fun toggleStreamerMode(session: Session) {
-        streamView.isVisible = !streamView.isVisible
-        session.log("C: Streaming Toggle = ${streamView.isVisible}")
+        if (streamView.opacity.equals(0.32)) streamView.opacity = 1.0
+        else if (streamView.opacity.equals(1.0)) streamView.opacity = 0.32
         updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
     init {
         with(root) {
             streamView = stackpane {
-                addClass(StreamStyle.streamContainer)
+                addClass(ApplicationStyle.streamContainer)
                 translateY -= 8
                 lobbyView = stackpane {
                     maxWidth = 1280.0
@@ -188,7 +194,7 @@ class StreamView(override val root: Parent) : Fragment() {
                         // BOUNTY VIEWS
                         for (i in 0..3) {
                             hbox {
-                                bountiesGui.add(BountyView(parent, i))
+                                bountiesGui.add(BigScoreView(parent, i))
                             }
                         }
                     }
@@ -227,13 +233,13 @@ class StreamView(override val root: Parent) : Fragment() {
                                     translateY += 61
                                 }
                                 bounty0 = label("FREE") { alignment = Pos.CENTER_LEFT
-                                    addClass(SpectatingStyle.matchBountyText)
+                                    addClass(InMatchStyle.matchBountyText)
                                     translateX -= 50
                                     translateY += 71.5
 //                                    blendMode = BlendMode.ADD
                                 }
                                 health0 = label("") { alignment = Pos.CENTER_LEFT
-                                    addClass(SpectatingStyle.matchHealthText)
+                                    addClass(InMatchStyle.matchHealthText)
                                     translateX -= 102
                                     translateY += 40.5
                                     scaleX = 0.7
@@ -245,7 +251,7 @@ class StreamView(override val root: Parent) : Fragment() {
                                     fitWidth = 50.0
                                     fitHeight = 30.0 - 10
                                 }
-                                spirit0 = imageview(getRes("cb_chain.gif").toString()) {
+                                spirit0 = imageview(getRes("cb_chain_red.gif").toString()) {
                                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                                     translateX += 166
                                     translateY += 63
@@ -288,13 +294,13 @@ class StreamView(override val root: Parent) : Fragment() {
                                     translateY += 61
                                 }
                                 bounty1 = label("FREE") { alignment = Pos.CENTER_RIGHT
-                                    addClass(SpectatingStyle.matchBountyText)
+                                    addClass(InMatchStyle.matchBountyText)
                                     translateX += 52
                                     translateY += 71.5
 //                                    blendMode = BlendMode.ADD
                                 }
                                 health1 = label("") { alignment = Pos.CENTER_RIGHT
-                                    addClass(SpectatingStyle.matchHealthText)
+                                    addClass(InMatchStyle.matchHealthText)
                                     translateX += 101
                                     translateY += 40.5
                                     scaleX = 0.7
@@ -306,7 +312,7 @@ class StreamView(override val root: Parent) : Fragment() {
                                     fitWidth = 50.0
                                     fitHeight = 30.0 - 10
                                 }
-                                spirit1 = imageview(getRes("cb_chain.gif").toString()) {
+                                spirit1 = imageview(getRes("cb_chain_red.gif").toString()) {
                                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                                     translateX -= 164
                                     translateY += 63

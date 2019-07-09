@@ -1,6 +1,6 @@
-package application.player
+package application.tools
 
-import GHOST_OPACITY
+import MyApp.Companion.GHOST_OPACITY
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -18,7 +18,7 @@ import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
-class PlayerView(override val root: Parent) : Fragment() {
+class ToolsPlayerView(override val root: Parent) : Fragment() {
 
     private var wholeThing: HBox
 
@@ -40,7 +40,7 @@ class PlayerView(override val root: Parent) : Fragment() {
     private lateinit var location: Label
 
     init { with(root) {
-        wholeThing = hbox { addClass(PlayerStyle.playerContainer)
+        wholeThing = hbox { addClass(ToolsPlayerStyle.playerContainer)
             minWidth = 400.0
             maxWidth = 400.0
             opacity = GHOST_OPACITY
@@ -56,17 +56,17 @@ class PlayerView(override val root: Parent) : Fragment() {
                 minWidth = 340.0
                 maxWidth = 340.0
                 stackpane { alignment = Pos.CENTER_LEFT
-                    statusBar = hbox { addClass(PlayerStyle.playerStatusBar)
+                    statusBar = hbox { addClass(ToolsPlayerStyle.playerStatusBar)
                         translateY += 1.0
                         maxWidth = 0.0
                     }
                     hbox {
                         handle = label {
-                            addClass(PlayerStyle.playerHandleText)
+                            addClass(ToolsPlayerStyle.playerHandleText)
                             translateY += 1.0
                         }
                         status = label {
-                            addClass(PlayerStyle.playerStatusText)
+                            addClass(ToolsPlayerStyle.playerStatusText)
                             translateX -= 160.0
                             translateY += 4.0
                             maxWidth = 160.0
@@ -76,42 +76,42 @@ class PlayerView(override val root: Parent) : Fragment() {
                 }
 
                 hbox {
-                    vbox { addClass(PlayerStyle.playerBountyBackdrop)
+                    vbox { addClass(ToolsPlayerStyle.playerBountyBackdrop)
                         translateY += 2.0
                         stackpane {
                             translateX += 10.0
                             translateY -= 5.0
-                            bounty2 = label { addClass(PlayerStyle.playerBountyShadow)
+                            bounty2 = label { addClass(ToolsPlayerStyle.playerBountyShadow)
                                 scaleX += 0.05
                                 scaleY += 0.20
                             }
-                            bounty1 = label { addClass(PlayerStyle.playerBountyText) }
+                            bounty1 = label { addClass(ToolsPlayerStyle.playerBountyText) }
                         }
                     }
                     vbox {
                         stackpane {
                             translateX -= 64.0
-                            chain2 = label { addClass(PlayerStyle.playerChainShadow)
+                            chain2 = label { addClass(ToolsPlayerStyle.playerChainShadow)
                                 translateY += 6.0
                                 scaleY += 0.20
                             }
-                            chain1 = label { addClass(PlayerStyle.playerChainText)
+                            chain1 = label { addClass(ToolsPlayerStyle.playerChainText)
                                 translateY += 6.0
                                 scaleX -= 0.20
                             }
                         }
                     }
-                    vbox { addClass(PlayerStyle.playerStatsBackdrop)
+                    vbox { addClass(ToolsPlayerStyle.playerStatsBackdrop)
                         translateX -= 142.0
                         translateY += 2.0
-                        record = label { addClass(PlayerStyle.playerRecordText) }
-                        cabinet = label { addClass(PlayerStyle.playerRecordText) }
-                        location = label { addClass(PlayerStyle.playerRecordText) }
+                        record = label { addClass(ToolsPlayerStyle.playerRecordText) }
+                        cabinet = label { addClass(ToolsPlayerStyle.playerRecordText) }
+                        location = label { addClass(ToolsPlayerStyle.playerRecordText) }
                     }
                     vbox { padding = Insets(0.0,0.0,0.0,8.0)
                         translateX -= 525.0
                         translateY += 8.0
-                        change = label { addClass(PlayerStyle.playerChangeText) }
+                        change = label { addClass(ToolsPlayerStyle.playerChangeText) }
                     }
                 }
             }

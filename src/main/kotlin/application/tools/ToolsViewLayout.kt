@@ -1,6 +1,6 @@
 package application.tools
 
-import application.MainStyle
+import application.ApplicationStyle
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -9,10 +9,10 @@ import javafx.scene.control.Label
 import session.Session
 import tornadofx.*
 
-class ToolsView(override val root: Parent) : Fragment() {
+class ToolsViewLayout(override val root: Parent) : Fragment() {
 
-    private val modeGui: MutableList<ModuleView> = ArrayList()
-    private val modulesGui: MutableList<ModuleView> = ArrayList()
+    private val modeGui: MutableList<ToolsModuleView> = ArrayList()
+    private val modulesGui: MutableList<ToolsModuleView> = ArrayList()
     private lateinit var matchesPlayedLabel: Label
     private lateinit var playersActiveLabel: Label
 
@@ -21,12 +21,8 @@ class ToolsView(override val root: Parent) : Fragment() {
             translateY += 10
             translateX -= 10
             alignment = Pos.TOP_RIGHT
-//            imageview(getRes("gn_atlas.png").toString()) {
-//                viewport = Rectangle2D(20.0, 910.0, 920.0, 100.0)
-//                opacity = 0.5
-//            }
             hbox {
-                addClass(MainStyle.utilsContainer); padding = Insets(10.0,10.0,10.0,15.0)
+                addClass(ApplicationStyle.utilsContainer); padding = Insets(10.0,10.0,10.0,15.0)
                 minWidth = 920.0
                 maxWidth = 920.0
                 minHeight = 100.0
@@ -36,19 +32,19 @@ class ToolsView(override val root: Parent) : Fragment() {
                         alignment = Pos.BOTTOM_LEFT
                         minWidth = 384.0
                         maxWidth = 384.0
-                        hbox { modeGui.add(ModuleView(parent, "XrdLobby")) }
-                        hbox { modeGui.add(ModuleView(parent, "Loading")) }
-                        hbox { modeGui.add(ModuleView(parent, "Match")) }
-                        hbox { modeGui.add(ModuleView(parent, "Slash")) }
-                        hbox { modeGui.add(ModuleView(parent, "Victory")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "XrdLobby")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "Loading")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "Match")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "Slash")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "Victory")) }
                     }
                     hbox {
                         alignment = Pos.BOTTOM_LEFT
                         minWidth = 384.0
                         maxWidth = 384.0
-                        hbox { modulesGui.add(ModuleView(parent, "Guilty Gear Xrd")) }
-                        hbox { modulesGui.add(ModuleView(parent, "GearNet Client")) }
-                        hbox { modulesGui.add(ModuleView(parent, "Stats Database")) }
+                        hbox { modulesGui.add(ToolsModuleView(parent, "Guilty Gear Xrd")) }
+                        hbox { modulesGui.add(ToolsModuleView(parent, "GearNet Client")) }
+                        hbox { modulesGui.add(ToolsModuleView(parent, "Stats Database")) }
                         hbox {
 //                            translateY -= 16
 //                            translateX += 4

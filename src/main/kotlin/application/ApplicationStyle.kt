@@ -1,7 +1,7 @@
 package application
 
-import GHOST_OPACITY
-import TRACE_BORDERS
+import MyApp.Companion.GHOST_OPACITY
+import MyApp.Companion.TRACE_BORDERS
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
@@ -10,7 +10,7 @@ import javafx.scene.shape.StrokeType
 import tornadofx.*
 import utils.getRes
 
-class MainStyle : Stylesheet() {
+class ApplicationStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
@@ -19,7 +19,7 @@ class MainStyle : Stylesheet() {
 
         val utilsContainer by cssclass()
         val appContainer by cssclass()
-        val moduleTitle by cssclass()
+        val streamContainer by cssclass()
         val lobbyName by cssclass()
         val consoleField by cssclass()
         val toggleStreamButton by cssclass()
@@ -47,6 +47,15 @@ class MainStyle : Stylesheet() {
             alignment = Pos.BOTTOM_LEFT
         }
 
+        streamContainer {
+            backgroundColor += c("#FF00FFff")
+            alignment = Pos.CENTER
+            maxWidth = 1280.px
+            minWidth = 1280.px
+            maxHeight = 720.px
+            minHeight = 720.px
+        }
+
         if (TRACE_BORDERS) star {
             borderColor += box(c("#00CC44DD"))
             backgroundColor += c("#22664411")
@@ -71,7 +80,6 @@ class MainStyle : Stylesheet() {
             and(consoleField) {
                 fontFiraCodeLight?.let { font = it }
                 alignment = Pos.BOTTOM_LEFT
-//                textFill = c("#522230")
                 textFill = c("#966674")
                 fontSize = 10.px
             }
@@ -81,16 +89,6 @@ class MainStyle : Stylesheet() {
                 fontSize = 18.px
                 maxWidth = 420.px
                 minWidth = 420.px
-                maxHeight = 32.px
-                minHeight = 32.px
-                alignment = Pos.CENTER
-            }
-            and(moduleTitle) {
-                fontFiraCodeRegular?.let { font = it }
-                textFill = c("#857d53cc")
-                fontSize = 12.px
-                maxWidth = 128.px
-                minWidth = 128.px
                 maxHeight = 32.px
                 minHeight = 32.px
                 alignment = Pos.CENTER

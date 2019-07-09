@@ -1,22 +1,25 @@
-import application.MainStyle
-import application.MainView
-import application.match.MatchStyle
-import application.player.PlayerStyle
-import application.stream.BountyStyle
-import application.stream.SpectatingStyle
-import application.stream.StreamStyle
+import application.ApplicationStyle
+import application.ApplicationView
+import application.stream.BigScoreStyle
+import application.stream.InMatchStyle
+import application.tools.ToolsMatchStyle
+import application.tools.ToolsPlayerStyle
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-const val SIMULATE_MODE = false
-const val TRACE_BORDERS = false
-const val GHOST_OPACITY = 0.64
+fun main(args: Array<String>) {
+    launch<MyApp>(args)
+}
 
-fun main(args: Array<String>) { launch<MyApp>(args) }
+class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 
-class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class, SpectatingStyle::class) {
+    companion object {
+        const val SIMULATE_MODE = false
+        const val TRACE_BORDERS = false
+        const val GHOST_OPACITY = 0.64
+    }
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)

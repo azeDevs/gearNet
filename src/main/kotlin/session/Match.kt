@@ -3,6 +3,9 @@ package session
 import memscan.LobbyData
 import memscan.MatchData
 import memscan.PlayerData
+import session.Session.Companion.MATCH_MODE
+import session.Session.Companion.SLASH_MODE
+import session.Session.Companion.VICTORY_MODE
 import utils.Duo
 import utils.keepInRange
 

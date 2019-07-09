@@ -1,6 +1,6 @@
-package application.match
+package application.tools
 
-import GHOST_OPACITY
+import MyApp.Companion.GHOST_OPACITY
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -28,7 +28,7 @@ import kotlin.random.Random
         val isHit: Pair<Boolean, Boolean> = Pair(false,false)
     )
 */
-class MatchView(override val root: Parent) : Fragment() {
+class ToolsMatchView(override val root: Parent) : Fragment() {
 
     private val P1 = 0
     private val P2 = 1
@@ -51,20 +51,20 @@ class MatchView(override val root: Parent) : Fragment() {
             wholeThing = stackpane { opacity = GHOST_OPACITY
 //                imageview(getRes("gn_atlas.png").toString()) { setViewport(Rectangle2D(6.0, 768.0, 500.0, 128.0)) }
                 timer = label {
-                    addClass(MatchStyle.matchTitle)
+                    addClass(ToolsMatchStyle.matchTitle)
                     translateY -= 2.2
                     scaleX += 8.8
                     scaleY += 8.8
                     opacity = 0.25
                 }
                 cabinet = label {
-                    addClass(MatchStyle.matchTitle)
+                    addClass(ToolsMatchStyle.matchTitle)
                     translateY -= 45.0
                 }
                 hbox {
-                    addClass(MatchStyle.matchContainer)
+                    addClass(ToolsMatchStyle.matchContainer)
 
-                    vbox { addClass(MatchStyle.sidestatsContainer)
+                    vbox { addClass(ToolsMatchStyle.sidestatsContainer)
                         translateY += 35.0
                         hbox {
                             character.p1 = imageview(getRes("gn_atlas.png").toString()) {
@@ -75,23 +75,23 @@ class MatchView(override val root: Parent) : Fragment() {
                                 translateY -= 2.0
                             }
                             vbox {
-                                handle.p1 = label().addClass(MatchStyle.matchPlayerTitle)
+                                handle.p1 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
                                 hbox {
-                                    health.p1 = label().addClass(MatchStyle.demoText)
-                                    rounds.p1 = label { addClass(MatchStyle.demoText); translateX -= 20.0 }
+                                    health.p1 = label().addClass(ToolsMatchStyle.demoText)
+                                    rounds.p1 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
                                 }
                             }
                         }
                         hbox{ translateY += 6.0
-                            risc.p1 = label().addClass(MatchStyle.demoText)
-                            isHit.p1 = label().addClass(MatchStyle.demoText)
+                            risc.p1 = label().addClass(ToolsMatchStyle.demoText)
+                            isHit.p1 = label().addClass(ToolsMatchStyle.demoText)
                         }
                         hbox { translateY += 6.0
-                            tension.p1 = label().addClass(MatchStyle.demoText)
-                            burst.p1 = label().addClass(MatchStyle.demoText)
+                            tension.p1 = label().addClass(ToolsMatchStyle.demoText)
+                            burst.p1 = label().addClass(ToolsMatchStyle.demoText)
                         }
                     }
-                    vbox { addClass(MatchStyle.sidestatsContainer)
+                    vbox { addClass(ToolsMatchStyle.sidestatsContainer)
                         translateY += 35.0
                         translateX += 4.0
                         hbox {
@@ -103,20 +103,20 @@ class MatchView(override val root: Parent) : Fragment() {
                                 translateY -= 2.0
                             }
                             vbox {
-                                handle.p2 = label().addClass(MatchStyle.matchPlayerTitle)
+                                handle.p2 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
                                 hbox { //translateY += 6.0
-                                    health.p2 = label().addClass(MatchStyle.demoText)
-                                    rounds.p2 = label { addClass(MatchStyle.demoText); translateX -= 20.0 }
+                                    health.p2 = label().addClass(ToolsMatchStyle.demoText)
+                                    rounds.p2 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
                                 }
                             }
                         }
                         hbox{ translateY += 6.0
-                            risc.p2 = label().addClass(MatchStyle.demoText)
-                            isHit.p2 = label().addClass(MatchStyle.demoText)
+                            risc.p2 = label().addClass(ToolsMatchStyle.demoText)
+                            isHit.p2 = label().addClass(ToolsMatchStyle.demoText)
                         }
                         hbox { translateY += 6.0
-                            tension.p2 = label().addClass(MatchStyle.demoText)
-                            burst.p2 = label().addClass(MatchStyle.demoText)
+                            tension.p2 = label().addClass(ToolsMatchStyle.demoText)
+                            burst.p2 = label().addClass(ToolsMatchStyle.demoText)
                         }
                     }
                 }

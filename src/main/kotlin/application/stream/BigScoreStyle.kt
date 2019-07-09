@@ -6,7 +6,7 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import tornadofx.*
 
-class BountyStyle : Stylesheet() {
+class BigScoreStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
@@ -54,15 +54,15 @@ class BountyStyle : Stylesheet() {
             and(bountyBountyText) {
                 fontRED?.let { font = it }
                 fontSize = 40.px
-                maxWidth = 200.px
-                minWidth = 200.px
+                maxWidth = 256.px
+                minWidth = 256.px
                 textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.8, 0.8, 0.3)), Stop(0.48, c(0.9, 0.9, 0.4)), Stop(0.52, c(0.7, 0.5, 0.1)), Stop(1.0, c(0.9, 0.8, 0.2)))
             }
             and(bountyFreeText) {
                 fontRED?.let { font = it }
                 fontSize = 40.px
-                maxWidth = 200.px
-                minWidth = 200.px
+                maxWidth = 256.px
+                minWidth = 256.px
                 textFill = LinearGradient(0.0, -20.0, 0.0, 5.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.4, 0.3, 0.2)), Stop(0.45, c(0.6, 0.4, 0.2)), Stop(0.55, c(0.4, 0.2, 0.2)), Stop(1.0, c(0.8, 0.4, 0.2)))
                 opacity = 0.32
             }
@@ -70,8 +70,8 @@ class BountyStyle : Stylesheet() {
                 fontRED?.let { font = it }
                 fontSize = 40.px
                 textFill = c("#9b332acc")
-                maxWidth = 200.px
-                minWidth = 200.px
+                maxWidth = 256.px
+                minWidth = 256.px
                 alignment = Pos.CENTER_LEFT
             }
             and(bountyChangeText) {

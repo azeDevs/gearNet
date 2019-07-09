@@ -14,9 +14,9 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
 
-    private var bounty = 0
-    private var change = 0
-    private var chain = 0
+    private var bounty = 87654321
+    private var change = 876543
+    private var chain = 8
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
@@ -183,35 +183,6 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (chain == 8) grade = Rectangle2D(128.0, 448.0, 64.0, 64.0)
         return grade
     }
-
-//    fun getRatingColor(): Vec4 {
-//        var color = Col4.GHOST
-//        if (getMatchesWon() >= 1 && getPlayerRating() > 0.0f) color    = Vec4(0.10, 0.90, 0.90, 1) // D
-//        if (getMatchesWon() >= 1 && getPlayerRating() >= 0.1f) color   = Vec4(0.00, 0.60, 0.90, 1) // D+
-//        if (getMatchesWon() >= 2 && getPlayerRating() >= 0.2f) color  = Vec4(0.20, 0.80, 0.10, 1) // C
-//        if (getMatchesWon() >= 3 && getPlayerRating() >= 0.3f) color  = Vec4(0.40, 0.90, 0.10, 1) // C+
-//        if (getMatchesWon() >= 5 && getPlayerRating() >= 0.4f) color  = Vec4(0.90, 0.90, 0.00, 1) // B
-//        if (getMatchesWon() >= 8 && getPlayerRating() >= 0.6f) color  = Vec4(0.98, 0.64, 0.10, 1) // B+
-//        if (getMatchesWon() >= 13 && getPlayerRating() >= 1.0f) color  = Vec4(0.98, 0.50, 0.00, 1) // A
-//        if (getMatchesWon() >= 21 && getPlayerRating() >= 1.2f) color = Vec4(0.98, 0.25, 0.10, 1) // A+
-//        if (getMatchesWon() >= 34 && getPlayerRating() >= 1.4f) color = Vec4(0.95, 0.20, 0.70, 1) // S
-//        if (getMatchesWon() >= 55 && getPlayerRating() >= 1.6f) color = Vec4(0.90, 0.10, 0.95, 1) // S+
-//        return color
-//    }
-//
-//    fun getChainColor(): Vec4 {
-//        when (getChain()) {z
-//            1 -> return Vec4(0.55,0.65,0.66,1.00) // D+
-//            2 -> return Vec4(0.50,0.70,0.68,1.00) // C
-//            3 -> return Vec4(0.45,0.75,0.70,1.00) // C+
-//            4 -> return Vec4(0.40,0.80,0.72,1.00) // B
-//            5 -> return Vec4(0.35,0.85,0.74,1.00) // B+
-//            6 -> return Vec4(0.30,0.90,0.76,1.00) // A
-//            7 -> return Vec4(0.25,0.95,0.78,1.00) // A+
-//            8 -> return Vec4(0.20,1.00,0.80,1.00) // S
-//            else -> return Col4.GHOST
-//        }
-//    }
 
 }
 

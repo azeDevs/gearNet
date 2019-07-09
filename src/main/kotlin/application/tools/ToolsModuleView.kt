@@ -1,6 +1,5 @@
 package application.tools
 
-import application.MainStyle
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -9,7 +8,7 @@ import javafx.scene.image.ImageView
 import tornadofx.*
 import utils.getRes
 
-class ModuleView(override val root: Parent, modTitle: String): Fragment() {
+class ToolsModuleView(override val root: Parent, modTitle: String): Fragment() {
 
     private lateinit var backdrop: ImageView
     private lateinit var moduleName: Label
@@ -19,7 +18,7 @@ class ModuleView(override val root: Parent, modTitle: String): Fragment() {
     init { with(root) {
             stackpane {
                 backdrop = imageview(getRes("gn_atlas.png").toString()) { viewport = Rectangle2D(512.0, if (enabled)  256.0 else 288.0, 128.0, 32.0) }
-                moduleName = label(modTitle) { addClass(MainStyle.moduleTitle) }
+                moduleName = label(modTitle) { addClass(ToolsModuleStyle.moduleTitle) }
             }
         } }
 

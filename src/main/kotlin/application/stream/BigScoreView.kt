@@ -20,7 +20,7 @@ import utils.getRes
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
+class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
 
 
 
@@ -48,7 +48,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     init {
         with(root) {
             wholeThing = stackpane { isVisible = false
-                addClass(BountyStyle.bountyContainer)
+                addClass(BigScoreStyle.bountyContainer)
                 translateX += target
 
                 scaleX += (0.16)
@@ -79,13 +79,15 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     translateX += 252
                     translateY -= 40
                     rotate += 1
-                    addClass(BountyStyle.bountyChangeText)
+                    addClass(BigScoreStyle.bountyChangeText)
                     blendMode = BlendMode.HARD_LIGHT
                 }
+
                 val chainsLightFit = 50.0
-                val chainsLightOpacity = 0.8
+                val chainsLightOpacity = 0.96
                 val chainsLightRotation = 16.0
-                chains2 = imageview(getRes("cb_chain.gif").toString()) {
+                val chainsBlendMode = BlendMode.LIGHTEN
+                chains2 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 229
                     translateY -= 9
@@ -93,9 +95,9 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
                 }
-                chains3 = imageview(getRes("cb_chain.gif").toString()) {
+                chains3 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 218
                     translateY += 13
@@ -103,10 +105,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
 
                 }
-                chains4 = imageview(getRes("cb_chain.gif").toString()) {
+                chains4 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 229
                     translateY += 37
@@ -114,10 +116,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
 
                 }
-                chains5 = imageview(getRes("cb_chain.gif").toString()) {
+                chains5 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 253
                     translateY += 47
@@ -125,10 +127,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
 
                 }
-                chains6 = imageview(getRes("cb_chain.gif").toString()) {
+                chains6 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 276
                     translateY += 37
@@ -136,10 +138,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
 
                 }
-                chains7 = imageview(getRes("cb_chain.gif").toString()) {
+                chains7 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 286
                     translateY += 13
@@ -147,10 +149,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
 
                 }
-                chains8 = imageview(getRes("cb_chain.gif").toString()) {
+                chains8 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 276
                     translateY -= 9
@@ -158,10 +160,10 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = chainsLightFit
                     opacity = chainsLightOpacity
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
                 }
 
-                chains1 = imageview(getRes("cb_chain.gif").toString()) {
+                chains1 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 252
                     translateY += 8
@@ -169,7 +171,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = 80.0
                     opacity = 0.96
                     rotate += chainsLightRotation
-                    blendMode = BlendMode.ADD
+                    blendMode = chainsBlendMode
                 }
 
                 chain = imageview(getRes("gn_stream.png").toString()) {
@@ -178,7 +180,7 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     translateY += 16
                     fitWidth = 52.0
                     fitHeight = 52.0
-                    opacity = 0.96
+                    opacity = 0.64
                     blendMode = BlendMode.HARD_LIGHT
                 }
 
@@ -188,25 +190,25 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     scaleX *= 0.9
                     opacity = 0.96
 
-                    handle2 = label { addClass(BountyStyle.bountyHandleShadow)
+                    handle2 = label { addClass(BigScoreStyle.bountyHandleShadow)
                         translateY += 3
                         translateX += 2
                         blendMode = BlendMode.HARD_LIGHT
                     }
-                    handle1 = label { addClass(BountyStyle.bountyHandleText) }
+                    handle1 = label { addClass(BigScoreStyle.bountyHandleText) }
                 }
 
                 stackpane {
-                    translateX -= 60.0
+                    translateX -= 32.0
                     translateY += 12.0
                     bounty2 = label {
-                        addClass(BountyStyle.bountyBountyShadow)
+                        addClass(BigScoreStyle.bountyBountyShadow)
                         scaleX += 0.04
                         scaleY += 0.18
                         blendMode = BlendMode.ADD
                     }
                     bounty1 = label {
-                        addClass(BountyStyle.bountyBountyText)
+                        addClass(BigScoreStyle.bountyBountyText)
                         translateY += 1.0
                     }
                 }
@@ -251,8 +253,8 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
                 chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
-                if (p.getBounty() > 0) bounty1.addClass(BountyStyle.bountyBountyText)
-                else  bounty1.addClass(BountyStyle.bountyFreeText)
+                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
+                else  bounty1.addClass(BigScoreStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())
@@ -266,8 +268,11 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains8.isVisible = p.getChain() > 7
 
 
-                chains1.fitWidth = 44.0 + ((8+p.getChain()) * p.getChain())
-                chains1.fitHeight = 44.0 + ((8+p.getChain()) * p.getChain())
+                chain.fitWidth = 52.0 * (1+p.getChain()*0.04)
+                chain.fitHeight = 52.0 * (1+p.getChain()*0.04)
+
+                chains1.fitWidth = 64.0 + ((8+p.getChain()) * p.getChain()) //44.0 + ((8+p.getChain()) * p.getChain())
+                chains1.fitHeight = 64.0 + ((8+p.getChain()) * p.getChain())
 
                 wholeThing.isVisible = true
             } else {

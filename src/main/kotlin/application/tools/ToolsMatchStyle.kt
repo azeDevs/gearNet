@@ -1,4 +1,4 @@
-package application.graphs
+package application.tools
 
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
@@ -7,7 +7,7 @@ import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
 import tornadofx.*
 
-class GraphStyle : Stylesheet() {
+class ToolsMatchStyle : Stylesheet() {
 
     companion object {
         val fontPaladinsStraight = loadFont("/fonts/Paladins-Straight.ttf", 16.0)
@@ -57,7 +57,7 @@ class GraphStyle : Stylesheet() {
 
             and(matchTitle) {
                 fontPaladinsStraight?.let { font = it }
-                fontSize = 24.px
+                fontSize = 18.px
                 textFill = c("#04a4c4")
             }
 
@@ -73,8 +73,8 @@ class GraphStyle : Stylesheet() {
 
             and(demoText) {
                 fontSize = 10.px
-                minWidth = 128.px
-                maxWidth = 128.px
+                minWidth = 140.px
+                maxWidth = 140.px
                 padding = box(2.px, 0.px, 0.px, 0.px)
                 alignment = Pos.CENTER_LEFT
             }

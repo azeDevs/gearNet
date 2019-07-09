@@ -1,4 +1,4 @@
-package application.player
+package application.tools
 
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
@@ -7,7 +7,7 @@ import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
 import tornadofx.*
 
-class PlayerStyle : Stylesheet() {
+class ToolsPlayerStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)

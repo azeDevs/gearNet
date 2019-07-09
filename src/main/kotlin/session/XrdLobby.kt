@@ -1,6 +1,6 @@
 package session
 
-import session.GearNetEvent.*
+import session.Event.Companion.GearNetEvent.*
 import utils.Duo
 import utils.keepInRange
 

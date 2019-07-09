@@ -1,6 +1,6 @@
 package session
 
-import SIMULATE_MODE
+import MyApp.Companion.SIMULATE_MODE
 import database.DatabaseHandler
 import database.SqlApi
 import memscan.*

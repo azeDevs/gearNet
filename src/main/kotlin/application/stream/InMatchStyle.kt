@@ -1,11 +1,12 @@
 package application.stream
 
+import MyApp.Companion.GHOST_OPACITY
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import tornadofx.*
 
-class SpectatingStyle : Stylesheet() {
+class InMatchStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
@@ -56,7 +57,7 @@ class SpectatingStyle : Stylesheet() {
                     Stop(0.55, c(0.4, 0.3, 0.1)),
                     Stop(1.0, c(0.4, 0.4, 0.8))
                 )
-                opacity = 0.64
+                opacity = GHOST_OPACITY
             }
 
         }
