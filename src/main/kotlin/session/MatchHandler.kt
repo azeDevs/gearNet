@@ -2,6 +2,7 @@ package session
 
 import memscan.MatchData
 import memscan.PlayerData
+import utils.isInRange
 import kotlin.math.abs
 
 class MatchHandler {
@@ -61,7 +62,7 @@ class MatchHandler {
         println("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 
         val bonusLoserPayout = (players[loser.steamUserId]!!.getChain() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getChain() * 100)
-        val bonusWinnerPayout = (players[winner.steamUserId]!!.getChain() * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getChain() * 1000)
+        val bonusWinnerPayout = (players[winner.steamUserId]!!.getChain(1) * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getChain(1) * 1000)
 
         println("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
 
@@ -69,8 +70,10 @@ class MatchHandler {
 
         println("payout = $payout")
 
-        players[loser.steamUserId]!!.changeBounty(bonusLoserPayout - payout)
-        players[loser.steamUserId]!!.changeChain(-1)
+        if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
+            players[loser.steamUserId]!!.changeBounty(bonusLoserPayout - payout)
+            players[loser.steamUserId]!!.changeChain(-2)
+        }
         players[winner.steamUserId]!!.changeBounty(bonusWinnerPayout + payout)
         players[winner.steamUserId]!!.changeChain(1)
 

@@ -5,7 +5,7 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import tornadofx.*
 
-class MatchStyle : Stylesheet() {
+class SpectatingStyle : Stylesheet() {
 
     companion object {
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
@@ -18,7 +18,8 @@ class MatchStyle : Stylesheet() {
     }
 
     init {
-        Stylesheet.label {
+
+        label {
             fontFiraCodeMedium?.let { font = it }
             textFill = c("#78cbab")
             fontSize = 10.px
@@ -36,15 +37,28 @@ class MatchStyle : Stylesheet() {
                 fontSize = 25.px
                 maxWidth = 160.px
                 minWidth = 160.px
-                textFill = LinearGradient(0.0, -20.0, 0.0, 20.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.96, 0.96, 0.45)), Stop(0.45, c(0.96, 0.96, 0.45)), Stop(0.55, c(0.96, 0.76, 0.0)), Stop(1.0, c(0.91, 0.69, 0.0)))
+                textFill = LinearGradient(0.0, -23.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.8, 0.8, 0.3)), Stop(0.48, c(0.9, 0.9, 0.4)), Stop(0.52, c(0.7, 0.5, 0.1)), Stop(1.0, c(0.9, 0.8, 0.2)))
             }
             and(matchFreeText) {
                 fontRED?.let { font = it }
                 fontSize = 25.px
                 maxWidth = 160.px
                 minWidth = 160.px
-                textFill = LinearGradient(0.0, -20.0, 0.0, 20.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.49, 0.47, 0.48)), Stop(0.45, c(0.46, 0.44, 0.45)), Stop(0.55, c(0.38, 0.39, 0.38)), Stop(1.0, c(0.35, 0.36, 0.35)))
+                textFill = LinearGradient(
+                    0.0,
+                    -20.0,
+                    0.0,
+                    10.0,
+                    false,
+                    CycleMethod.NO_CYCLE,
+                    Stop(0.0, c(0.3, 0.3, 0.6)),
+                    Stop(0.45, c(0.6, 0.5, 0.4)),
+                    Stop(0.55, c(0.4, 0.3, 0.1)),
+                    Stop(1.0, c(0.4, 0.4, 0.8))
+                )
+                opacity = 0.64
             }
+
         }
     }
 }

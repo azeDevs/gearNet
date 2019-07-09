@@ -72,7 +72,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (bounty < 10) bounty = 0
     }
 
-    fun getChain() = chain
+    fun getChain(modify:Int = 0) = chain + modify
 
     fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
 
@@ -172,7 +172,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     }
 
     fun getChainImage(chain:Int = getChain()): Rectangle2D {
-        var grade = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+        var grade = Rectangle2D(256.0, 448.0, 64.0, 64.0)
         if (chain == 1) grade = Rectangle2D(128.0, 0.0, 64.0, 64.0)
         if (chain == 2) grade = Rectangle2D(128.0, 64.0, 64.0, 64.0)
         if (chain == 3) grade = Rectangle2D(128.0, 128.0, 64.0, 64.0)

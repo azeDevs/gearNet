@@ -17,9 +17,12 @@ import tornadofx.*
 import utils.addCommas
 import utils.getRandomName
 import utils.getRes
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
+
+
 
     private var wholeThing: StackPane
     private lateinit var character: ImageView
@@ -46,25 +49,30 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         with(root) {
             wholeThing = stackpane { isVisible = false
                 addClass(BountyStyle.bountyContainer)
-                scaleX += (0.12)
-                scaleY += (0.12)
-                scaleX -= (scaleIndex*0.01)*scaleIndex
-                scaleY -= (scaleIndex*0.01)*scaleIndex
-                translateX -= 10*scaleIndex
+                translateX += target
+
+                scaleX += (0.16)
+                scaleY += (0.16)
+                scaleX -= (scaleIndex*0.02)*(scaleIndex*1.16)
+                scaleY -= (scaleIndex*0.02)*(scaleIndex*1.16)
+                translateX += scaleIndex*scaleIndex*scaleIndex
+                translateY += scaleIndex*12
+                translateY -= scaleIndex*scaleIndex*scaleIndex
 
                 translateX += 400
                 minWidth = 1024.0
                 maxWidth = 1024.0
                 character = imageview(getRes("gn_atlas.png").toString()) {
                     viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
-                    translateX -= 260
+                    translateX -= 209
                     translateY += 18
                     fitWidth = 64.0
                     fitHeight = 64.0
                 }
                 imageview(getRes("gn_stream.png").toString()) {
-                    viewport = Rectangle2D(192.0, 0.0, 832.0, 192.0)
-                    fitWidth = 640.0
+                    viewport = Rectangle2D(256.0, 0.0, 768.0, 192.0)
+                    translateX += 25
+                    fitWidth = 592.0
                     fitHeight = 148.0
                 }
                 change = label {
@@ -175,32 +183,31 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 }
 
                 stackpane {
-                    translateX -= 60
+                    translateX -= 44
                     translateY -= 38
-                    opacity = 0.8
-                    blendMode = BlendMode.HARD_LIGHT
+                    scaleX *= 0.9
+                    opacity = 0.96
+
                     handle2 = label { addClass(BountyStyle.bountyHandleShadow)
                         translateY += 3
                         translateX += 2
+                        blendMode = BlendMode.HARD_LIGHT
                     }
                     handle1 = label { addClass(BountyStyle.bountyHandleText) }
                 }
 
                 stackpane {
-                    translateX -= 110.0
+                    translateX -= 60.0
                     translateY += 12.0
                     bounty2 = label {
                         addClass(BountyStyle.bountyBountyShadow)
-                        scaleX += 0.05
-                        scaleY += 0.25
-                        rotate -= 0.5
+                        scaleX += 0.04
+                        scaleY += 0.18
                         blendMode = BlendMode.ADD
                     }
                     bounty1 = label {
                         addClass(BountyStyle.bountyBountyText)
                         translateY += 1.0
-                        rotate += 0.5
-                        blendMode = BlendMode.ADD
                     }
                 }
 
@@ -218,6 +225,19 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         }
     }
 
+    var target = 0.0
+    private var current = 0.0
+
+    fun approachTarget() {
+        if (current != target) {
+            val targetFraction = ((current - target) * 0.5)
+            println("target: ${target}  |  current: ${current}  |  FRACTION: ${targetFraction}")
+            wholeThing.translateX -= targetFraction
+            current -= targetFraction
+            if ((current).roundToInt().equals((target).roundToInt())) current = target
+        }
+    }
+
     fun setVisibility(flag: Boolean) = Platform.runLater {
         wholeThing.isVisible = flag
     }
@@ -231,6 +251,8 @@ class BountyView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
                 chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
+                if (p.getBounty() > 0) bounty1.addClass(BountyStyle.bountyBountyText)
+                else  bounty1.addClass(BountyStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())

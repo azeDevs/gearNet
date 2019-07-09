@@ -10,6 +10,7 @@ import javafx.scene.control.Label
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import session.Player
 import session.Session
 import tornadofx.*
@@ -32,28 +33,43 @@ class MainView : View() {
 
     private fun cycleDatabase() {
         GlobalScope.launch {
-            utilsGui.blinkDatabaseIndicator(session)
+            runBlocking {
+                utilsGui.blinkDatabaseIndicator(session)
+            }
             delay(2048); cycleDatabase()
+        }
+    }
+
+    private fun cycleAnimations() {
+        GlobalScope.launch {
+            runBlocking {
+                streamView.animateTargets()
+                redrawAppUi()
+            }
+            delay(64); cycleAnimations()
         }
     }
 
     private fun cycleMemScan() {
         GlobalScope.launch {
-            utilsGui.blinkGuiltyGearIndicator(session)
-            if (session.api.isXrdApiConnected()) {
-                session.updatePlayers()
-                session.updateClientMatch()
+            runBlocking {
+                utilsGui.blinkGuiltyGearIndicator(session)
+                if (session.api.isXrdApiConnected()) {
+                    session.updatePlayers()
+                    session.updateClientMatch()
+                }
             }
-            redrawAppUi()
             delay(32); cycleMemScan()
         }
     }
 
     private fun cycleUi() {
         GlobalScope.launch {
-            utilsGui.applyData(session)
-            updateConsole()
-            delay(64); cycleUi()
+            runBlocking {
+                utilsGui.applyData(session)
+                updateConsole()
+            }
+            delay(32); cycleUi()
         }
     }
 
@@ -140,6 +156,7 @@ class MainView : View() {
 
             }
 
+            cycleAnimations()
             cycleDatabase()
             cycleMemScan()
             cycleUi()

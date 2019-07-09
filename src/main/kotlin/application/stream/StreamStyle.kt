@@ -19,7 +19,7 @@ class StreamStyle : Stylesheet() {
             minWidth = 1280.px
             maxHeight = 720.px
             minHeight = 720.px
-            visibility = FXVisibility.HIDDEN
+//            visibility = FXVisibility.HIDDEN
         }
 
         label {

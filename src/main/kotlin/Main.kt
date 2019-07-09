@@ -3,6 +3,7 @@ import application.MainView
 import application.match.MatchStyle
 import application.player.PlayerStyle
 import application.stream.BountyStyle
+import application.stream.SpectatingStyle
 import application.stream.StreamStyle
 import javafx.stage.Stage
 import tornadofx.App
@@ -15,11 +16,11 @@ const val GHOST_OPACITY = 0.64
 
 fun main(args: Array<String>) { launch<MyApp>(args) }
 
-class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class) {
+class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class, SpectatingStyle::class) {
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.5.15"
+        view.title = "ＧｅａｒＮｅｔ  //  0.6.1"
     }
 
     override fun start(stage: Stage) {
