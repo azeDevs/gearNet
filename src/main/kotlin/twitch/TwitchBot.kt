@@ -16,19 +16,21 @@ class TwitchBot(accessToken: String) : BotApi {
                 .withEnableHelix(true)
                 .withEnableTMI(true)
                 .build()
-        twitchClient.chat.eventManager
-                .onEvent(ChannelMessageEvent::class.java)
-                .subscribe {
-                    messageCache.add(Message(it.user.id, it.message))
-                }
+        twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe {
+            messageCache.add(Message(it.user.id, it.message))
+        }
+        sendMessage("Hello World!")
     }
 
-    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azedevs", message)
+    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", message)
 
     override fun getMessages(): List<Message> = messageCache
+    fun clearMessages() { messageCache.clear() }
 
     override fun isConnected(): Boolean {
-        return twitchClient.messagingInterface.getChatters("azedevs").isFailedExecution
+        val flag = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
+        println("Bot.isConnected() == ${flag}")
+        return flag
     }
 
     fun <T> eval(callback: (client: TwitchClient) -> T): T = callback.invoke(twitchClient)

@@ -4,6 +4,7 @@ import application.ApplicationStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
+import javafx.scene.Group
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
@@ -27,8 +28,8 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 
     var streamView: StackPane
     private val bountiesGui: MutableList<BigScoreView> = ArrayList()
-    private lateinit var lobbyView: StackPane
-    private lateinit var statsView: StackPane
+    private lateinit var lobbyView: Group
+    private lateinit var statsView: Group
     private lateinit var matchView: HBox
 
     private lateinit var bounty0: Label
@@ -60,30 +61,36 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         else {
             lockHud = -1
             when (s.sessionMode) {
-                LOBBY_MODE -> {
-//                    bountiesGui.forEach { it.target = 64.0 }
+
+                VICTORY_MODE -> {
+//                    bountiesGui.forEach { it.setTarget(0.0) }
                     lobbyView.isVisible = true
                     matchView.isVisible = false
+                    showHud = true
+                }
+                LOBBY_MODE -> {
+//                    bountiesGui.forEach { it.setTarget(0.0) }
+                    lobbyView.isVisible = true
+                    matchView.isVisible = false
+                    showHud = true
                 }
                 LOADING_MODE -> {
-//                    bountiesGui.forEach { it.target = 128.0 }
+//                    bountiesGui.forEach { it.setTarget(-256.0) }
                     lobbyView.isVisible = true
                     matchView.isVisible = false
+                    showHud = true
                 }
                 MATCH_MODE -> {
-//                    bountiesGui.forEach { it.target = 512.0 }
+//                    bountiesGui.forEach { it.setTarget(2048.0) }
                     lobbyView.isVisible = false
                     matchView.isVisible = true
+                    showHud = false
                 }
                 SLASH_MODE -> {
-//                    bountiesGui.forEach { it.target = 256.0 }
+//                    bountiesGui.forEach { it.setTarget(-256.0) }
                     lobbyView.isVisible = false
                     matchView.isVisible = true
-                }
-                VICTORY_MODE -> {
-//                    bountiesGui.forEach { it.target = 0.0 }
-                    lobbyView.isVisible = true
-                    matchView.isVisible = false
+                    showHud = false
                 }
 
             }
@@ -109,7 +116,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
             else health0.text = ""
             rating0.viewport = Rectangle2D(p1.getRatingImage().minX, p1.getRatingImage().minY + 20, p1.getRatingImage().width, p1.getRatingImage().height - 20)
+            rating0.isVisible = true
             chains0.viewport = p1.getChainImage()
+            chains0.isVisible = p1.getChain() > 0
             spirit0.isVisible = p1.getChain() > 0
             if (s.matchHandler.clientMatch.getRounds(0) > 0) round10.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
             else round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
@@ -133,7 +142,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
             else health1.text = ""
             rating1.viewport = Rectangle2D(p2.getRatingImage().minX, p2.getRatingImage().minY + 20, p2.getRatingImage().width, p2.getRatingImage().height - 20)
+            rating1.isVisible = true
             chains1.viewport = p2.getChainImage()
+            chains1.isVisible = p2.getChain() > 0
             spirit1.isVisible = p2.getChain() > 0
             if (s.matchHandler.clientMatch.getRounds(1) > 0) round11.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
             else round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
@@ -158,8 +169,8 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     }
 
     fun toggleStreamerMode(session: Session) {
-        if (streamView.opacity.equals(0.32)) streamView.opacity = 1.0
-        else if (streamView.opacity.equals(1.0)) streamView.opacity = 0.32
+        if (streamView.opacity.equals(0.64)) streamView.opacity = 1.0
+        else if (streamView.opacity.equals(1.0)) streamView.opacity = 0.64
         updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
@@ -168,7 +179,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             streamView = stackpane {
                 addClass(ApplicationStyle.streamContainer)
                 translateY -= 8
-                lobbyView = stackpane {
+                lobbyView = group {
                     maxWidth = 1280.0
                     minWidth = 1280.0
                     maxHeight = 720.0
@@ -176,7 +187,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                     imageview(getRes("gn_stream.png").toString()) {
                         viewport = Rectangle2D(0.0, 832.0, 1024.0, 192.0)
                         translateY += 256
-                        translateZ -= 4
                         fitWidth = 1280.0
                         fitHeight = 240.0
                     }
@@ -184,23 +194,15 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                         viewport = Rectangle2D(0.0, 832.0, 1024.0, 192.0)
                         rotate += 180
                         translateY -= 256
-                        translateZ -= 4
                         fitWidth = 1280.0
                         fitHeight = 240.0
                     }
-                    vbox {
-                        translateY += 80
-                        translateX -= 12
-                        // BOUNTY VIEWS
-                        for (i in 0..3) {
-                            hbox {
-                                bountiesGui.add(BigScoreView(parent, i))
-                            }
-                        }
+                    for (i in 0..3) {
+                        bountiesGui.add(BigScoreView(parent, i))
                     }
                 }
 
-                statsView = stackpane {
+                statsView = group {
                     opacity = 0.0
                     maxWidth = 1280.0
                     minWidth = 1280.0
