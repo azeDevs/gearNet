@@ -10,7 +10,6 @@ import javafx.scene.control.Label
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import session.Player
 import session.Session
 import session.Session.Companion.LOADING_MODE
@@ -39,29 +38,31 @@ class ApplicationView : View() {
 
     private fun cycleDatabase() {
         GlobalScope.launch {
-            runBlocking {
                 utilsGui.blinkDatabaseIndicator(session)
-            }
             delay(2048); cycleDatabase()
+        }
+    }
+
+    private fun cycleTwitch() {
+        GlobalScope.launch {
+            session.updateBets()
+            delay(64); cycleTwitch()
         }
     }
 
     private fun cycleMemScan() {
         GlobalScope.launch {
-            runBlocking {
                 utilsGui.blinkGuiltyGearIndicator(session)
                 if (session.api.isXrdApiConnected()) {
                     session.updatePlayers()
                     session.updateClientMatch()
                 }
-            }
             delay(32); cycleMemScan()
         }
     }
 
     private fun cycleUi() {
         GlobalScope.launch {
-            runBlocking {
                 streamViewLayout.animateTargets()
                 utilsGui.applyData(session)
                 updateConsole()
@@ -73,8 +74,7 @@ class ApplicationView : View() {
                 else playersGui[i].applyData(Player(), session)
                 streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
                 updateTitle()
-            }
-            delay(64); cycleUi()
+            delay(24); cycleUi()
         }
     }
 
@@ -164,6 +164,7 @@ class ApplicationView : View() {
 
             cycleDatabase()
             cycleMemScan()
+            cycleTwitch()
             cycleUi()
         }
     }

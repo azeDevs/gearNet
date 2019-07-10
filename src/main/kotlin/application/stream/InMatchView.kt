@@ -206,7 +206,7 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                         blendMode = BlendMode.ADD
                     }
                     bounty1 = label {
-                        addClass(BigScoreStyle.bountyBountyText)
+                        addClass(InMatchStyle.matchBountyText)
                         translateY += 1.0
                     }
                 }
@@ -251,8 +251,8 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
                 chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
-                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
-                else  bounty1.addClass(BigScoreStyle.bountyFreeText)
+//                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
+//                else  bounty1.addClass(BigScoreStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())

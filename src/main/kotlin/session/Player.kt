@@ -8,15 +8,16 @@ import utils.getIdString
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
 
-    private var bounty = 87654321
-    private var change = 876543
-    private var chain = 8
+    private var bounty = 0
+    private var change = 0
+    private var chain = Random.nextInt(9)
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
