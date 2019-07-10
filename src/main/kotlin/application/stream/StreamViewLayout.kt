@@ -110,9 +110,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
         if (p1.getSteamId() > 0L) {
             bounty0.text = p1.getBountyString()
-            if (p1.getBounty()>0) bounty0.addClass(InMatchStyle.matchBountyText)
-            else bounty0.addClass(InMatchStyle.matchFreeText)
-
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
             else health0.text = ""
             rating0.viewport = Rectangle2D(p1.getRatingImage().minX, p1.getRatingImage().minY + 20, p1.getRatingImage().width, p1.getRatingImage().height - 20)
@@ -126,8 +123,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             else round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         } else {
             bounty0.text = "FREE"
-            bounty0.addClass(InMatchStyle.matchFreeText)
-            health0.isVisible = false
             rating0.isVisible = false
             chains0.isVisible = false
             spirit0.isVisible = false
@@ -136,9 +131,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         }
         if (p2.getSteamId() > 0L) {
             bounty1.text = p2.getBountyString()
-            if (p2.getBounty()>0) bounty1.addClass(InMatchStyle.matchBountyText)
-            else bounty1.addClass(InMatchStyle.matchFreeText)
-
             if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
             else health1.text = ""
             rating1.viewport = Rectangle2D(p2.getRatingImage().minX, p2.getRatingImage().minY + 20, p2.getRatingImage().width, p2.getRatingImage().height - 20)
@@ -146,14 +138,13 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             chains1.viewport = p2.getChainImage()
             chains1.isVisible = p2.getChain() > 0
             spirit1.isVisible = p2.getChain() > 0
+
             if (s.matchHandler.clientMatch.getRounds(1) > 0) round11.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
             else round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
             if (s.matchHandler.clientMatch.getRounds(1) > 1) round21.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
             else round21.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         } else {
             bounty1.text = "FREE"
-            bounty1.addClass(InMatchStyle.matchFreeText)
-            health1.isVisible = false
             rating1.isVisible = false
             chains1.isVisible = false
             spirit1.isVisible = false

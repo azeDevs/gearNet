@@ -4,8 +4,9 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
+import utils.getTokenFromFile
 
-class TwitchBot(accessToken: String) : BotApi {
+class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : BotApi {
     private val messageCache: MutableList<Message> = mutableListOf()
     private val twitchClient: TwitchClient
 
