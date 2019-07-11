@@ -18,7 +18,7 @@ class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : 
                 .withEnableTMI(true)
                 .build()
         twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe {
-            messageCache.add(Message(it.user.id, it.message))
+            messageCache.add(Message(it.user.id, it.user.name, it.message))
         }
         sendMessage("Hello World!")
     }

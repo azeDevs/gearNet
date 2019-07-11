@@ -24,6 +24,7 @@ interface BotApi {
 
 
 class Message(
-    val twitchUserId: Long,
-    val messageText: String
+    val id: Long,
+    val name: String,
+    val text: String
 )

@@ -8,7 +8,6 @@ import utils.getIdString
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 
 class Player(playerData: PlayerData = PlayerData()) {
@@ -17,7 +16,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     private var bounty = 0
     private var change = 0
-    private var chain = Random.nextInt(9)
+    private var chain = 8 //Random.nextInt(9)
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
