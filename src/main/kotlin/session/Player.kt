@@ -16,7 +16,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     private var bounty = 0
     private var change = 0
-    private var chain = 8 //Random.nextInt(9)
+    private var chain = 0 //Random.nextInt(9)
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
@@ -52,7 +52,7 @@ class Player(playerData: PlayerData = PlayerData()) {
                 idle = 0
             } else {
                 idle = max(1,s.getActivePlayerCount())
-                s.log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
+                log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
             }
         }
     }

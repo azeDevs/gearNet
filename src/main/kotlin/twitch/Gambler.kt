@@ -1,9 +1,10 @@
 package twitch
 
-class Gambler {
-    var wallet = 100
-    var p1bet = 0
-    var p2bet = 0
+class Gambler(val name:String, val id:Long) {
+    var ranked = -1
+    var wallet = 100L
+    var p1Bet = 0L
+    var p2Bet = 0L
 
     /*
 
@@ -12,4 +13,5 @@ class Gambler {
                                       p1chain*8 percent payout bonus
         p1bet = 100             p2bet = 1000
     */
+
 }

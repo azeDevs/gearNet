@@ -4,6 +4,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
+import session.log
 import utils.getTokenFromFile
 
 class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : BotApi {
@@ -20,7 +21,7 @@ class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : 
         twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe {
             messageCache.add(Message(it.user.id, it.user.name, it.message))
         }
-        sendMessage("Hello World!")
+//        sendMessage("Hello World!")
     }
 
     override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", message)
@@ -30,7 +31,7 @@ class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : 
 
     override fun isConnected(): Boolean {
         val flag = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
-        println("Bot.isConnected() == ${flag}")
+        log("Bot.isConnected() == ${flag}")
         return flag
     }
 

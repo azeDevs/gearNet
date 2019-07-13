@@ -248,7 +248,7 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
 //            if ((offsetCurrent*10).roundToInt().equals((offsetTarget*10).roundToInt())) {
 //                wholeThing.layoutX = offsetTarget
 //                current = target
-//                println("TARGET: ${target}  |  CURRENT: ${current}  |  FRACTION: ${targetFraction}  |  OFFSET: ${offsetX}  |  OFFSETTARGET: ${offsetTarget}")
+//                log("TARGET: ${target}  |  CURRENT: ${current}  |  FRACTION: ${targetFraction}  |  OFFSET: ${offsetX}  |  OFFSETTARGET: ${offsetTarget}")
 //            }
 //        }
     }

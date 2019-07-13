@@ -6,6 +6,7 @@ import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
+import session.log
 import utils.truncate
 import java.nio.ByteBuffer
 
@@ -18,26 +19,29 @@ class MemHandler : XrdApi {
 
     private var GG_PROC: Win32Process? = null
 
-    override fun isConnected(): Boolean {
-        return try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            true
-        } catch (e: IllegalStateException) {
-            false
-        }
+    override fun isConnected(): Boolean = try {
+        GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+        GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
+        true
+    } catch (e: IllegalStateException) {
+        log("ERR: XrdApi.isConnected returned an IllegalStateException")
+        false
+    } catch (e: NullPointerException) {
+        log("ERR: XrdApi.isConnected returned an NullPointerException")
+        false
     }
 
-    override fun getClientSteamId(): Long =
-        try { val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.long
-            id
-        } catch (e : NullPointerException) {
-            -1L
-        }
+
+    override fun getClientSteamId(): Long = try {
+        val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.long
+        id
+    } catch (e: NullPointerException) {
+        -1L
+    }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
-        if(!isConnected()){
-            return null
-        }
+        if (!isConnected()) return null
         val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
         var lastPointer: Pointer = procBaseAddr
@@ -56,8 +60,8 @@ class MemHandler : XrdApi {
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
 
-    override fun getPlayerData() : List<PlayerData> {
-        if(!isConnected()) return ArrayList()
+    override fun getPlayerData(): List<PlayerData> {
+        if (!isConnected()) return ArrayList()
 
         val offs = longArrayOf(0x1C25AB4L, 0x44CL)
         val pDatas = ArrayList<PlayerData>()
@@ -73,8 +77,8 @@ class MemHandler : XrdApi {
             val loadpercent = bb.get(0x44).toInt()
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
-            val dispname  = truncate(String(dispbytes).trim('\u0000'), 24)
-            val pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch , loadpercent)
+            val dispname = truncate(String(dispbytes).trim('\u0000'), 24)
+            val pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch, loadpercent)
 
             offs[1] += 0x48L
             pDatas.add(pd)
@@ -85,8 +89,8 @@ class MemHandler : XrdApi {
 
     override fun getMatchData(): MatchData {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)
-        val p1offs = longArrayOf(0x1B18C78L,0L)
-        val p2offs = longArrayOf(0x1B18C78L,0L)
+        val p1offs = longArrayOf(0x1B18C78L, 0L)
+        val p2offs = longArrayOf(0x1B18C78L, 0L)
         p2offs[0] += 4L
         val p1roundoffset = longArrayOf(0x1A3BA38L)
         val p2roundoffset = longArrayOf(0x1A3BA3CL)
@@ -97,10 +101,12 @@ class MemHandler : XrdApi {
             val health = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             p1offs[1] = sortedStructOffs[1]
             p2offs[1] = sortedStructOffs[1]
-            val strikeStun = Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
+            val strikeStun =
+                Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
             p1offs[1] = sortedStructOffs[2]
             p2offs[1] = sortedStructOffs[2]
-            val canBurst = Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
+            val canBurst =
+                Pair(getByteBufferFromAddress(p1offs, 4)!!.int == 1, getByteBufferFromAddress(p2offs, 4)!!.int == 1)
             p1offs[1] = sortedStructOffs[3]
             p2offs[1] = sortedStructOffs[3]
             val guardGauge = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
@@ -108,9 +114,10 @@ class MemHandler : XrdApi {
             p2offs[1] = sortedStructOffs[4]
             val tension = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             val timer = getByteBufferFromAddress(timeroffs, 4)!!.int
-            val rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
+            val rounds =
+                Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
             return MatchData(timer, health, rounds, tension, canBurst, strikeStun, guardGauge)
-        } catch (e : NullPointerException) {
+        } catch (e: NullPointerException) {
             return MatchData()
         }
     }

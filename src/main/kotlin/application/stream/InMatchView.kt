@@ -13,6 +13,7 @@ import javafx.scene.paint.Stop
 import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
+import session.log
 import tornadofx.*
 import utils.addCommas
 import utils.getRandomName
@@ -231,7 +232,7 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     fun approachTarget() {
         if (current != target) {
             val targetFraction = ((current - target) * 0.5)
-            println("target: ${target}  |  current: ${current}  |  FRACTION: ${targetFraction}")
+            log("target: ${target}  |  current: ${current}  |  FRACTION: ${targetFraction}")
             wholeThing.translateX -= targetFraction
             current -= targetFraction
             if ((current).roundToInt().equals((target).roundToInt())) current = target

@@ -29,6 +29,14 @@ val pathHome = Paths.get(System.getProperty("user.dir"))
 val trueFuture = CompletableFuture.completedFuture(true)
 
 
+fun stringToInt(param: String): Int {
+    for (c in param.toCharArray()) {
+        if (!Character.isDigit(c))
+            return -1
+    }
+    return Integer.valueOf(param)
+}
+
 /**
  * Concatenate an "s" to the end of an existing String, based on
  * the value of an incoming Integer being greater than 1.
@@ -206,6 +214,8 @@ fun addCommas(inStr: String):String {
  * uhhh
  */
 fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, retainMax:Boolean = false): Int = if (value > maximum || value < minimum) { if (retainMax) maximum else minimum } else value
+
+
 /**
  * TODO: WTF DOES THIS DO?
  *

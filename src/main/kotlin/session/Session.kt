@@ -3,7 +3,6 @@ package session
 import memscan.PlayerData
 import tornadofx.Controller
 import twitch.BettingHandler
-import twitch.TwitchBot
 import utils.Duo
 import utils.getIdString
 import kotlin.math.max
@@ -20,18 +19,16 @@ class Session : Controller() {
     }
 
     val api = ApiHandler() // 6sr270mlawxcas8bg8f9yi90lqympq
-    val bot = TwitchBot()
+
     val matchHandler = MatchHandler()
     val bettingHandler = BettingHandler()
     val players: HashMap<Long, Player> = HashMap()
 
-    var consoleLog = arrayListOf("C: GearNet started")
+
     var randomValues = false
 
     fun updateBets() {
-        if (!bot.getMessages().isEmpty()) { bot.getMessages().forEach { bettingHandler.scanMessage(it) }
-            bot.clearMessages()
-        }
+        bettingHandler.refreshGamblers()
     }
 
     fun updatePlayers(): Boolean {
@@ -155,15 +152,18 @@ class Session : Controller() {
         .sortedByDescending { item -> item.getBounty() }
         .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
-    fun log(text: String) {
-        if (consoleLog.size > 50) consoleLog.removeAt(0)
-        consoleLog.add(text)
-        println(text)
-    }
+
 
     fun getClient(): Player {
         if (players.isEmpty()) return Player()
         return players.values.first { it.getSteamId() == api.getClientId() }
     }
+}
+
+var consoleLog = arrayListOf("C: GearNet started")
+fun log(text: String) {
+    if (consoleLog.size > 50) consoleLog.removeAt(0)
+    consoleLog.add(text)
+    println(text)
 }
 

@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 
     companion object {
-        const val SIMULATE_MODE = true
+        const val SIMULATE_MODE = false
         const val TRACE_BORDERS = false
         const val GHOST_OPACITY = 0.64
     }
