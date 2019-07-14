@@ -13,22 +13,32 @@ import java.nio.ByteBuffer
 
 class MemHandler : XrdApi {
 
+    var connected = false
+
     override fun getLobbyData(): LobbyData {
         return LobbyData()
     }
 
     private var GG_PROC: Win32Process? = null
 
-    override fun isConnected(): Boolean = try {
-        GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-        GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
-        true
-    } catch (e: IllegalStateException) {
-        log("ERR: XrdApi.isConnected returned an IllegalStateException")
-        false
-    } catch (e: NullPointerException) {
-        log("ERR: XrdApi.isConnected returned an NullPointerException")
-        false
+    private fun logConnected(flag:Boolean, logEntry:String): Boolean {
+        if (flag != connected)  {
+            connected = flag
+            log(logEntry)
+        }
+        return flag
+    }
+
+    override fun isConnected(): Boolean {
+        try {
+            GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
+            return logConnected(true, "MemHandler: XrdApi connected")
+        } catch (e: IllegalStateException) {
+            return logConnected(false, "MemHandler: XrdApi disconnected")
+        } catch (e: NullPointerException) {
+            return logConnected(false, "MemHandler: XrdApi failed to locate memory address")
+        }
     }
 
 
