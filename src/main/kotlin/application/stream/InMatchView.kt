@@ -15,11 +15,8 @@ import session.Player
 import session.Session
 import session.log
 import tornadofx.*
-import utils.addCommas
-import utils.getRandomName
 import utils.getRes
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
 
@@ -244,7 +241,6 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     }
 
     fun applyData(p: Player, s: Session) = Platform.runLater {
-        if (s.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
@@ -290,33 +286,6 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains8.isVisible = false
                 wholeThing.isVisible = false
             }
-    }
-
-    private fun applyRandomData(p: Player) {
-        val chainInt = Random.nextInt(9)
-        val bountyStr = addCommas(Random.nextInt(1222333).toString())
-        val changeInt = Random.nextInt(-444555, 666777)
-        val dispName = getRandomName()
-        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
-        handle1.text = dispName
-        handle2.text = dispName
-        bounty1.text = "$bountyStr W$"
-        bounty2.text = "$bountyStr W$"
-        setChangeTextColor(changeInt)
-        change.text = p.getChangeString(1f, changeInt)
-        riskRating.viewport = p.getRatingImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        chain.viewport = p.getChainImage(chainInt)
-        chains1.isVisible = chainInt > 0
-        chains2.isVisible = chainInt > 1
-        chains3.isVisible = chainInt > 2
-        chains4.isVisible = chainInt > 3
-        chains5.isVisible = chainInt > 4
-        chains6.isVisible = chainInt > 5
-        chains7.isVisible = chainInt > 6
-        chains8.isVisible = chainInt > 7
-        chains1.fitWidth = 44.0 + ((8+chainInt) * chainInt)
-        chains1.fitHeight = 44.0 + ((8+chainInt) * chainInt)
-        wholeThing.isVisible = true
     }
 
     private fun setChangeTextColor(changeInt: Int) {

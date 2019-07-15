@@ -15,10 +15,6 @@ class MemHandler : XrdApi {
 
     var connected = false
 
-    override fun getLobbyData(): LobbyData {
-        return LobbyData()
-    }
-
     private var GG_PROC: Win32Process? = null
 
     private fun logConnected(flag:Boolean, logEntry:String): Boolean {
@@ -40,7 +36,6 @@ class MemHandler : XrdApi {
             return logConnected(false, "[MEMH] XrdApi failed to locate memory address")
         }
     }
-
 
     override fun getClientSteamId(): Long = try {
         val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.long
@@ -88,14 +83,13 @@ class MemHandler : XrdApi {
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
             val dispname = truncate(String(dispbytes).trim('\u0000'), 24)
-            val pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch, loadpercent)
+            val pd = PlayerData(steamid, dispname, charid.toInt(), cabid.toInt(), playerside.toInt(), wins, totalmatch, loadpercent)
 
             offs[1] += 0x48L
             pDatas.add(pd)
         }
         return pDatas
     }
-
 
     override fun getMatchData(): MatchData {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)

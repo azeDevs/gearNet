@@ -14,14 +14,9 @@ import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
 import tornadofx.*
-import utils.addCommas
-import utils.getRandomName
 import utils.getRes
-import kotlin.random.Random
 
 class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
-
-
 
     private var wholeThing: StackPane
     private var offsetX = 0.0
@@ -37,11 +32,9 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     private lateinit var handle1: Label
     private lateinit var handle2: Label
     private lateinit var riskRating: ImageView
-
     private lateinit var chain: ImageView
     private lateinit var bounty1: Label
     private lateinit var bounty2: Label
-
     private lateinit var change: Label
 
 
@@ -51,8 +44,7 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 addClass(BigScoreStyle.bountyContainer)
                 translateX += 256
                 translateY -= 208
-                translateX += target
-                offsetX += 256 + target
+                offsetX += 256
 
                 scaleX += (0.16)
                 scaleY += (0.16)
@@ -225,32 +217,8 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     fitHeight = 40.0
                 }
 
-
-
             }
         }
-    }
-
-
-    private var target = 0.0
-    private var current = 0.0
-
-    fun setTarget(value:Double = 0.0) { target = value }
-
-    fun approachTarget() {
-//        val offsetTarget = target + offsetX
-//        var offsetCurrent = current + offsetX
-//        if (offsetCurrent != offsetTarget) {
-//            val targetFraction = ((offsetCurrent - offsetTarget) * 0.2)
-//            offsetCurrent = offsetCurrent - targetFraction
-//            current = current - targetFraction
-//            wholeThing.translateX -= targetFraction
-//            if ((offsetCurrent*10).roundToInt().equals((offsetTarget*10).roundToInt())) {
-//                wholeThing.layoutX = offsetTarget
-//                current = target
-//                log("TARGET: ${target}  |  CURRENT: ${current}  |  FRACTION: ${targetFraction}  |  OFFSET: ${offsetX}  |  OFFSETTARGET: ${offsetTarget}")
-//            }
-//        }
     }
 
     fun setVisibility(flag: Boolean) = Platform.runLater {
@@ -258,7 +226,6 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     }
 
     fun applyData(p: Player, s: Session) = Platform.runLater {
-        if (s.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) { //  && !s.sessionMode.equals(MATCH_MODE)
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
@@ -266,8 +233,6 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
                 chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
-//                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
-//                else bounty1.addClass(BigScoreStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())
@@ -279,14 +244,10 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains6.isVisible = p.getChain() > 5
                 chains7.isVisible = p.getChain() > 6
                 chains8.isVisible = p.getChain() > 7
-
-
                 chain.fitWidth = 52.0 * (1+p.getChain() * 0.064)
                 chain.fitHeight = 52.0 * (1+p.getChain() * 0.064)
-
                 chains1.fitWidth = 52.0 * (1+p.getChain() * 0.32)
                 chains1.fitHeight = 52.0 * (1+p.getChain() * 0.32)
-
                 wholeThing.isVisible = true
             } else {
                 character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
@@ -307,33 +268,6 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains8.isVisible = false
                 wholeThing.isVisible = false
             }
-    }
-
-    private fun applyRandomData(p: Player) {
-        val chainInt = Random.nextInt(9)
-        val bountyStr = addCommas(Random.nextInt(1222333).toString())
-        val changeInt = Random.nextInt(-444555, 666777)
-        val dispName = getRandomName()
-        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
-        handle1.text = dispName
-        handle2.text = dispName
-        bounty1.text = "$bountyStr W$"
-        bounty2.text = "$bountyStr W$"
-        setChangeTextColor(changeInt)
-        change.text = p.getChangeString(1f, changeInt)
-        riskRating.viewport = p.getRatingImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        chain.viewport = p.getChainImage(chainInt)
-        chains1.isVisible = chainInt > 0
-        chains2.isVisible = chainInt > 1
-        chains3.isVisible = chainInt > 2
-        chains4.isVisible = chainInt > 3
-        chains5.isVisible = chainInt > 4
-        chains6.isVisible = chainInt > 5
-        chains7.isVisible = chainInt > 6
-        chains8.isVisible = chainInt > 7
-        chains1.fitWidth = 44.0 + ((8+chainInt) * chainInt)
-        chains1.fitHeight = 44.0 + ((8+chainInt) * chainInt)
-        wholeThing.isVisible = true
     }
 
     private fun setChangeTextColor(changeInt: Int) {

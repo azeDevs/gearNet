@@ -3,15 +3,15 @@ package twitch
 import session.log
 import utils.stringToInt
 
-class BettingHandler {
+class BetListener {
 
     val bot = TwitchBot()
-    val gamblers: HashMap<Long, Gambler> = HashMap()
+    val gamblers: HashMap<Long, Viewer> = HashMap()
 
     fun updateGamblers() {
         bot.getMessages().forEach {
             if (!it.text.isEmpty() && it.text[0].toString().equals("!")) {
-                if (!gamblers.containsKey(it.id)) gamblers.put(it.id, Gambler(it.name, it.id))
+                if (!gamblers.containsKey(it.id)) gamblers.put(it.id, Viewer(it.name, it.id))
                 determineCommand(gamblers[it.id]!!, it)
             }
         }
@@ -39,7 +39,7 @@ class BettingHandler {
 
     */
 
-    fun determineCommand(g:Gambler, m: Message) {
+    fun determineCommand(g:Viewer, m: Message) {
         val cmd = m.text.substring(1).split("\\s".toRegex()).toList()
         log("T COMMAND: ${m.name}: \"${cmd[0]}\"")
         when (cmd[0].toUpperCase()) {

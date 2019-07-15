@@ -13,11 +13,6 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import session.Player
 import session.Session
-import session.Session.Companion.LOADING_MODE
-import session.Session.Companion.LOBBY_MODE
-import session.Session.Companion.MATCH_MODE
-import session.Session.Companion.SLASH_MODE
-import session.Session.Companion.VICTORY_MODE
 import tornadofx.*
 import utils.getRes
 
@@ -48,115 +43,111 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var round11: ImageView
     private lateinit var round21: ImageView
 
-    fun animateTargets() {
-        bountiesGui.forEach { it.approachTarget() }
-    }
-
     fun updateStreamLeaderboard(allPlayers: List<Player>, s: Session) {
-        val players = allPlayers
-        if (s.sessionMode == lockHud) {
-            lobbyView.isVisible = showHud
-            matchView.isVisible = !showHud
-        }
-        else {
-            lockHud = -1
-            when (s.sessionMode) {
-
-                VICTORY_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(0.0) }
-                    lobbyView.isVisible = true
-                    matchView.isVisible = false
-                    showHud = true
-                }
-                LOBBY_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(0.0) }
-                    lobbyView.isVisible = true
-                    matchView.isVisible = false
-                    showHud = true
-                }
-                LOADING_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(-256.0) }
-                    lobbyView.isVisible = true
-                    matchView.isVisible = false
-                    showHud = true
-                }
-                MATCH_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(2048.0) }
-                    lobbyView.isVisible = false
-                    matchView.isVisible = true
-                    showHud = false
-                }
-                SLASH_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(-256.0) }
-                    lobbyView.isVisible = false
-                    matchView.isVisible = true
-                    showHud = false
-                }
-
-            }
-        }
-
-        val p1 = players.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Player()
-        val p2 = players.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Player()
-        applyData(p1, p2, s)
-        for (i in 0..3) {
-            if (players.size > i) {
-                bountiesGui[i].applyData(players[i], s)
-                bountiesGui[i].setVisibility(showHud)
-            }
-        }
+//        val players = allPlayers
+//        if (s.sessionMode == lockHud) {
+//            lobbyView.isVisible = showHud
+//            matchView.isVisible = !showHud
+//        }
+//        else {
+//            lockHud = -1
+//            when (s.sessionMode) {
+//
+//                VICTORY_MODE -> {
+////                    bountiesGui.forEach { it.setTarget(0.0) }
+//                    lobbyView.isVisible = true
+//                    matchView.isVisible = false
+//                    showHud = true
+//                }
+//                LOBBY_MODE -> {
+////                    bountiesGui.forEach { it.setTarget(0.0) }
+//                    lobbyView.isVisible = true
+//                    matchView.isVisible = false
+//                    showHud = true
+//                }
+//                LOADING_MODE -> {
+////                    bountiesGui.forEach { it.setTarget(-256.0) }
+//                    lobbyView.isVisible = true
+//                    matchView.isVisible = false
+//                    showHud = true
+//                }
+//                MATCH_MODE -> {
+////                    bountiesGui.forEach { it.setTarget(2048.0) }
+//                    lobbyView.isVisible = false
+//                    matchView.isVisible = true
+//                    showHud = false
+//                }
+//                SLASH_MODE -> {
+////                    bountiesGui.forEach { it.setTarget(-256.0) }
+//                    lobbyView.isVisible = false
+//                    matchView.isVisible = true
+//                    showHud = false
+//                }
+//
+//            }
+//        }
+//
+//        val p1 = players.firstOrNull { it.getSeat().toInt() == 0 } ?: Player()
+//        val p2 = players.firstOrNull { it.getSeat().toInt() == 1 } ?: Player()
+//        applyData(p1, p2, s)
+//        for (i in 0..3) {
+//            if (players.size > i) {
+//                bountiesGui[i].applyData(players[i], s)
+//                bountiesGui[i].setVisibility(showHud)
+//            }
+//        }
     }
 
     fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
-        if (p1.getSteamId() > 0L) {
-            bounty0.text = p1.getBountyString()
-            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
-            else health0.text = ""
-            rating0.viewport = Rectangle2D(p1.getRatingImage().minX, p1.getRatingImage().minY + 20, p1.getRatingImage().width, p1.getRatingImage().height - 20)
-            rating0.isVisible = true
-            chains0.viewport = p1.getChainImage()
-            chains0.isVisible = p1.getChain() > 0
-            spirit0.isVisible = p1.getChain() > 0
-            if (s.matchHandler.clientMatch.getRounds(0) > 0) round10.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
-            else round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-            if (s.matchHandler.clientMatch.getRounds(0) > 1) round20.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
-            else round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-        } else {
-            bounty0.text = "FREE"
-            rating0.isVisible = false
-            chains0.isVisible = false
-            spirit0.isVisible = false
-            round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-            round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-        }
-        if (p2.getSteamId() > 0L) {
-            bounty1.text = p2.getBountyString()
-            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
-            else health1.text = ""
-            rating1.viewport = Rectangle2D(p2.getRatingImage().minX, p2.getRatingImage().minY + 20, p2.getRatingImage().width, p2.getRatingImage().height - 20)
-            rating1.isVisible = true
-            chains1.viewport = p2.getChainImage()
-            chains1.isVisible = p2.getChain() > 0
-            spirit1.isVisible = p2.getChain() > 0
-
-            if (s.matchHandler.clientMatch.getRounds(1) > 0) round11.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
-            else round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-            if (s.matchHandler.clientMatch.getRounds(1) > 1) round21.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
-            else round21.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-        } else {
-            bounty1.text = "FREE"
-            rating1.isVisible = false
-            chains1.isVisible = false
-            spirit1.isVisible = false
-            round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
-            round21.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
-        }
+//        if (p1.getSteamId() > 0L) {
+//            bounty0.text = p1.getBountyString()
+//            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
+//            else health0.text = ""
+//            rating0.viewport = Rectangle2D(p1.getRatingImage().minX, p1.getRatingImage().minY + 20, p1.getRatingImage().width, p1.getRatingImage().height - 20)
+//            rating0.isVisible = true
+//            chains0.viewport = p1.getChainImage()
+//            chains0.isVisible = p1.getChain() > 0
+//            spirit0.isVisible = p1.getChain() > 0
+//            if (s.matchHandler.clientMatch.getRounds(0) > 0) round10.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
+//            else round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//            if (s.matchHandler.clientMatch.getRounds(0) > 1) round20.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
+//            else round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//        } else {
+//            bounty0.text = "FREE"
+//            rating0.isVisible = false
+//            chains0.isVisible = false
+//            spirit0.isVisible = false
+//            round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//            round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//        }
+//        if (p2.getSteamId() > 0L) {
+//            bounty1.text = p2.getBountyString()
+//            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
+//            else health1.text = ""
+//            rating1.viewport = Rectangle2D(p2.getRatingImage().minX, p2.getRatingImage().minY + 20, p2.getRatingImage().width, p2.getRatingImage().height - 20)
+//            rating1.isVisible = true
+//            chains1.viewport = p2.getChainImage()
+//            chains1.isVisible = p2.getChain() > 0
+//            spirit1.isVisible = p2.getChain() > 0
+//
+//            if (s.matchHandler.clientMatch.getRounds(1) > 0) round11.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
+//            else round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//            if (s.matchHandler.clientMatch.getRounds(1) > 1) round21.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
+//            else round21.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//        } else {
+//            bounty1.text = "FREE"
+//            rating1.isVisible = false
+//            chains1.isVisible = false
+//            spirit1.isVisible = false
+//            round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+//            round21.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
+//        }
     }
 
     fun toggleScoreboardMode(session: Session) {
-        lockHud = session.sessionMode
-        showHud = !showHud
-        updateStreamLeaderboard(session.getPlayersList(), session)
+//        lockHud = session.sessionMode
+//        showHud = !showHud
+//        updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
     init {

@@ -27,42 +27,27 @@ interface XrdApi {
      */
     fun getMatchData(): MatchData
 
-    /**
-     * @return data from current lobby
-     */
-    fun getLobbyData(): LobbyData
-
 }
 
 data class PlayerData(
-    //val miniHealth: Pair<Int, Int>,
-    //val miniRounds: Pair<Int, Int>,
-    //val readiedUp: Pair<Boolean, Boolean>,
-    val steamUserId: Long = -1L,
+    val steamId: Long = -1L,
     val displayName: String = "",
-    val characterId: Byte = -0x1,
-    val cabinetLoc: Byte = -0x1,
-    val playerSide: Byte = -0x1,
+    val characterId: Int = -1,
+    val cabinetId: Int = -1,
+    val seatingId: Int = -1,
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
 ) { fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
                 other.characterId == characterId &&
-                other.cabinetLoc == cabinetLoc &&
-                other.playerSide == playerSide &&
+                other.cabinetId == cabinetId &&
+                other.seatingId == seatingId &&
                 other.matchesWon == matchesWon &&
                 other.matchesSum == matchesSum &&
                 other.loadingPct == loadingPct
 }
 
 data class MatchData(
-    //val frameDelay: Int = -1,
-    //val comboBeats: Pair<Int, Int>,
-    //val comboDamage: Pair<Int, Int>,
-    //val tensionPulse: Pair<Float, Float>,
-    //val stunProgress: Pair<Int, Int>,
-    //val inputMotions: Pair<?, ?>,
-    //val inputButtons: Pair<?, ?>,
     val timer: Int = -1,
     val health: Pair<Int, Int> = Pair(-1,-1),
     val rounds: Pair<Int, Int> = Pair(-1,-1),
@@ -83,31 +68,4 @@ data class MatchData(
             canBurst.second == other.canBurst.second &&
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
-
 }
-
-//class LobbyMessage(
-//    val userId: Long = -1L,
-//    val text: String = ""
-//)
-
-data class LobbyData(
-    //val matchTime: Int = -1
-    //val restriction: Int = -1     // Connection restriction
-    //val matchType: Int = -1       // Serious, Casual, Training
-    //val matchRule: Int = -1       // Winner stays, Loser, etc
-    //val passworded: Boolean = false
-    //val chatText: List<LobbyMessage> = arrayListOf()
-    val lobbyName: String = "",
-    val roundWins: Int = 2,
-    val openCabinets: Int = 4
-)
-
-data class CabinetData(
-    val readiedUp: Pair<Boolean, Boolean> = Pair(false,false),
-    val miniHealth: Pair<Int, Int> = Pair(-1,-1),
-    val miniRounds: Pair<Int, Int> = Pair(-1,-1)
-)
-
-
-

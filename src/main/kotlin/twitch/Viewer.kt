@@ -1,6 +1,6 @@
 package twitch
 
-class Gambler(val name:String, val id:Long) {
+class Viewer(val name:String, val id:Long) {
     var ranked = -1
     var wallet = 100L
     var p1Bet = 0L

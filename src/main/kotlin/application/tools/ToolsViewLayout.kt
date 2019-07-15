@@ -32,7 +32,7 @@ class ToolsViewLayout(override val root: Parent) : Fragment() {
                         alignment = Pos.BOTTOM_LEFT
                         minWidth = 384.0
                         maxWidth = 384.0
-                        hbox { modeGui.add(ToolsModuleView(parent, "XrdLobby")) }
+                        hbox { modeGui.add(ToolsModuleView(parent, "Lobby")) }
                         hbox { modeGui.add(ToolsModuleView(parent, "Loading")) }
                         hbox { modeGui.add(ToolsModuleView(parent, "Match")) }
                         hbox { modeGui.add(ToolsModuleView(parent, "Slash")) }
@@ -58,26 +58,26 @@ class ToolsViewLayout(override val root: Parent) : Fragment() {
         }
     }
 
-    fun applyData(session: Session) = Platform.runLater {
-        matchesPlayedLabel.minWidth = 125.0
-        playersActiveLabel.minWidth = 125.0
-        matchesPlayedLabel.text = "Matches: 1 / ${session.matchHandler.archiveMatches.size}"
-        playersActiveLabel.text = "Players: ${session.getActivePlayerCount()} / ${session.players.size}"
-        for (i in 0..4) if (i == session.sessionMode) modeGui[i].reset(true) else modeGui[i].reset(false)
-        modeGui.forEach { it.nextFrame() }
-        modulesGui.forEach { it.nextFrame() }
+    fun applyData(s: Session) = Platform.runLater {
+//        matchesPlayedLabel.minWidth = 125.0
+//        playersActiveLabel.minWidth = 125.0
+//        matchesPlayedLabel.text = "Matches: 1 / ${s.matchHandler.archiveMatches.size}"
+//        playersActiveLabel.text = "Players: ${s.getActivePlayerCount()} / ${s.players.size}"
+//        for (i in 0..4) if (i == s.sessionMode) modeGui[i].reset(true) else modeGui[i].reset(false)
+//        modeGui.forEach { it.nextFrame() }
+//        modulesGui.forEach { it.nextFrame() }
     }
 
-    fun blinkGuiltyGearIndicator(session: Session) {
-        modulesGui[0].reset(session.api.isXrdApiConnected())
+    fun blinkGuiltyGearIndicator(s: Session) {
+//        modulesGui[0].reset(s.apiHandler.isXrdApiConnected())
     }
 
-    fun blinkGearNetIndicator(session: Session) {
-        modulesGui[1].reset(session.api.isXrdApiConnected())
+    fun blinkGearNetIndicator(s: Session) {
+//        modulesGui[1].reset(s.apiHandler.isXrdApiConnected())
     }
 
-    fun blinkDatabaseIndicator(session: Session) {
-        modulesGui[2].reset(session.api.isXrdApiConnected())
+    fun blinkDatabaseIndicator(s: Session) {
+//        modulesGui[2].reset(s.apiHandler.isXrdApiConnected())
     }
 
 }

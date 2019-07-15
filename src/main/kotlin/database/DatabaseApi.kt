@@ -7,12 +7,12 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 //Soon to be Deprecated in favor of Web API
-class DatabaseHandler(host: String = "", password: String = "", username: String = "arcNet", port: Int = 5432) : SqlApi {
+class DatabaseApi(host: String = "", password: String = "", username: String = "arcNet", port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
     init {
-        // DatabaseHandler's init first executes on line 14 in Session.kt
+        // DatabaseApi's init first executes on line 14 in Session.kt
         //Init credentials
         val credentials = Properties()
         credentials["user"] = username

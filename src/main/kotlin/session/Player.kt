@@ -9,7 +9,18 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
+/**
+ *
+ * XrdListener                  updates and archives Lobby data.
+ *  ┗━ Duo<Lobby>               contains past and present Lobby data
+ *      ┗━ List<Cabinet>        contains Match and Players seating data
+ *          ┣━ Match            contains fighting Players and Match data
+ *          ┗━ List<Player>     contains Player bounty and chains data
+ *
+ * [Player]
+ * contains Player bounty and chains data
+ *
+ */
 class Player(playerData: PlayerData = PlayerData()) {
 
     var present = true
@@ -34,7 +45,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getNameString() = getData().displayName
 
-    fun getSteamId() = getData().steamUserId
+    fun getSteamId() = getData().steamId
 
     fun getCharacterId() = getData().characterId
 
@@ -51,7 +62,7 @@ class Player(playerData: PlayerData = PlayerData()) {
                 present = false
                 idle = 0
             } else {
-                idle = max(1,s.getActivePlayerCount())
+//                idle = max(1,s.getActivePlayerCount())
                 log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
             }
         }
@@ -95,9 +106,9 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getMatchesPlayed() = getData().matchesSum
 
-    fun getCabinet() = getData().cabinetLoc
+    fun getCabinet() = getData().cabinetId
 
-    fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
+    fun getCabinetString(cabId:Int = getCabinet()): String {
         when(cabId) {
             0 -> return "Cabinet A"
             1 -> return "Cabinet B"
@@ -107,9 +118,9 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    fun getPlaySide() = getData().playerSide
+    fun getSeat() = getData().seatingId
 
-    fun getPlaySideString(cabId:Int = getCabinet().toInt(), sideId:Int = getPlaySide().toInt()): String {
+    fun getPlaySideString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
         if (cabId > 3) return ""
         when(sideId) {
             0 -> return "Player One"
@@ -120,7 +131,7 @@ class Player(playerData: PlayerData = PlayerData()) {
             5 -> return "5th"
             6 -> return "6th"
             7 -> return "Spectating"
-            else -> return "[${getPlaySide().toInt()}]"
+            else -> return "[${getSeat()}]"
         }
     }
 

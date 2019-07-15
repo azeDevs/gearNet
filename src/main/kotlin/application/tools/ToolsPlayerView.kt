@@ -13,10 +13,7 @@ import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
 import tornadofx.*
-import utils.addCommas
-import utils.getRandomName
 import utils.getRes
-import kotlin.random.Random
 
 class ToolsPlayerView(override val root: Parent) : Fragment() {
 
@@ -119,7 +116,6 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
     } }
 
     fun applyData(p: Player, session: Session) = Platform.runLater {
-        if (session.randomValues) applyRandomData(p) else
             if (p.getSteamId() > 0L) {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterTrademark(p.getData().characterId)
@@ -165,32 +161,6 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
                 cabinet.text = ""
                 location.text = ""
             }
-    }
-
-    private fun applyRandomData(p: Player) {
-        val bountyStr = addCommas(Random.nextInt(1222333).toString())
-        val loadingInt = Random.nextInt(100)
-        val changeInt = Random.nextInt(-444555, 666777)
-        val chainInt = Random.nextInt(0, 9)
-        val winsInt = Random.nextInt(44)
-        val cabId = Random.nextInt(5)
-        wholeThing.opacity = 1.0
-        character.viewport = Rectangle2D(Random.nextInt(8) * 128.0, 512 + Random.nextInt(4) * 128.0, 128.0, 128.0)
-//        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
-        handle.text = getRandomName()
-        statusBar.maxWidth = 335.0 * (loadingInt * 0.01)
-        bounty1.text = "$bountyStr W$"
-        bounty2.text = "$bountyStr W$"
-        chain1.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
-        chain2.text = if (chainInt >= 8) "★" else if (chainInt > 0) chainInt.toString() else ""
-        if (changeInt > 0) change.textFill = c("#84c928")
-        else if (changeInt < 0) change.textFill = c("#d22e44")
-        else change.textFill = c("#e0af1a")
-        change.text = p.getChangeString(1f, changeInt)
-        record.text = "W:$winsInt  /  M:${winsInt + Random.nextInt(44)}"
-        location.text = p.getPlaySideString(cabId, Random.nextInt(8))
-        cabinet.text = p.getCabinetString(cabId)
-        status.text = "Standby: ${Random.nextInt(1, 8)} [$loadingInt%]"
     }
 
 }
