@@ -159,12 +159,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
-    fun toggleStreamerMode(session: Session) {
-        if (streamView.opacity.equals(0.64)) streamView.opacity = 1.0
-        else if (streamView.opacity.equals(1.0)) streamView.opacity = 0.64
-        updateStreamLeaderboard(session.getPlayersList(), session)
-    }
-
     init {
         with(root) {
             streamView = stackpane {

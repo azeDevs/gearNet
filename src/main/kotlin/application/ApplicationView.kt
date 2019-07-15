@@ -26,6 +26,7 @@ class ApplicationView : View() {
         val sb = StringBuilder()
         consoleLog.forEach { sb.append("\n${it}") }
         consoleView.setText(sb.toString())
+        consoleViewShade.setText(sb.toString())
     }
 
     override val root: Form = Form()
@@ -34,6 +35,7 @@ class ApplicationView : View() {
     private val session: Session by inject()
     lateinit private var utilsGui: ToolsViewLayout
     lateinit private var streamViewLayout: StreamViewLayout
+    lateinit private var consoleViewShade: Label
     lateinit private var consoleView: Label
     lateinit private var lobbyTitle: Label
 
@@ -44,21 +46,14 @@ class ApplicationView : View() {
         }
     }
 
-    private fun cycleTwitch() {
-        GlobalScope.launch {
-            session.updateBets()
-            delay(64); cycleTwitch()
-        }
-    }
-
-    private fun cycleMemScan() {
+    private fun cycleGameLoop() {
         GlobalScope.launch {
                 utilsGui.blinkGuiltyGearIndicator(session)
                 if (session.api.isXrdApiConnected()) {
                     session.updatePlayers()
                     session.updateClientMatch()
                 }
-            delay(32); cycleMemScan()
+            delay(32); cycleGameLoop()
         }
     }
 
@@ -75,7 +70,7 @@ class ApplicationView : View() {
                 else playersGui[i].applyData(Player(), session)
                 streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
                 updateTitle()
-            delay(24); cycleUi()
+            delay(32); cycleUi()
         }
     }
 
@@ -95,15 +90,6 @@ class ApplicationView : View() {
         with(root) {
             addClass(ApplicationStyle.appContainer)
             stackpane {
-                consoleView = label {
-                    addClass(ApplicationStyle.consoleField)
-                    minWidth = 1250.0
-                    maxWidth = 1250.0
-                    minHeight = 700.0
-                    maxHeight = 700.0
-                    translateY -= 26
-                    translateX += 6
-                }
                 vbox {
                     translateX -= 10
                     hbox {
@@ -145,6 +131,28 @@ class ApplicationView : View() {
 
                 vbox { streamViewLayout = StreamViewLayout(parent) }
 
+                consoleViewShade = label {
+                    addClass(ApplicationStyle.consoleFieldShade)
+                    minWidth = 1250.0
+                    maxWidth = 1250.0
+                    minHeight = 700.0
+                    maxHeight = 700.0
+                    translateY -= 214
+                    translateX += 5
+                    isVisible = true
+                }
+
+                consoleView = label {
+                    addClass(ApplicationStyle.consoleField)
+                    minWidth = 1250.0
+                    maxWidth = 1250.0
+                    minHeight = 700.0
+                    maxHeight = 700.0
+                    translateY -= 216
+                    translateX += 4
+                    isVisible = true
+                }
+
                 button {
                     addClass(ApplicationStyle.toggleStreamButton)
                     translateY -= 15
@@ -156,16 +164,20 @@ class ApplicationView : View() {
                         if (streamViewLayout.streamView.isVisible) streamViewLayout.toggleScoreboardMode(session)
                     }
                     longpress {
-                        streamViewLayout.toggleStreamerMode(session)
-                        streamViewLayout.lockHud = -1
+                        if (consoleView.isVisible.equals(false)) {
+                            consoleView.isVisible = true
+                            consoleViewShade.isVisible = true
+                        } else {
+                            consoleView.isVisible = false
+                            consoleViewShade.isVisible = false
+                        }
                     }
                 }
 
             }
 
             cycleDatabase()
-            cycleMemScan()
-            cycleTwitch()
+            cycleGameLoop()
             cycleUi()
         }
     }

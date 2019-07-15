@@ -8,9 +8,8 @@ class BettingHandler {
     val bot = TwitchBot()
     val gamblers: HashMap<Long, Gambler> = HashMap()
 
-    fun refreshGamblers() {
+    fun updateGamblers() {
         bot.getMessages().forEach {
-            log("CHAT ${it.name}: ${it.text}")
             if (!it.text.isEmpty() && it.text[0].toString().equals("!")) {
                 if (!gamblers.containsKey(it.id)) gamblers.put(it.id, Gambler(it.name, it.id))
                 determineCommand(gamblers[it.id]!!, it)
@@ -41,28 +40,34 @@ class BettingHandler {
     */
 
     fun determineCommand(g:Gambler, m: Message) {
-        log("COMMAND from ${m.name}: \"${m.id}\"")
         val cmd = m.text.substring(1).split("\\s".toRegex()).toList()
-        if (cmd.size.equals(3)) {
-            when (cmd[0].toUpperCase()) {
-                "BET" -> {
+        log("T COMMAND: ${m.name}: \"${cmd[0]}\"")
+        when (cmd[0].toUpperCase()) {
+            "BET" -> {
+                if (cmd.size.equals(3)) {
                     val amount = stringToInt(cmd[1])
                     if (amount > 0 && cmd[2].equals("P1", true) ) {
                         g.p1Bet += amount
+                        bot.sendMessage("${m.name} bet ${amount} that Player 1 will win!")
                     } else if (amount > 0 && cmd[2].equals("P2", true) ) {
                         g.p2Bet += amount
+                        bot.sendMessage("${m.name} bet ${amount} that Player 2 will win!")
                     }
                 }
-                else -> {
-//                    bot.sendMessage("")
-                }
             }
-            // CONVERT STRING 0 AND CHECK FOR MAJOR COMMAND
-            // CONVERT STRING 1 INTO LONG FOR BET AMOUNT
-
-            // VERIFY WALLET AND BET AMOUNT
-            // PLACE BET AND SEND CONFIRMATION TWITCH MESSAGE
+            "USERS" -> {
+                bot.getViewers()
+            }
+            else -> {
+                bot.sendMessage("Uh, what?")
+            }
         }
+        // CONVERT STRING 0 AND CHECK FOR MAJOR COMMAND
+        // CONVERT STRING 1 INTO LONG FOR BET AMOUNT
+
+        // VERIFY WALLET AND BET AMOUNT
+        // PLACE BET AND SEND CONFIRMATION TWITCH MESSAGE
+
     }
 
     fun initFightingPhase() {

@@ -3,6 +3,7 @@ package session
 import utils.Duo
 
 class Cabinet {
+
     private val match = Match()
     private val fightingPlayers = Duo(Player(), Player())
     private val queuedUpPlayers = emptyList<Player>()
@@ -16,4 +17,5 @@ class Cabinet {
         allPlayers.addAll(spectatingPlayers)
         return allPlayers.toList()
     }
+
 }

@@ -13,6 +13,7 @@ import utils.getRes
 class ApplicationStyle : Stylesheet() {
 
     companion object {
+        val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
         val fontFiraCodeLight = loadFont("/fonts/FiraCode-Light.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
@@ -21,6 +22,7 @@ class ApplicationStyle : Stylesheet() {
         val appContainer by cssclass()
         val streamContainer by cssclass()
         val lobbyName by cssclass()
+        val consoleFieldShade by cssclass()
         val consoleField by cssclass()
         val toggleStreamButton by cssclass()
     }
@@ -77,11 +79,18 @@ class ApplicationStyle : Stylesheet() {
             textFill = c("#cccccc")
             fontSize = 14.px
 
-            and(consoleField) {
-                fontFiraCodeLight?.let { font = it }
+            and(consoleFieldShade) {
+                fontFiraCodeBold?.let { font = it }
                 alignment = Pos.BOTTOM_LEFT
-                textFill = c("#966674")
-                fontSize = 10.px
+                textFill = c("#111111")
+                fontSize = 14.px
+            }
+
+            and(consoleField) {
+                fontFiraCodeBold?.let { font = it }
+                alignment = Pos.BOTTOM_LEFT
+                textFill = c("#cccccc")
+                fontSize = 14.px
             }
 
             and(lobbyName) {

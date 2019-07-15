@@ -33,11 +33,11 @@ class MemHandler : XrdApi {
         try {
             GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
             GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
-            return logConnected(true, "MemHandler: XrdApi connected")
+            return logConnected(true, "[MEMH] XrdApi connected")
         } catch (e: IllegalStateException) {
-            return logConnected(false, "MemHandler: XrdApi disconnected")
+            return logConnected(false, "[MEMH] XrdApi disconnected")
         } catch (e: NullPointerException) {
-            return logConnected(false, "MemHandler: XrdApi failed to locate memory address")
+            return logConnected(false, "[MEMH] XrdApi failed to locate memory address")
         }
     }
 

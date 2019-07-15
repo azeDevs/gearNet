@@ -23,7 +23,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchSty
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.6.1"
+        view.title = "ＧｅａｒＮｅｔ  //  0.6.3"
     }
 
     override fun start(stage: Stage) {

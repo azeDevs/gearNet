@@ -26,16 +26,16 @@ class MatchHandler {
         val winnerPlayer = players.values.firstOrNull { it.getSteamId() == data.steamUserId && it.isWinner() } ?: Player()
 
         if (loserPlayer.getSteamId() != -1L) {
-            log("******** loserPlayer = ${loserPlayer.getNameString()}")
+            log("MATCH LOSER: ${loserPlayer.getNameString()}")
             loser = loserPlayer.getData()
         }
         if (winnerPlayer.getSteamId() != -1L) {
-            log("******** winnerPlayer = ${winnerPlayer.getNameString()}")
+            log("MATCH WINNER: ${winnerPlayer.getNameString()}")
             winner = winnerPlayer.getData()
         }
 
         if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
-            log("----------------------------------------- WE HAVE A WINNER")
+            log("-------- MATCH RESULTS -------- [ resolveEveryone ]")
             log("loserPlayer = ${loser.displayName} // winnerPlayer = ${winner.displayName}")
 
             if ((loser.steamUserId == clientMatch.players.p1.steamUserId || loser.steamUserId == clientMatch.players.p2.steamUserId) && (winner.steamUserId == clientMatch.players.p1.steamUserId || winner.steamUserId == clientMatch.players.p2.steamUserId)) {
@@ -45,7 +45,7 @@ class MatchHandler {
             log("loserChain = ${players[loser.steamUserId]!!.getChain()} // winnerChain = ${players[winner.steamUserId]!!.getChain()}")
             players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle(s) }
             log("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
-            log("-----------------------------------------")
+            log("-------------------------------")
 
             loser = PlayerData()
             winner = PlayerData()
@@ -55,7 +55,7 @@ class MatchHandler {
     }
 
     private fun resolveLobbyMatchResults(players: HashMap<Long, Player>) {
-        log("/// LOBBY MATCH ///")
+        log("-------- MATCH RESULTS -------- [ resolveLobbyMatchResults ]")
         val loserBounty = players[loser.steamUserId]!!.getBounty()
         val winnerBounty = players[winner.steamUserId]!!.getBounty()
 
@@ -76,11 +76,11 @@ class MatchHandler {
         }
         players[winner.steamUserId]!!.changeBounty(bonusWinnerPayout + payout)
         players[winner.steamUserId]!!.changeChain(1)
-
+        log("-------------------------------")
     }
 
     private fun resolveClientMatchResults(players: HashMap<Long, Player>) {
-        log("/// CLIENT MATCH ///")
+        log("-------- MATCH RESULTS -------- [ resolveClientMatchResults ]")
         val loserSide = loser.playerSide.toInt()
         val loserRounds = clientMatch.getRounds(loserSide)
         val winnerRounds = clientMatch.getRounds(abs(loserSide - 1))
@@ -106,6 +106,7 @@ class MatchHandler {
         players[loser.steamUserId]!!.changeChain(-2)
         players[winner.steamUserId]!!.changeBounty(winnerPayout - loserPayout)
         players[winner.steamUserId]!!.changeChain(1)
+        log("-------------------------------")
     }
 
 }

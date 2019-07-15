@@ -27,15 +27,11 @@ class Session : Controller() {
 
     var randomValues = false
 
-    fun updateBets() {
-        bettingHandler.refreshGamblers()
-    }
-
     fun updatePlayers(): Boolean {
         var somethingChanged = false
 
         // Define the GearNet client player
-        api.defineClientId(this)
+        api.defineClientId()
 
         val snap = api.getSnap()
         snap.getLobbyPlayers().forEach { data ->
@@ -44,7 +40,7 @@ class Session : Controller() {
             if (!players.containsKey(data.steamUserId)) {
                 players[data.steamUserId] = Player(data)
                 somethingChanged = true
-                log("S: New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
+                log("[SESS] adding new Player ${getIdString(data.steamUserId)} ${Character.getCharacterInitials(data.characterId)} \"${data.displayName}\"")
             }
 
             // The present is now the past, and the future is now the present
@@ -104,7 +100,7 @@ class Session : Controller() {
                 && clientMatchPlayers.p2.steamUserId > 0L) {
                 matchHandler.clientMatch =
                     Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
-                log("S: Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
+                log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
                 somethingChanged = true
                 setMode(LOADING_MODE)
             }
@@ -124,6 +120,9 @@ class Session : Controller() {
 
         }
 
+        // Filter Twitch messages for valid commands to execute
+        bettingHandler.updateGamblers()
+
         return somethingChanged
     }
 
@@ -139,11 +138,11 @@ class Session : Controller() {
     fun setMode(mode: Int) {
         sessionMode = mode
         when (mode) {
-            LOBBY_MODE -> log("S: sessionMode = LOBBY_MODE")
-            LOADING_MODE -> log("S: sessionMode = LOADING_MODE")
-            MATCH_MODE -> log("S: sessionMode = MATCH_MODE")
-            SLASH_MODE -> log("S: sessionMode = SLASH_MODE")
-            VICTORY_MODE -> log("S: sessionMode = VICTORY_MODE")
+            LOBBY_MODE -> log("[SESS] sessionMode = LOBBY_MODE")
+            LOADING_MODE -> log("[SESS] sessionMode = LOADING_MODE")
+            MATCH_MODE -> log("[SESS] sessionMode = MATCH_MODE")
+            SLASH_MODE -> log("[SESS] sessionMode = SLASH_MODE")
+            VICTORY_MODE -> log("[SESS] sessionMode = VICTORY_MODE")
         }
     }
 
@@ -160,9 +159,9 @@ class Session : Controller() {
     }
 }
 
-var consoleLog = arrayListOf("C: GearNet started")
+var consoleLog = arrayListOf("[CLIE] GearNet // Bounty Bets 0.6.3")
 fun log(text: String) {
-    if (consoleLog.size > 50) consoleLog.removeAt(0)
+    if (consoleLog.size > 15) consoleLog.removeAt(0)
     consoleLog.add(text)
     println(text)
 }
