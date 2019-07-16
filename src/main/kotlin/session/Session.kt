@@ -3,6 +3,7 @@ package session
 import memscan.XrdListener
 import tornadofx.Controller
 import twitch.BotListener
+import utils.Log
 import utils.log
 
 
@@ -21,10 +22,18 @@ class Session : Controller() {
 
     fun updateSession() {
         xrdListener.generateUpdate().forEach {
-            log("EVENT ${it.type.name}")
+            when (it.getType()) {
+                EventType.PLAYER_JOINED -> runPlayerJoined(it)
+            }
         }
     }
+
+    private fun runPlayerJoined(e:Event) {
+        log("${Log.EVE} ${e.getType().name} ${e.getPlayer()}")
+    }
 }
+
+
 //        // New match underway?
 //        val lobbyMatchPlayers = Duo(PlayerData(), PlayerData())
 //        val clientMatchPlayers = Duo(PlayerData(), PlayerData())

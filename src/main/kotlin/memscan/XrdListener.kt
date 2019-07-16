@@ -2,7 +2,7 @@ package memscan
 
 import MyApp.Companion.SIMULATE_MODE
 import session.Event
-import session.EventType.LOBBY_PLAYER_JOINED
+import session.EventType.PLAYER_JOINED
 import session.Lobby
 import session.Match
 import session.Player
@@ -28,6 +28,7 @@ class XrdListener {
     val events: MutableList<Event> = mutableListOf()
 
     fun generateUpdate(): List<Event> {
+        events.clear()
         if (xrdApi.isConnected()) {
             // 1. Generate a Match and Players
             val players: List<Player> = xrdApi.getPlayerData().map { Player(it) }
@@ -50,23 +51,24 @@ class XrdListener {
             generateClientEvents()
         }
         val out = events
-        events.clear()
         return out
     }
 
-    private fun generateLobbyEvents() {
-        // LOBBY_PLAYER_JOINED
+    private fun getPlayersJoining(): List<Player> {
         val p1 = lobby.p1.getPlayers()
         val p2 = lobby.p2.getPlayers()
-
         log("p1.size","${p1.size}")
         log("p2.size","${p2.size}")
 
-        val nonMatchingPredicate: ((Map.Entry<String, Int>)) -> Boolean = { it.value == 0 }
-            p2.filter { np -> var flag = true
-                p1.forEach { op -> if (op.getSteamId() == np.getSteamId()) flag = false }
-                flag
-            }.forEach { events.add(Event(LOBBY_PLAYER_JOINED, Duo(0), Duo(it))) }
+        return p2.filter { np -> var flag = true
+            p1.forEach { op -> if (op.getSteamId() == np.getSteamId()) flag = false }
+            flag
+        }
+    }
+
+    private fun generateLobbyEvents() {
+        // PLAYER_JOINED
+        getPlayersJoining().forEach { events.add(Event(PLAYER_JOINED, Duo(it), Duo(0))) }
 
         // LOBBY_PLAYER_MOVED
         // if the cabinetId == 4, then the player is roaming

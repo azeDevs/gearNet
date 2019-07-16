@@ -6,6 +6,7 @@ import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
+import utils.Log.MEM
 import utils.log
 import utils.truncate
 import java.nio.ByteBuffer
@@ -29,11 +30,11 @@ class MemHandler : XrdApi {
         try {
             GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
             GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
-            return logConnected(true, "[MEMH] XrdApi connected")
+            return logConnected(true, "${MEM} XrdApi connected")
         } catch (e: IllegalStateException) {
-            return logConnected(false, "[MEMH] XrdApi disconnected")
+            return logConnected(false, "${MEM} XrdApi disconnected")
         } catch (e: NullPointerException) {
-            return logConnected(false, "[MEMH] XrdApi failed to locate memory address")
+            return logConnected(false, "${MEM} XrdApi failed to locate memory address")
         }
     }
 

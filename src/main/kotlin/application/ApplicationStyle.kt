@@ -87,20 +87,22 @@ class ApplicationStyle : Stylesheet() {
                 fontFiraCodeBold?.let { font = it }
                 textFill = c("#cccccc")
                 fontSize = 10.px
-                minHeight = 278.px
-                maxHeight = 278.px
+                minHeight = 280.px
+                maxHeight = 280.px
                 alignment = Pos.BOTTOM_LEFT
                 backgroundColor += c("#0000007C")
-                padding = box(8.px)
+                padding = box(0.px, 6.px, 4.px, 6.px)
+                borderWidth += box(1.px)
+                borderColor += box(c("#33333399"))
             }
             and(consoleFieldNoBG) {
                 fontFiraCodeBold?.let { font = it }
                 textFill = c("#aaff33")
                 fontSize = 10.px
-                minHeight = 278.px
-                maxHeight = 278.px
+                minHeight = 280.px
+                maxHeight = 280.px
                 alignment = Pos.BOTTOM_RIGHT
-                padding = box(8.px)
+                padding = box(0.px, 6.px, 4.px, 6.px)
             }
 
             and(lobbyName) {
