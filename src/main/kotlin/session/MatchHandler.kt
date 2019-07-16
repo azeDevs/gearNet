@@ -25,11 +25,11 @@ class MatchHandler {
 //        val winnerPlayer = players.values.firstOrNull { it.getSteamId() == data.steamId && it.isWinner() } ?: Player()
 //
 //        if (loserPlayer.getSteamId() != -1L) {
-//            utils.log("MATCH LOSER: ${loserPlayer.getNameString()}")
+//            utils.log("MATCH LOSER: ${loserPlayer.getName()}")
 //            loser = loserPlayer.getData()
 //        }
 //        if (winnerPlayer.getSteamId() != -1L) {
-//            utils.log("MATCH WINNER: ${winnerPlayer.getNameString()}")
+//            utils.log("MATCH WINNER: ${winnerPlayer.getName()}")
 //            winner = winnerPlayer.getData()
 //        }
 //

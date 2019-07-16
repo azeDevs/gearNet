@@ -1,6 +1,5 @@
 package twitch
 
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
@@ -13,9 +12,9 @@ class TwitchBot : BotApi {
 
     init {
         twitchClient = TwitchClientBuilder.builder()
-            .withChatAccount(OAuth2Credential("twitch", getTokenFromFile("keys", "twitch_bot")))
-//            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
-//            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
+//            .withChatAccount(OAuth2Credential("twitch", getTokenFromFile("keys", "twitch_bot")))
+            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
+            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
             .withEnableChat(true)
             .withEnableHelix(true)
             .withEnableKraken(true)
@@ -27,7 +26,7 @@ class TwitchBot : BotApi {
         }
 
         twitchClient.getChat().joinChannel("azeDevs")
-
+//        sendMessage("Hello World!")
     }
 
     fun getViewers() {

@@ -1,9 +1,9 @@
 package session
 
 import memscan.XrdListener
+import session.EventType.*
 import tornadofx.Controller
 import twitch.BotListener
-import utils.Log
 import utils.log
 
 
@@ -23,14 +23,25 @@ class Session : Controller() {
     fun updateSession() {
         xrdListener.generateUpdate().forEach {
             when (it.getType()) {
-                EventType.PLAYER_JOINED -> runPlayerJoined(it)
+                XRD_CONNECTED -> log("XrdApi connected")
+                XRD_DISCONNECT -> log("XrdApi disconnected")
+                PLAYER_JOINED -> log("Player \"${it.getPlayer().getName()}\" joined")
+                PLAYER_MOVED -> log("Player \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
+
+                MATCH_LOADING -> log("Match loading with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
+                MATCH_ENDED -> log(it.getType().name)
+
+                BURST_ENABLED -> log(it.getType().name)
+                STRIKE_STUNNED -> log(it.getType().name)
+                DAMAGE_DEALT -> log(it.getType().name)
+                ROUND_ENDED -> log(it.getType().name)
+
+                LOBBY_DISPLAYED -> log(it.getType().name)
+                MATCH_DISPLAYED -> log(it.getType().name)
             }
         }
     }
 
-    private fun runPlayerJoined(e:Event) {
-        log("${Log.EVE} ${e.getType().name} ${e.getPlayer()}")
-    }
 }
 
 

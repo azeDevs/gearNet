@@ -6,44 +6,26 @@ import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
-import utils.Log.MEM
-import utils.log
 import utils.truncate
 import java.nio.ByteBuffer
 
 
 class MemHandler : XrdApi {
 
-    var connected = false
-
     private var GG_PROC: Win32Process? = null
 
-    private fun logConnected(flag:Boolean, logEntry:String): Boolean {
-        if (flag != connected)  {
-            connected = flag
-            log(logEntry)
-        }
-        return flag
-    }
-
     override fun isConnected(): Boolean {
-        try {
-            GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            GG_PROC!!.modules["GuiltyGearXrd.exe"]//!!.pointer
-            return logConnected(true, "${MEM} XrdApi connected")
-        } catch (e: IllegalStateException) {
-            return logConnected(false, "${MEM} XrdApi disconnected")
-        } catch (e: NullPointerException) {
-            return logConnected(false, "${MEM} XrdApi failed to locate memory address")
-        }
+        try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            GG_PROC!!.modules["GuiltyGearXrd.exe"]
+            return true }
+        catch (e: IllegalStateException) { return false }
+        catch (e: NullPointerException) { return false }
     }
 
     override fun getClientSteamId(): Long = try {
         val id = getByteBufferFromAddress(longArrayOf(0x1AD82E4L), 8)!!.long
         id
-    } catch (e: NullPointerException) {
-        -1L
-    }
+    } catch (e: NullPointerException) { -1L }
 
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {

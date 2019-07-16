@@ -44,7 +44,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     }
 
 
-    fun getNameString() = getData().displayName
+    fun getName() = getData().displayName
 
     fun getSteamId() = getData().steamId
 
@@ -64,7 +64,7 @@ class Player(playerData: PlayerData = PlayerData()) {
                 idle = 0
             } else {
 //                idle = max(1,s.getActivePlayerCount())
-                log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getNameString()})")
+                log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getName()})")
             }
         }
     }
@@ -121,7 +121,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getSeat() = getData().seatingId
 
-    fun getPlaySideString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
+    fun getSeatString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
         if (cabId > 3) return ""
         when(sideId) {
             0 -> return "Player One"

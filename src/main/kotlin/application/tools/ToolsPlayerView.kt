@@ -120,7 +120,7 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterTrademark(p.getData().characterId)
 
-                handle.text = p.getNameString()
+                handle.text = p.getName()
                 if (p.isIdle()) handle.textFill = c("#3befaa88")
                 else handle.textFill = c("#3befaa")
 
@@ -144,7 +144,7 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
 
                 record.text = p.getRecordString()
                 cabinet.text = p.getCabinetString()
-                location.text = p.getPlaySideString()
+                location.text = p.getSeatString()
 
             } else {
                 wholeThing.opacity = GHOST_OPACITY

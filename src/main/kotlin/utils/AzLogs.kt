@@ -1,6 +1,6 @@
 package utils
 
-var consoleLog = arrayListOf("${Log.APP} GearNet // Bounty Bets 0.6.3")
+var consoleLog = arrayListOf("Starting GearNet // Bounty Bets 0.6.3")
 var watchedLog: MutableMap<String, String> = mutableMapOf()
 
 fun log(text: String) {
@@ -11,10 +11,4 @@ fun log(text: String) {
 
 fun log(tag:String, text:String) {
     watchedLog.put(tag, text)
-}
-
-object Log {
-    const val APP = "[APP]"
-    const val MEM = "[MEM]"
-    const val EVE = "[EVE]"
 }

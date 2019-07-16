@@ -243,8 +243,8 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     fun applyData(p: Player, s: Session) = Platform.runLater {
             if (p.getSteamId() > 0L) {
                 character.viewport = getCharacterTrademark(p.getData().characterId)
-                handle1.text = p.getNameString(); handle1.isVisible = true
-                handle2.text = p.getNameString(); handle2.isVisible = true
+                handle1.text = p.getName(); handle1.isVisible = true
+                handle2.text = p.getName(); handle2.isVisible = true
                 riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
                 chain.viewport = p.getChainImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()

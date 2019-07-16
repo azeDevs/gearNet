@@ -77,7 +77,7 @@ class MemRandomizer : XrdApi {
                 log(
                     "B: ${s.displayName} [${getIdString(s.steamId)}] has moved to cab ${Player(sightedBot).getCabinetString()}, spot ${Player(
                         sightedBot
-                    ).getPlaySideString(0, seat.p2)}"
+                    ).getSeatString(0, seat.p2)}"
                 )
             } else {
                 // TODO: MAKE THE BOT FIND ANY OPEN SEAT
