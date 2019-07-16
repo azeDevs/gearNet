@@ -4,24 +4,24 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import session.log
 import utils.getTokenFromFile
+import utils.log
 
-class TwitchBot(accessToken: String = getTokenFromFile("keys", "twitch_bot")) : BotApi {
+class TwitchBot : BotApi {
     private val messageCache: MutableList<Message> = mutableListOf()
     private val twitchClient: TwitchClient
 
     init {
-        val credentials = OAuth2Credential("twitch", accessToken)
         twitchClient = TwitchClientBuilder.builder()
-            .withChatAccount(credentials)
+            .withChatAccount(OAuth2Credential("twitch", getTokenFromFile("keys", "twitch_bot")))
+//            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
+//            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
             .withEnableChat(true)
             .withEnableHelix(true)
             .withEnableKraken(true)
             .withEnableTMI(true)
             .build()
 
-        // Listen for public messages
         twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe {
             messageCache.add(Message(it.user.id, it.user.name, it.message))
         }

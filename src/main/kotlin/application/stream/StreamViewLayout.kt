@@ -43,7 +43,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var round11: ImageView
     private lateinit var round21: ImageView
 
-    fun updateStreamLeaderboard(allPlayers: List<Player>, s: Session) {
+    fun updateStreamLeaderboard(s: Session) {
 //        val players = allPlayers
 //        if (s.sessionMode == lockHud) {
 //            lobbyView.isVisible = showHud
@@ -144,10 +144,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //        }
     }
 
-    fun toggleScoreboardMode(session: Session) {
-//        lockHud = session.sessionMode
-//        showHud = !showHud
-//        updateStreamLeaderboard(session.getPlayersList(), session)
+    fun toggleScoreboard() {
+        lobbyView.isVisible = !lobbyView.isVisible
+        matchView.isVisible = !matchView.isVisible
     }
 
     init {
@@ -175,27 +174,6 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                     }
                     for (i in 0..3) {
                         bountiesGui.add(BigScoreView(parent, i))
-                    }
-                }
-
-                statsView = group {
-                    opacity = 0.0
-                    maxWidth = 1280.0
-                    minWidth = 1280.0
-                    maxHeight = 720.0
-                    minHeight = 720.0
-                    imageview(getRes("gn_stream.png").toString()) {
-                        viewport = Rectangle2D(0.0, 832.0, 1024.0, 192.0)
-                        translateY += 380
-                        fitWidth = 1280.0
-                        fitHeight = 240.0
-                    }
-                    imageview(getRes("gn_stream.png").toString()) {
-                        viewport = Rectangle2D(0.0, 832.0, 1024.0, 192.0)
-                        rotate += 180
-                        translateY -= 410
-                        fitWidth = 1280.0
-                        fitHeight = 240.0
                     }
                 }
 

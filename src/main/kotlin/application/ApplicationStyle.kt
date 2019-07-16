@@ -22,8 +22,8 @@ class ApplicationStyle : Stylesheet() {
         val appContainer by cssclass()
         val streamContainer by cssclass()
         val lobbyName by cssclass()
-        val consoleFieldShade by cssclass()
         val consoleField by cssclass()
+        val consoleFieldNoBG by cssclass()
         val toggleStreamButton by cssclass()
     }
 
@@ -71,6 +71,10 @@ class ApplicationStyle : Stylesheet() {
                 textFill = c("#52141f")
                 backgroundColor += c("#00000000")
                 alignment = Pos.BOTTOM_RIGHT
+                minWidth = 1240.px
+                maxWidth = 1240.px
+                minHeight = 680.px
+                maxHeight = 680.px
             }
         }
 
@@ -79,18 +83,24 @@ class ApplicationStyle : Stylesheet() {
             textFill = c("#cccccc")
             fontSize = 14.px
 
-            and(consoleFieldShade) {
-                fontFiraCodeBold?.let { font = it }
-                alignment = Pos.BOTTOM_LEFT
-                textFill = c("#111111")
-                fontSize = 14.px
-            }
-
             and(consoleField) {
                 fontFiraCodeBold?.let { font = it }
-                alignment = Pos.BOTTOM_LEFT
                 textFill = c("#cccccc")
-                fontSize = 14.px
+                fontSize = 10.px
+                minHeight = 278.px
+                maxHeight = 278.px
+                alignment = Pos.BOTTOM_LEFT
+                backgroundColor += c("#0000007C")
+                padding = box(8.px)
+            }
+            and(consoleFieldNoBG) {
+                fontFiraCodeBold?.let { font = it }
+                textFill = c("#aaff33")
+                fontSize = 10.px
+                minHeight = 278.px
+                maxHeight = 278.px
+                alignment = Pos.BOTTOM_RIGHT
+                padding = box(8.px)
             }
 
             and(lobbyName) {
@@ -100,7 +110,6 @@ class ApplicationStyle : Stylesheet() {
                 minWidth = 420.px
                 maxHeight = 32.px
                 minHeight = 32.px
-                alignment = Pos.CENTER
             }
         }
     }

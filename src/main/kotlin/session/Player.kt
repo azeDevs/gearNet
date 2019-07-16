@@ -5,6 +5,7 @@ import memscan.PlayerData
 import session.Character.getCharacterName
 import utils.addCommas
 import utils.getIdString
+import utils.log
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

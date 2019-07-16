@@ -13,20 +13,20 @@ package session
  *
  */
 class Lobby (
-    players: List<Player> = emptyList(),
+    private val players: List<Player> = emptyList(),
     match: Match = Match()
 ) {
-
-    val cabinetA: Cabinet = generateCab(0, players, match)
-    val cabinetB: Cabinet = generateCab(1, players, match)
-    val cabinetC: Cabinet = generateCab(2, players, match)
-    val cabinetD: Cabinet = generateCab(3, players, match)
+    val cabinets: List<Cabinet> = listOf(generateCab(0, players, match), generateCab(1, players, match), generateCab(2, players, match), generateCab(3, players, match))
 
     private fun generateCab(cabinetId:Int, players: List<Player>, match: Match): Cabinet =
-        Cabinet(
-            players.filter { it.getCabinet() == cabinetId && it.getSeat() > 1 },
-            if (match.cabinetId == cabinetId) match else Match()
-        )
+        Cabinet(players.filter { it.getCabinet() == cabinetId && it.getSeat() > 1 },
+            if (match.cabinetId == cabinetId) match else Match())
+
+    fun getPlayers(): List<Player> {
+//        val allPlayers: MutableList<Player> = mutableListOf()
+//        cabinets.forEach { allPlayers.addAll(it.getPlayers().filter { it.getSteamId() > 0 }.toList()) }
+        return players.filter { it.getSteamId() > 0 }.toList()
+    }
 
 }
 

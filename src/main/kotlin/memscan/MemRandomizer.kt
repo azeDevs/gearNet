@@ -5,11 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import session.Character.getCharacterInitials
 import session.Player
-import session.log
-import utils.Duo
-import utils.getIdString
-import utils.getRandomName
-import utils.isInRange
+import utils.*
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.random.Random
@@ -69,12 +65,20 @@ class MemRandomizer : XrdApi {
         val seatedBots = botLobby.values.filter { it.steamId != s.steamId && isInRange(it.cabinetId.toInt(), 0, 3) && isInRange(it.seatingId.toInt(), 0, 1) }.toList()
         if (seatedBots.isNotEmpty()) {
             val sightedBot = seatedBots[Random.nextInt(seatedBots.size)]
-            log("B: ${s.displayName} [${getIdString(s.steamId)}] has spotted a seated bot...${sightedBot.displayName} [${getIdString(sightedBot.steamId)}]")
+            log(
+                "B: ${s.displayName} [${getIdString(s.steamId)}] has spotted a seated bot...${sightedBot.displayName} [${getIdString(
+                    sightedBot.steamId
+                )}]"
+            )
 
             if (botLobby.values.none { it.cabinetId == sightedBot.cabinetId && it.seatingId.toInt() == abs(sightedBot.seatingId.toInt() - 1) }) {
                 seat.p1 = sightedBot.cabinetId.toInt()
                 seat.p2 = abs(sightedBot.seatingId.toInt() - 1)
-                log("B: ${s.displayName} [${getIdString(s.steamId)}] has moved to cab ${Player(sightedBot).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString(0, seat.p2)}")
+                log(
+                    "B: ${s.displayName} [${getIdString(s.steamId)}] has moved to cab ${Player(sightedBot).getCabinetString()}, spot ${Player(
+                        sightedBot
+                    ).getPlaySideString(0, seat.p2)}"
+                )
             } else {
                 // TODO: MAKE THE BOT FIND ANY OPEN SEAT
             }
@@ -90,27 +94,31 @@ class MemRandomizer : XrdApi {
         val s = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]
         val t = PlayerData(s.steamId, s.displayName, Random.nextInt(25), s.cabinetId, s.seatingId, s.matchesWon, s.matchesSum, s.loadingPct)
         botLobby[t.steamId] = t
-        log("B: ${s.displayName} [${getIdString(s.steamId)}] changed characters from ${getCharacterInitials(s.characterId)} to ${getCharacterInitials(t.characterId)}")
+        log(
+            "B: ${s.displayName} [${getIdString(s.steamId)}] changed characters from ${getCharacterInitials(s.characterId)} to ${getCharacterInitials(
+                t.characterId
+            )}"
+        )
     }
 
     private fun botsLoadMatch() {
         // filter cabinets with 2 players seated
         // once they qualify, flag them as loading
-//        log("botsLoadMatch -")
+//        utils.log("botsLoadMatch -")
     }
 
     private fun botTakeDamage() {
         // reduce Health of one bot, increase Tension of both
         // reduce Risc, isHit = true
         // rare chance this will set burst false
-//        log("botTakeDamage -")
+//        utils.log("botTakeDamage -")
     }
 
     private fun botBlockDamage() {
         // increase Tension of both bots
         // increase Risc, isHit = true
         // rare chance this will set burst true
-//        log("botBlockDamage -")
+//        utils.log("botBlockDamage -")
     }
 
     private fun pickRandomBotFromLobby() = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]

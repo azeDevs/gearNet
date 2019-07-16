@@ -13,9 +13,9 @@ import javafx.scene.paint.Stop
 import session.Character.getCharacterTrademark
 import session.Player
 import session.Session
-import session.log
 import tornadofx.*
 import utils.getRes
+import utils.log
 import kotlin.math.roundToInt
 
 class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {

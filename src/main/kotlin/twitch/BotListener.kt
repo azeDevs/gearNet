@@ -1,9 +1,9 @@
 package twitch
 
-import session.log
+import utils.log
 import utils.stringToInt
 
-class BetListener {
+class BotListener {
 
     val bot = TwitchBot()
     val gamblers: HashMap<Long, Viewer> = HashMap()

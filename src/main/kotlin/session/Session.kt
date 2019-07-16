@@ -2,7 +2,8 @@ package session
 
 import memscan.XrdListener
 import tornadofx.Controller
-import twitch.BetListener
+import twitch.BotListener
+import utils.log
 
 
 class Session : Controller() {
@@ -16,15 +17,15 @@ class Session : Controller() {
     }
 
     private val xrdListener = XrdListener()
-    private val betListener = BetListener()
+    private val betListener = BotListener()
 
+    fun updateSession() {
+        xrdListener.generateUpdate().forEach {
+            log("EVENT ${it.type.name}")
+        }
+    }
 }
-//
-//    fun updatePlayers(): Boolean {
-//
 //        // New match underway?
-//        // TODO: MAKE CABINETS TO HOUSE THESE
-//        // NOTE: THIS IS WEHRE YOU LEFT OFF
 //        val lobbyMatchPlayers = Duo(PlayerData(), PlayerData())
 //        val clientMatchPlayers = Duo(PlayerData(), PlayerData())
 //
@@ -69,7 +70,7 @@ class Session : Controller() {
 //                && clientMatchPlayers.p2.steamId > 0L) {
 //                matchHandler.clientMatch =
 //                    Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
-//                log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
+//                utils.log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
 //                somethingChanged = true
 //                setMode(LOADING_MODE)
 //            }
@@ -107,11 +108,11 @@ class Session : Controller() {
 //    fun setMode(mode: Int) {
 //        sessionMode = mode
 //        when (mode) {
-//            LOBBY_MODE -> log("[SESS] sessionMode = LOBBY_MODE")
-//            LOADING_MODE -> log("[SESS] sessionMode = LOADING_MODE")
-//            MATCH_MODE -> log("[SESS] sessionMode = MATCH_MODE")
-//            SLASH_MODE -> log("[SESS] sessionMode = SLASH_MODE")
-//            VICTORY_MODE -> log("[SESS] sessionMode = VICTORY_MODE")
+//            LOBBY_MODE -> utils.log("[SESS] sessionMode = LOBBY_MODE")
+//            LOADING_MODE -> utils.log("[SESS] sessionMode = LOADING_MODE")
+//            MATCH_MODE -> utils.log("[SESS] sessionMode = MATCH_MODE")
+//            SLASH_MODE -> utils.log("[SESS] sessionMode = SLASH_MODE")
+//            VICTORY_MODE -> utils.log("[SESS] sessionMode = VICTORY_MODE")
 //        }
 //    }
 //
@@ -129,10 +130,5 @@ class Session : Controller() {
 //    }
 //}
 
-var consoleLog = arrayListOf("[CLIE] GearNet // Bounty Bets 0.6.3")
-fun log(text: String) {
-    if (consoleLog.size > 15) consoleLog.removeAt(0)
-    consoleLog.add(text)
-    println(text)
-}
+
 

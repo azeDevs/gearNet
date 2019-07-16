@@ -74,34 +74,34 @@ class Match (
 //            if (!roundOngoing && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
 //                roundOngoing = true
 //                session.setMode(MATCH_MODE)
-//                log("[MATC] ID$matchId Duel ${getRounds(P1) + getRounds(P2) + 1} ... LET'S ROCK!")
+//                utils.log("[MATC] ID$matchId Duel ${getRounds(P1) + getRounds(P2) + 1} ... LET'S ROCK!")
 //            }
 //
 //            // Has the round ended, and did player 1 win?
 //            if (roundOngoing && getWinner() == -1 && getHealth(P2) == 0 && getHealth(P1) != getHealth(P2) ) {
 //                roundOngoing = false
 //                session.setMode(SLASH_MODE)
-//                log("[MATC] ID$matchId P1 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
+//                utils.log("[MATC] ID$matchId P1 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
 //            }
 //
 //            // Has the round ended, and did player 2 win?
 //            if (roundOngoing && getWinner() == -1 && getHealth(P1) == 0 && getHealth(P2) != getHealth(P1)) {
 //                roundOngoing = false
 //                session.setMode(SLASH_MODE)
-//                log("[MATC] ID$matchId P2 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
+//                utils.log("[MATC] ID$matchId P2 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
 //            }
 //
 //            // Did player 1 win the match?
 //            if (getRounds(P1) == lobbyData.roundWins && winner == -1) {
 //                winner = 0
 //                session.setMode(VICTORY_MODE)
-//                log("[MATC] ID$matchId CONCLUDED, P1 \"${getHandleString(P1)}\" wins Match")
+//                utils.log("[MATC] ID$matchId CONCLUDED, P1 \"${getHandleString(P1)}\" wins Match")
 //            }
 //
 //            // Did player 2 win the match?
 //            if (getRounds(P2) == lobbyData.roundWins && winner == -1) {
 //                winner = 1
-//                log("[MATC] ID$matchId CONCLUDED, P2 \"${getHandleString(P2)}\" wins Match")
+//                utils.log("[MATC] ID$matchId CONCLUDED, P2 \"${getHandleString(P2)}\" wins Match")
 //                session.setMode(VICTORY_MODE)
 //            }
 //

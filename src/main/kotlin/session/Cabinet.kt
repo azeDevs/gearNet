@@ -13,8 +13,8 @@ package session
  *
  */
 class Cabinet(
-    val queue: List<Player> = emptyList(),
-    val match: Match = Match()
+    private val queue: List<Player> = emptyList(),
+    private val match: Match = Match()
 ) {
     fun getPlayers():List<Player> {
         val allPlayers = emptySet<Player>().toMutableSet()
@@ -56,20 +56,20 @@ class Cabinet(
 //    }
 //
 //    private fun resolveLobbyMatchResults(players: HashMap<Long, Player>) {
-//        log("-------- MATCH RESULTS -------- [ resolveLobbyMatchResults ]")
+//        utils.log("-------- MATCH RESULTS -------- [ resolveLobbyMatchResults ]")
 //        val loserBounty = players[loser.steamId]!!.getBounty()
 //        val winnerBounty = players[winner.steamId]!!.getBounty()
 //
-//        log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
+//        utils.log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 //
 //        val bonusLoserPayout = (players[loser.steamId]!!.getChain() * players[loser.steamId]!!.getMatchesWon()) + players[loser.steamId]!!.getMatchesPlayed() + (players[loser.steamId]!!.getChain() * 100)
 //        val bonusWinnerPayout = (players[winner.steamId]!!.getChain(1) * players[winner.steamId]!!.getMatchesWon()) + players[winner.steamId]!!.getMatchesPlayed() + (players[winner.steamId]!!.getChain(1) * 1000)
 //
-//        log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
+//        utils.log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
 //
 //        val payout = ((loserBounty * 0.32)).toInt()
 //
-//        log("payout = $payout")
+//        utils.log("payout = $payout")
 //
 //        if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
 //            players[loser.steamId]!!.changeBounty(bonusLoserPayout - payout)
@@ -77,7 +77,7 @@ class Cabinet(
 //        }
 //        players[winner.steamId]!!.changeBounty(bonusWinnerPayout + payout)
 //        players[winner.steamId]!!.changeChain(1)
-//        log("-------------------------------")
+//        utils.log("-------------------------------")
 //    }
 //
 //    fun updateClientMatch(matchData: MatchData, s: Session): Boolean {
@@ -88,33 +88,33 @@ class Cabinet(
 //    }
 //
 //    private fun resolveClientMatchResults(players: HashMap<Long, Player>) {
-//        log("-------- MATCH RESULTS -------- [ resolveClientMatchResults ]")
+//        utils.log("-------- MATCH RESULTS -------- [ resolveClientMatchResults ]")
 //        val loserSide = loser.seatingId.toInt()
 //        val loserRounds = clientMatch.getRounds(loserSide)
 //        val winnerRounds = clientMatch.getRounds(abs(loserSide - 1))
 //
-//        log("loserRounds = $loserRounds // winnerRounds = $winnerRounds")
+//        utils.log("loserRounds = $loserRounds // winnerRounds = $winnerRounds")
 //
 //        val loserBounty = players[loser.steamId]!!.getBounty()
 //        val winnerBounty = players[winner.steamId]!!.getBounty()
 //
-//        log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
+//        utils.log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 //
 //        val bonusLoserPayout = (players[loser.steamId]!!.getChain() * players[loser.steamId]!!.getMatchesWon()) + players[loser.steamId]!!.getMatchesPlayed() + (players[loser.steamId]!!.getChain() * 100)
 //        val bonusWinnerPayout = (players[winner.steamId]!!.getChain() * players[winner.steamId]!!.getMatchesWon()) + players[winner.steamId]!!.getMatchesPlayed() + (players[winner.steamId]!!.getChain() * 1000)
 //
-//        log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
+//        utils.log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
 //
 //        val loserPayout = (((winnerBounty + bonusLoserPayout) * 0.25) * loserRounds).toInt()
 //        val winnerPayout = (((loserBounty + bonusWinnerPayout) * 0.25) * winnerRounds).toInt()
 //
-//        log("loserPayout = $loserPayout // winnerPayout = $winnerPayout")
+//        utils.log("loserPayout = $loserPayout // winnerPayout = $winnerPayout")
 //
 //        players[loser.steamId]!!.changeBounty(loserPayout - winnerPayout)
 //        players[loser.steamId]!!.changeChain(-2)
 //        players[winner.steamId]!!.changeBounty(winnerPayout - loserPayout)
 //        players[winner.steamId]!!.changeChain(1)
-//        log("-------------------------------")
+//        utils.log("-------------------------------")
 //    }
 //
 //}

@@ -99,12 +99,10 @@ fun input(): String {
  */
 fun getTokenFromFile(vararg path: String): String {
     val sb = StringBuilder()
-    try {
-        val fileScan = Scanner(FileReader(Paths.get("$pathHome", *path).toFile()))
+    try { val fileScan = Scanner(FileReader(Paths.get("$pathHome", *path).toFile()))
         while (fileScan.hasNext()) sb.append(fileScan.next())
         fileScan.close()
     } catch (e: FileNotFoundException) { e.printStackTrace() }
-
     return sb.toString()
 }
 
@@ -254,5 +252,5 @@ fun getRes(fileName: String): URI {
  */
 class Duo<T>(
     var p1: T,
-    var p2: T
+    var p2: T = p1
 ) { fun p(p:Int) = if (p==0) p1 else p2 }

@@ -6,7 +6,7 @@ import org.jire.kotmem.win32.Kernel32.ReadProcessMemory
 import org.jire.kotmem.win32.Win32Process
 import org.jire.kotmem.win32.openProcess
 import org.jire.kotmem.win32.processIDByName
-import session.log
+import utils.log
 import utils.truncate
 import java.nio.ByteBuffer
 
