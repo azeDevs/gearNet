@@ -6,20 +6,20 @@ package session
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
- *          ┗━ List<Player>     contains Player bounty and chains data
+ *          ┗━ List<Fighter>     contains Fighter bounty and chains data
  *
  * [Cabinet]
  * contains Match and Players seating data
  *
  */
 class Cabinet(
-    private val queue: List<Player> = emptyList(),
+    private val queue: List<Fighter> = emptyList(),
     private val match: Match = Match()
 ) {
-    fun getPlayers():List<Player> {
-        val allPlayers = emptySet<Player>().toMutableSet()
-        allPlayers.add(match.fighters.p1)
-        allPlayers.add(match.fighters.p2)
+    fun getPlayers():List<Fighter> {
+        val allPlayers = emptySet<Fighter>().toMutableSet()
+        allPlayers.add(match.fighters.first)
+        allPlayers.add(match.fighters.second)
         allPlayers.addAll(queue)
         return allPlayers.toList()
     }
@@ -37,17 +37,17 @@ class Cabinet(
 //
 //
 //    private val match = Match()
-//    private val fightingPlayers = Duo(Player(), Player())
-//    private val queuedUpPlayers = emptyList<Player>()
-//    private val spectatingPlayers = emptyList<Player>()
+//    private val fightingPlayers = Duo(Fighter(), Fighter())
+//    private val queuedUpPlayers = emptyList<Fighter>()
+//    private val spectatingPlayers = emptyList<Fighter>()
 //
-//    fun updateCabinet(matchData: MatchData, playerData: List<PlayerData>, s:Session) {
+//    fun updateCabinet(matchData: MatchData, playerData: List<FighterData>, s:Session) {
 //        match.updateMatch(matchData, s)
 //        // TODO: MAKE PLAYERDATA UPDATE ALL PLAYERS ON THIS CABINET
 //    }
 //
-//    fun getPlayers():List<Player> {
-//        val allPlayers = emptySet<Player>().toMutableSet()
+//    fun getFighters():List<Fighter> {
+//        val allPlayers = emptySet<Fighter>().toMutableSet()
 //        allPlayers.add(fightingPlayers.p1)
 //        allPlayers.add(fightingPlayers.p2)
 //        allPlayers.addAll(queuedUpPlayers)
@@ -55,7 +55,7 @@ class Cabinet(
 //        return allPlayers.toList()
 //    }
 //
-//    private fun resolveLobbyMatchResults(players: HashMap<Long, Player>) {
+//    private fun resolveLobbyMatchResults(players: HashMap<Long, Fighter>) {
 //        utils.log("-------- MATCH RESULTS -------- [ resolveLobbyMatchResults ]")
 //        val loserBounty = players[loser.steamId]!!.getBounty()
 //        val winnerBounty = players[winner.steamId]!!.getBounty()
@@ -87,7 +87,7 @@ class Cabinet(
 //        return updatedMatchSnap
 //    }
 //
-//    private fun resolveClientMatchResults(players: HashMap<Long, Player>) {
+//    private fun resolveClientMatchResults(players: HashMap<Long, Fighter>) {
 //        utils.log("-------- MATCH RESULTS -------- [ resolveClientMatchResults ]")
 //        val loserSide = loser.seatingId.toInt()
 //        val loserRounds = clientMatch.getRounds(loserSide)

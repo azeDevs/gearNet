@@ -25,8 +25,8 @@ class Session : Controller() {
             when (it.getType()) {
                 XRD_CONNECTED -> log("XrdApi connected")
                 XRD_DISCONNECT -> log("XrdApi disconnected")
-                PLAYER_JOINED -> log("Player \"${it.getPlayer().getName()}\" joined")
-                PLAYER_MOVED -> log("Player \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
+                PLAYER_JOINED -> log("Fighter \"${it.getPlayer().getName()}\" joined")
+                PLAYER_MOVED -> log("Fighter \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
 
                 MATCH_LOADING -> log("Match loading with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
                 MATCH_ENDED -> log(it.getType().name)
@@ -46,16 +46,16 @@ class Session : Controller() {
 
 
 //        // New match underway?
-//        val lobbyMatchPlayers = Duo(PlayerData(), PlayerData())
-//        val clientMatchPlayers = Duo(PlayerData(), PlayerData())
+//        val lobbyMatchPlayers = Duo(FighterData(), FighterData())
+//        val clientMatchPlayers = Duo(FighterData(), FighterData())
 //
-//        lobbyHandler.getPlayers().filter { it.isLoading() }.forEach { p ->
+//        lobbyHandler.getFighters().filter { it.isLoading() }.forEach { p ->
 //
 //            // Lobby Match stuff --------
 //            if (p.getPlaySide() == 0) lobbyMatchPlayers.p1 = p.getData()
-//            else lobbyMatchPlayers.p1 = PlayerData()
+//            else lobbyMatchPlayers.p1 = FighterData()
 //            if (p.getPlaySide() == 1) lobbyMatchPlayers.p2 = p.getData()
-//            else lobbyMatchPlayers.p2 = PlayerData()
+//            else lobbyMatchPlayers.p2 = FighterData()
 //
 //            if (lobbyMatchPlayers.p1.steamId != -1L
 //                && lobbyMatchPlayers.p2.steamId != -1L
@@ -66,9 +66,9 @@ class Session : Controller() {
 //
 //            // Client Match stuff --------
 //            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 0)
-//                clientMatchPlayers.p1 = p.getData() else clientMatchPlayers.p1 = PlayerData()
+//                clientMatchPlayers.p1 = p.getData() else clientMatchPlayers.p1 = FighterData()
 //            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 1)
-//                clientMatchPlayers.p2 = p.getData() else clientMatchPlayers.p2 = PlayerData()
+//                clientMatchPlayers.p2 = p.getData() else clientMatchPlayers.p2 = FighterData()
 //            matchHandler.updateClientMatch(lobbyHandler.getMatchData(), this)
 //
 //            // Set sessionMode to MATCH_MODE
@@ -136,17 +136,17 @@ class Session : Controller() {
 //        }
 //    }
 //
-//    fun getPlayersList(): List<Player> = players.values.toList()
+//    fun getPlayersList(): List<Fighter> = players.values.toList()
 //        .sortedByDescending { item -> item.getRating() }
 //        .sortedByDescending { item -> item.getBounty() }
 //        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 //
 //    // CLIENT
-//    fun getClient(): Player {
+//    fun getClient(): Fighter {
 //        if (!players.isEmpty()) {
 //            val clientId = xrdApi.getClientSteamId()
-//            return players.values.first { it.getSteamId() == clientId }
-//        } else return Player()
+//            return players.values.first { it.getId() == clientId }
+//        } else return Fighter()
 //    }
 //}
 

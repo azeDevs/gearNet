@@ -253,4 +253,4 @@ fun getRes(fileName: String): URI {
 class Duo<T>(
     var p1: T,
     var p2: T = p1
-) { fun p(p:Int) = if (p==0) p1 else p2 }
+)

@@ -2,7 +2,7 @@ package memscan
 
 /**
  * memscan.XrdApi
- * provides [PlayerData]
+ * provides [FighterData]
  * provides [MatchData]
  */
 interface XrdApi {
@@ -20,7 +20,7 @@ interface XrdApi {
     /**
      * @return a List of the Xrd lobby's active players and their data
      */
-    fun getPlayerData(): List<PlayerData>
+    fun getFighterData(): List<FighterData>
 
     /**
      * @return data from current match
@@ -29,7 +29,7 @@ interface XrdApi {
 
 }
 
-data class PlayerData(
+data class FighterData(
     val steamId: Long = -1L,
     val displayName: String = "",
     val characterId: Int = -1,
@@ -38,7 +38,7 @@ data class PlayerData(
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
-) { fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
+) { fun equals(other: FighterData) = other.displayName.equals(displayName) &&
                 other.characterId == characterId &&
                 other.cabinetId == cabinetId &&
                 other.seatingId == seatingId &&

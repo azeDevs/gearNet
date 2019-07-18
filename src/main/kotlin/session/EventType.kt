@@ -1,36 +1,41 @@
 package session
 
-import utils.Duo
 
 class Event {
     private var eventType: EventType = EventType.NULL_EVENT
-    private var players: Duo<Player> = Duo(Player(), Player())
-    private var deltas: Duo<Int> = Duo(0, 0)
+    private var fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter())
+    private var deltas: Pair<Int, Int> = Pair(0, 0)
 
     fun getType() = eventType
-    fun getPlayers() = players
+    fun getPlayers() = fighters
     fun getDeltas() = deltas
-    fun getPlayer(i:Int = 0) = if (i == 0) players.p1 else players.p2
-    fun getDelta(i:Int = 0) = if (i == 0) deltas.p1 else deltas.p2
+    fun getPlayer(i:Int = 0) = if (i == 0) fighters.first else fighters.second
+    fun getDelta(i:Int = 0) = if (i == 0) deltas.first else deltas.second
 
     constructor(eventType: EventType = EventType.NULL_EVENT) {
         this.eventType = eventType
-        this.players = Duo(Player(), Player())
-        this.deltas = Duo(0, 0)
+        this.fighters = Pair(Fighter(), Fighter())
+        this.deltas = Pair(0, 0)
     }
     constructor(eventType: EventType = EventType.NULL_EVENT,
-                player: Player = Player(),
+                fighter: Fighter = Fighter()) {
+        this.eventType = eventType
+        this.fighters = Pair(fighter, fighter)
+        this.deltas = Pair(0, 0)
+    }
+    constructor(eventType: EventType = EventType.NULL_EVENT,
+                fighter: Fighter = Fighter(),
                 delta: Int = 0) {
         this.eventType = eventType
-        this.players = Duo(player, player)
-        this.deltas = Duo(delta, delta)
+        this.fighters = Pair(fighter, fighter)
+        this.deltas = Pair(delta, delta)
     }
     constructor(eventType: EventType = EventType.NULL_EVENT,
-                players: Duo<Player> = Duo(Player(), Player()),
-                deltas: Duo<Int> = Duo(0, 0)) {
+                fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter()),
+                deltas: Pair<Int, Int> = Pair(0, 0)) {
         this.eventType = eventType
-        this.players = Duo(players.p1, players.p2)
-        this.deltas = Duo(deltas.p1, deltas.p2)
+        this.fighters = Pair(fighters.first, fighters.second)
+        this.deltas = Pair(deltas.first, deltas.second)
     }
 }
 

@@ -48,10 +48,10 @@ class BotListener {
                     val amount = stringToInt(cmd[1])
                     if (amount > 0 && cmd[2].equals("P1", true) ) {
                         g.p1Bet += amount
-                        bot.sendMessage("${m.name} bet ${amount} that Player 1 will win!")
+                        bot.sendMessage("${m.name} bet ${amount} that Fighter 1 will win!")
                     } else if (amount > 0 && cmd[2].equals("P2", true) ) {
                         g.p2Bet += amount
-                        bot.sendMessage("${m.name} bet ${amount} that Player 2 will win!")
+                        bot.sendMessage("${m.name} bet ${amount} that Fighter 2 will win!")
                     }
                 }
             }

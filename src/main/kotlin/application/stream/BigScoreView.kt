@@ -11,7 +11,7 @@ import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import session.Character.getCharacterTrademark
-import session.Player
+import session.Fighter
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -225,8 +225,8 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         wholeThing.isVisible = flag
     }
 
-    fun applyData(p: Player, s: Session) = Platform.runLater {
-            if (p.getSteamId() > 0L) { //  && !s.sessionMode.equals(MATCH_MODE)
+    fun applyData(p: Fighter, s: Session) = Platform.runLater {
+            if (p.getId() > 0L) { //  && !s.sessionMode.equals(MATCH_MODE)
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getName(); handle1.isVisible = true
                 handle2.text = p.getName(); handle2.isVisible = true

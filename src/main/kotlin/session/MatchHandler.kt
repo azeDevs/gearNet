@@ -1,6 +1,6 @@
 package session
 
-import memscan.PlayerData
+import memscan.FighterData
 
 class MatchHandler {
 
@@ -8,8 +8,8 @@ class MatchHandler {
     var lobbyMatches = arrayListOf(Pair(-1L, Match()), Pair(-1L, Match()), Pair(-1L, Match()), Pair(-1L, Match()))
     var clientMatch = Match()
 
-    private var loser = PlayerData()
-    private var winner = PlayerData()
+    private var loser = FighterData()
+    private var winner = FighterData()
 
 }
 //
@@ -20,15 +20,15 @@ class MatchHandler {
 //        return updatedMatchSnap
 //    }
 //
-//    fun resolveEveryone(players: HashMap<Long, Player>, s: Session, data: PlayerData): Boolean {
-//        val loserPlayer = players.values.firstOrNull { it.getSteamId() == data.steamId && it.isLoser() } ?: Player()
-//        val winnerPlayer = players.values.firstOrNull { it.getSteamId() == data.steamId && it.isWinner() } ?: Player()
+//    fun resolveEveryone(players: HashMap<Long, Fighter>, s: Session, data: FighterData): Boolean {
+//        val loserPlayer = players.values.firstOrNull { it.getId() == data.steamId && it.isLoser() } ?: Fighter()
+//        val winnerPlayer = players.values.firstOrNull { it.getId() == data.steamId && it.isWinner() } ?: Fighter()
 //
-//        if (loserPlayer.getSteamId() != -1L) {
+//        if (loserPlayer.getId() != -1L) {
 //            utils.log("MATCH LOSER: ${loserPlayer.getName()}")
 //            loser = loserPlayer.getData()
 //        }
-//        if (winnerPlayer.getSteamId() != -1L) {
+//        if (winnerPlayer.getId() != -1L) {
 //            utils.log("MATCH WINNER: ${winnerPlayer.getName()}")
 //            winner = winnerPlayer.getData()
 //        }
@@ -46,8 +46,8 @@ class MatchHandler {
 //            utils.log("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
 //            utils.log("-------------------------------")
 //
-//            loser = PlayerData()
-//            winner = PlayerData()
+//            loser = FighterData()
+//            winner = FighterData()
 //            return true
 //        }
 //        return false
@@ -55,7 +55,7 @@ class MatchHandler {
 //
 //
 //
-//    private fun resolveClientMatchResults(players: HashMap<Long, Player>) {
+//    private fun resolveClientMatchResults(players: HashMap<Long, Fighter>) {
 //        utils.log("-------- MATCH RESULTS -------- [ resolveClientMatchResults ]")
 //        val loserSide = loser.seatingId.toInt()
 //        val loserRounds = clientMatch.getRounds(loserSide)

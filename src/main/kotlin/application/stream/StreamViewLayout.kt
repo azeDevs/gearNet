@@ -11,7 +11,7 @@ import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
-import session.Player
+import session.Fighter
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -87,8 +87,8 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            }
 //        }
 //
-//        val p1 = players.firstOrNull { it.getSeat().toInt() == 0 } ?: Player()
-//        val p2 = players.firstOrNull { it.getSeat().toInt() == 1 } ?: Player()
+//        val p1 = players.firstOrNull { it.getSeat().toInt() == 0 } ?: Fighter()
+//        val p2 = players.firstOrNull { it.getSeat().toInt() == 1 } ?: Fighter()
 //        applyData(p1, p2, s)
 //        for (i in 0..3) {
 //            if (players.size > i) {
@@ -98,8 +98,8 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //        }
     }
 
-    fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
-//        if (p1.getSteamId() > 0L) {
+    fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
+//        if (p1.getId() > 0L) {
 //            bounty0.text = p1.getBountyString()
 //            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
 //            else health0.text = ""
@@ -120,7 +120,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //            round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //        }
-//        if (p2.getSteamId() > 0L) {
+//        if (p2.getId() > 0L) {
 //            bounty1.text = p2.getBountyString()
 //            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
 //            else health1.text = ""

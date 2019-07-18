@@ -1,7 +1,7 @@
 package session
 
 import javafx.geometry.Rectangle2D
-import memscan.PlayerData
+import memscan.FighterData
 import session.Character.getCharacterName
 import utils.addCommas
 import utils.getIdString
@@ -12,41 +12,32 @@ import kotlin.math.min
 
 /**
  *
- * XrdListener                  updates and archives Lobby data.
+ * XrdListener                  updates and archives Lobby getData().
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
- *          ┗━ List<Player>     contains Player bounty and chains data
+ *          ┗━ List<Fighter>     contains Fighter bounty and chains data
  *
- * [Player]
- * contains Player bounty and chains data
+ * [Fighter]
+ * contains Fighter bounty and chains data
  *
  */
-class Player(playerData: PlayerData = PlayerData()) {
+class Fighter(oldData: FighterData = FighterData(), newData: FighterData = FighterData()) {
 
     var present = true
 
     private var bounty = 0
     private var change = 0
-    private var chain = 0 //Random.nextInt(9)
+    private var chain = 0
     private var idle = 1
-    private var data = Pair(playerData, playerData)
+    private var data = Pair(oldData, newData)
 
     private fun oldData() = data.first
     fun getData() = data.second
 
-    fun updatePlayerData(updatedData: PlayerData, playersActive: Int) {
-        data = Pair(getData(), updatedData)
-        if (isLoading()) {
-            present = true
-            idle = max(1,playersActive)
-        }
-    }
-
-
+    fun getId() = getData().steamId
+    fun isValid() = getData().steamId > 0
     fun getName() = getData().displayName
-
-    fun getSteamId() = getData().steamId
 
     fun getCharacterId() = getData().characterId
 
@@ -64,7 +55,7 @@ class Player(playerData: PlayerData = PlayerData()) {
                 idle = 0
             } else {
 //                idle = max(1,s.getActivePlayerCount())
-                log("P: ${getIdString(getSteamId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getName()})")
+                log("P: ${getIdString(getId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getData().displayName})")
             }
         }
     }
@@ -124,8 +115,8 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun getSeatString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
         if (cabId > 3) return ""
         when(sideId) {
-            0 -> return "Player One"
-            1 -> return "Player Two"
+            0 -> return "Fighter One"
+            1 -> return "Fighter Two"
             2 -> return "2nd (Next)"
             3 -> return "3rd"
             4 -> return "4th"

@@ -10,7 +10,7 @@ import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import session.Character.getCharacterTrademark
-import session.Player
+import session.Fighter
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -115,8 +115,8 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
         }
     } }
 
-    fun applyData(p: Player, session: Session) = Platform.runLater {
-            if (p.getSteamId() > 0L) {
+    fun applyData(p: Fighter, session: Session) = Platform.runLater {
+            if (p.getId() > 0L) {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterTrademark(p.getData().characterId)
 
