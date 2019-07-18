@@ -14,7 +14,7 @@ package session
  */
 class Cabinet(
     private val queue: List<Fighter> = emptyList(),
-    private val match: Match = Match()
+    val match: Match = Match()
 ) {
     fun getPlayers():List<Fighter> {
         val allPlayers = emptySet<Fighter>().toMutableSet()

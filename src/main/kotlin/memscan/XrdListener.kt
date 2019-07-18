@@ -92,28 +92,25 @@ class XrdListener {
     private fun getEventsMatchEnded() {
         val fightsOut = Duo(Fighter(), Fighter())
         var winningSide = Duo(-1, -1)
-        lobby.getNewFighters().forEach { nf ->
-            val of = lobby.getOldFighters().firstOrNull { it.getId() == nf.getId() } ?: Fighter()
-            // Find the Winner
+        lobby.getFighterPairs().forEach {
+            val of = it.first
+            val nf = it.second
             if (nf.getMatchesWon() > of.getMatchesWon() && nf.getMatchesPlayed() > of.getMatchesPlayed()) {
                 when (nf.getSeat()) {
                     0 -> { fightsOut.p1 = nf; winningSide = Duo(1, 0) }
-                    1 -> { fightsOut.p2 = nf; winningSide = Duo(0, 1) }
-                }
-            }
-            // Find the Loser
+                    1 -> { fightsOut.p2 = nf; winningSide = Duo(0, 1) } } }
             if (nf.getMatchesWon() == of.getMatchesWon() && nf.getMatchesPlayed() > of.getMatchesPlayed()) {
                 when (nf.getSeat()) {
-                    0 -> { fightsOut.p1 = nf}
-                    1 -> { fightsOut.p2 = nf}
-                }
-            }
+                    0 -> { fightsOut.p1 = nf; winningSide = Duo(0, 1)}
+                    1 -> { fightsOut.p2 = nf; winningSide = Duo(1, 0)} } }
         }
-        if (fightsOut.p1.isValid() && fightsOut.p2.isValid()) events.add(Event(MATCH_LOADING, Pair(fightsOut.p1, fightsOut.p2), Pair(winningSide.p1, winningSide.p2)))
+        if (fightsOut.p1.isValid() && fightsOut.p2.isValid()) events.add(Event(MATCH_ENDED, Pair(fightsOut.p1, fightsOut.p2), Pair(winningSide.p1, winningSide.p2)))
     }
 
     private fun getEventsRoundStarted() {
-        //            // Has the round started?
+        val match = lobby.getMatch(0)
+//        if (match.first )
+//            // Has the round started?
 //            if (!roundOngoing && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
 //                roundOngoing = true
 //                session.setMode(MATCH_MODE)

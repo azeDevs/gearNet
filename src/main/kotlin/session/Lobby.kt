@@ -1,5 +1,7 @@
 package session
 
+import utils.keepInRange
+
 /**
  *
  * XrdListener                  updates and archives Lobby data.
@@ -17,6 +19,8 @@ class Lobby (
     match: Match = Match()
 ) {
     val cabinets: List<Cabinet> = listOf(generateCab(0, fighters, match), generateCab(1, fighters, match), generateCab(2, fighters, match), generateCab(3, fighters, match))
+
+    fun getMatch(cabinetId: Int): Match = cabinets.get(keepInRange(cabinetId, 0, 3)).match
 
     private fun generateCab(cabinetId:Int, fighters: List<Fighter>, match: Match): Cabinet =
         Cabinet(fighters.filter { it.getCabinet() == cabinetId && it.getSeat() > 1 },

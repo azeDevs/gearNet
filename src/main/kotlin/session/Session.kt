@@ -29,12 +29,12 @@ class Session : Controller() {
                 PLAYER_MOVED -> log("Fighter \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
 
                 MATCH_LOADING -> log("Match loading with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
-                MATCH_ENDED -> log(it.getType().name)
+                MATCH_ENDED -> log("Match Ended with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
+                ROUND_ENDED -> log(it.getType().name)
 
                 BURST_ENABLED -> log(it.getType().name)
                 STRIKE_STUNNED -> log(it.getType().name)
                 DAMAGE_DEALT -> log(it.getType().name)
-                ROUND_ENDED -> log(it.getType().name)
 
                 LOBBY_DISPLAYED -> log(it.getType().name)
                 MATCH_DISPLAYED -> log(it.getType().name)
