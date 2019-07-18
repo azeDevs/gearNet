@@ -27,7 +27,7 @@ class TwitchBot : BotApi {
         }
 
         twitchClient.getChat().joinChannel("azeDevs")
-//        sendMessage("Hi Illusion!")
+//        sendMessage("Hi WOrld!")
     }
 
     fun getViewers() {

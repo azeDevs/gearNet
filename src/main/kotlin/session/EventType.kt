@@ -69,6 +69,7 @@ enum class EventType { NULL_EVENT,
     BURST_ENABLED,
     STRIKE_STUNNED,
     DAMAGE_DEALT,
+    ROUND_STARTED,
     ROUND_ENDED,
     MATCH_ENDED,
 

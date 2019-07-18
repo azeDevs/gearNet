@@ -101,8 +101,7 @@ class MemHandler : XrdApi {
             p2offs[1] = sortedStructOffs[4]
             val tension = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             val timer = getByteBufferFromAddress(timeroffs, 4)!!.int
-            val rounds =
-                Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
+            val rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
             return MatchData(timer, health, rounds, tension, canBurst, strikeStun, guardGauge)
         } catch (e: NullPointerException) {
             return MatchData()

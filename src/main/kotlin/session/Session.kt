@@ -23,14 +23,16 @@ class Session : Controller() {
     fun updateSession() {
         xrdListener.generateUpdate().forEach {
             when (it.getType()) {
+                NULL_EVENT -> log("null", "-1")
                 XRD_CONNECTED -> log("XrdApi connected")
                 XRD_DISCONNECT -> log("XrdApi disconnected")
                 PLAYER_JOINED -> log("Fighter \"${it.getPlayer().getName()}\" joined")
                 PLAYER_MOVED -> log("Fighter \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
 
-                MATCH_LOADING -> log("Match loading with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
-                MATCH_ENDED -> log("Match Ended with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
-                ROUND_ENDED -> log(it.getType().name)
+                MATCH_LOADING -> log("Match LOADING with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
+                MATCH_ENDED -> log("Match ENDED with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
+                ROUND_STARTED -> log("Round STARTED with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
+                ROUND_ENDED -> log("Round ENDED with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
 
                 BURST_ENABLED -> log(it.getType().name)
                 STRIKE_STUNNED -> log(it.getType().name)
@@ -43,6 +45,7 @@ class Session : Controller() {
     }
 
 }
+
 
 
 //        // New match underway?
@@ -141,13 +144,7 @@ class Session : Controller() {
 //        .sortedByDescending { item -> item.getBounty() }
 //        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 //
-//    // CLIENT
-//    fun getClient(): Fighter {
-//        if (!players.isEmpty()) {
-//            val clientId = xrdApi.getClientSteamId()
-//            return players.values.first { it.getId() == clientId }
-//        } else return Fighter()
-//    }
+
 //}
 
 

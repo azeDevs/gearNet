@@ -48,6 +48,7 @@ class XrdListener {
             getEventsMatchLoading()
             getEventsMatchEnded()
             getEventsDamageDealt()
+            getEventsRoundStarted()
             getEventsRoundEnded()
             getEventsLobbyDisplayed()
             getEventsMatchDisplayed()
@@ -81,11 +82,12 @@ class XrdListener {
     }
 
     private fun getEventsMatchLoading() {
-        val playersLoading = lobby.getNewFighters().filter { it.isLoading() }
-        if (playersLoading.size == 2) {
-            log("loadingP1", playersLoading[0].getLoadPercent().toString())
-            log("loadingP2", playersLoading[1].getLoadPercent().toString())
-            events.add(Event(MATCH_LOADING, Pair(playersLoading[0], playersLoading[1])))
+        // FIXME: THIS NEEDS TO ONLY FIRE ONCE
+        val fighters = lobby.getFighterPairs().filter { it.second.isLoading() && it.second.getLoadPercent() < it.first.getLoadPercent() }
+        if (fighters.size == 2) {
+            log("loadingP1", fighters[0].second.getLoadPercent().toString())
+            log("loadingP2", fighters[1].second.getLoadPercent().toString())
+            events.add(Event(MATCH_LOADING, Pair(fighters[0].second, fighters[1].second)))
         }
     }
 
@@ -108,17 +110,21 @@ class XrdListener {
     }
 
     private fun getEventsRoundStarted() {
-        val match = lobby.getMatch(0)
-//        if (match.first )
-//            // Has the round started?
-//            if (!roundOngoing && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
-//                roundOngoing = true
-//                session.setMode(MATCH_MODE)
-//                utils.log("[MATC] ID$matchId Duel ${getRounds(P1) + getRounds(P2) + 1} ... LET'S ROCK!")
-//            }
+        val oldMatch = lobby.getMatch(getClient().getCabinet()).first
+        val newMatch = lobby.getMatch(getClient().getCabinet()).second
+        log("Player 1 HP","${newMatch.getHealth(0)}")
+        log("Player 2 HP","${newMatch.getHealth(1)}")
+        log("TEST", "${newMatch.getHealth(0) == 420 && newMatch.getHealth(1) == 420}")
+        if(oldMatch.getHealth(0) != 420 || oldMatch.getHealth(1) != 420)
+            if(newMatch.getHealth(0) == 420 && newMatch.getHealth(1) == 420)
+                events.add(Event(ROUND_STARTED))
     }
 
     private fun getEventsRoundEnded() {
+        val oldMatch = lobby.getMatch(getClient().getCabinet()).first
+        val newMatch = lobby.getMatch(getClient().getCabinet()).second
+        if((newMatch.getHealth(0) == 0 && oldMatch.getHealth(0) != 0) || (newMatch.getHealth(1) == 0 && oldMatch.getHealth(1) != 0))
+            events.add(Event(ROUND_ENDED, newMatch.fighters, newMatch.getHealth()))
 
 //            // Has the round ended, and did player 1 win?
 //            if (roundOngoing && getWinner() == -1 && getHealth(P2) == 0 && getHealth(P1) != getHealth(P2) ) {
@@ -146,6 +152,13 @@ class XrdListener {
 
     private fun getEventsMatchDisplayed() {
         //events.add(Event(MATCH_DISPLAYED))
+    }
+
+    fun getClient(): Fighter {
+        if (lobby.getFighterPairs().size == 1) {
+            val clientId = xrdApi.getClientSteamId()
+            return lobby.getNewFighters().first { it.getId() == clientId }
+        } else return Fighter()
     }
 
 }
