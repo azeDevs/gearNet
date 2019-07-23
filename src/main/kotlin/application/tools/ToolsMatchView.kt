@@ -7,7 +7,7 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
-import session.Match
+import models.Match
 import session.Session
 import tornadofx.*
 import utils.Duo
@@ -61,7 +61,7 @@ class ToolsMatchView(override val root: Parent) : Fragment() {
                     vbox { addClass(ToolsMatchStyle.sidestatsContainer)
                         translateY += 35.0
                         hbox {
-                            character.p1 = imageview(getRes("gn_atlas.png").toString()) {
+                            character.f1 = imageview(getRes("gn_atlas.png").toString()) {
                                 viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                                 fitHeight = 32.0
                                 fitWidth = 32.0
@@ -69,27 +69,27 @@ class ToolsMatchView(override val root: Parent) : Fragment() {
                                 translateY -= 2.0
                             }
                             vbox {
-                                handle.p1 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
+                                handle.f1 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
                                 hbox {
-                                    health.p1 = label().addClass(ToolsMatchStyle.demoText)
-                                    rounds.p1 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
+                                    health.f1 = label().addClass(ToolsMatchStyle.demoText)
+                                    rounds.f1 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
                                 }
                             }
                         }
                         hbox{ translateY += 6.0
-                            risc.p1 = label().addClass(ToolsMatchStyle.demoText)
-                            isHit.p1 = label().addClass(ToolsMatchStyle.demoText)
+                            risc.f1 = label().addClass(ToolsMatchStyle.demoText)
+                            isHit.f1 = label().addClass(ToolsMatchStyle.demoText)
                         }
                         hbox { translateY += 6.0
-                            tension.p1 = label().addClass(ToolsMatchStyle.demoText)
-                            burst.p1 = label().addClass(ToolsMatchStyle.demoText)
+                            tension.f1 = label().addClass(ToolsMatchStyle.demoText)
+                            burst.f1 = label().addClass(ToolsMatchStyle.demoText)
                         }
                     }
                     vbox { addClass(ToolsMatchStyle.sidestatsContainer)
                         translateY += 35.0
                         translateX += 4.0
                         hbox {
-                            character.p2 = imageview(getRes("gn_atlas.png").toString()) {
+                            character.f2 = imageview(getRes("gn_atlas.png").toString()) {
                                 viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
                                 fitHeight = 32.0
                                 fitWidth = 32.0
@@ -97,20 +97,20 @@ class ToolsMatchView(override val root: Parent) : Fragment() {
                                 translateY -= 2.0
                             }
                             vbox {
-                                handle.p2 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
+                                handle.f2 = label().addClass(ToolsMatchStyle.matchPlayerTitle)
                                 hbox { //translateY += 6.0
-                                    health.p2 = label().addClass(ToolsMatchStyle.demoText)
-                                    rounds.p2 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
+                                    health.f2 = label().addClass(ToolsMatchStyle.demoText)
+                                    rounds.f2 = label { addClass(ToolsMatchStyle.demoText); translateX -= 20.0 }
                                 }
                             }
                         }
                         hbox{ translateY += 6.0
-                            risc.p2 = label().addClass(ToolsMatchStyle.demoText)
-                            isHit.p2 = label().addClass(ToolsMatchStyle.demoText)
+                            risc.f2 = label().addClass(ToolsMatchStyle.demoText)
+                            isHit.f2 = label().addClass(ToolsMatchStyle.demoText)
                         }
                         hbox { translateY += 6.0
-                            tension.p2 = label().addClass(ToolsMatchStyle.demoText)
-                            burst.p2 = label().addClass(ToolsMatchStyle.demoText)
+                            tension.f2 = label().addClass(ToolsMatchStyle.demoText)
+                            burst.f2 = label().addClass(ToolsMatchStyle.demoText)
                         }
                     }
                 }
@@ -124,54 +124,54 @@ class ToolsMatchView(override val root: Parent) : Fragment() {
 //                timer.text = m.getTimer().toString()
 //                cabinet.text = m.getCabinetString()
 //
-//                character.p1.setViewport(getCharacterTrademark(m.getCharacter(P1)))
-//                handle.p1.text = m.getHandleString(P1)
-//                tension.p1.text = m.getTensionString(P1)
-//                health.p1.text = m.getHealthString(P1)
-//                rounds.p1.text = m.getRoundsString(P1)
-//                burst.p1.text = m.getBurstString(P1)
-//                risc.p1.text = m.getRiscString(P1)
-//                isHit.p1.text = m.getHitStunString(P1)
+//                character.f1.setViewport(getCharacterTrademark(m.getCharacter(P1)))
+//                handle.f1.text = m.getHandleString(P1)
+//                tension.f1.text = m.getTensionString(P1)
+//                health.f1.text = m.getHealthString(P1)
+//                rounds.f1.text = m.getRoundsString(P1)
+//                burst.f1.text = m.getBurstString(P1)
+//                risc.f1.text = m.getRiscString(P1)
+//                isHit.f1.text = m.getHitStunString(P1)
 //
-//                character.p2.setViewport(getCharacterPortrait(m.getCharacter(P2)))
-//                handle.p2.text = m.getHandleString(P2)
-//                tension.p2.text = m.getTensionString(P2)
-//                health.p2.text = m.getHealthString(P2)
-//                rounds.p2.text = m.getRoundsString(P2)
-//                burst.p2.text = m.getBurstString(P2)
-//                risc.p2.text = m.getRiscString(P2)
-//                isHit.p2.text = m.getHitStunString(P2)
+//                character.f2.setViewport(getCharacterPortrait(m.getCharacter(P2)))
+//                handle.f2.text = m.getHandleString(P2)
+//                tension.f2.text = m.getTensionString(P2)
+//                health.f2.text = m.getHealthString(P2)
+//                rounds.f2.text = m.getRoundsString(P2)
+//                burst.f2.text = m.getBurstString(P2)
+//                risc.f2.text = m.getRiscString(P2)
+//                isHit.f2.text = m.getHitStunString(P2)
 //            } else {
 //                wholeThing.opacity = GHOST_OPACITY
 //                timer.text = ""
 //                cabinet.text = ""
 //
-//                character.p1.setViewport(getCharacterPortrait(NULL))
-//                handle.p1.text = ""
-//                tension.p1.text = ""
-//                health.p1.text = ""
-//                rounds.p1.text = ""
-//                burst.p1.text = ""
-//                risc.p1.text = ""
-//                isHit.p1.text = ""
+//                character.f1.setViewport(getCharacterPortrait(NULL))
+//                handle.f1.text = ""
+//                tension.f1.text = ""
+//                health.f1.text = ""
+//                rounds.f1.text = ""
+//                burst.f1.text = ""
+//                risc.f1.text = ""
+//                isHit.f1.text = ""
 //
-//                character.p2.setViewport(getCharacterPortrait(NULL))
-//                handle.p2.text = ""
-//                tension.p2.text = ""
-//                health.p2.text = ""
-//                rounds.p2.text = ""
-//                burst.p2.text = ""
-//                risc.p2.text = ""
-//                isHit.p2.text = ""
+//                character.f2.setViewport(getCharacterPortrait(NULL))
+//                handle.f2.text = ""
+//                tension.f2.text = ""
+//                health.f2.text = ""
+//                rounds.f2.text = ""
+//                burst.f2.text = ""
+//                risc.f2.text = ""
+//                isHit.f2.text = ""
 //            }
 //
-//        if (isInRange(m.getTension(P1), 0, 10000)) tension.p1.textFill = c("#84c928") else tension.p1.textFill = c("#d22e44")
-//        if (isInRange(m.getHealth(P1), 0, 420)) health.p1.textFill = c("#84c928") else health.p1.textFill = c("#d22e44")
-//        if (isInRange(m.getRisc(P1), -12800, 12800)) risc.p1.textFill = c("#84c928") else risc.p1.textFill = c("#d22e44")
+//        if (isInRange(m.getTension(P1), 0, 10000)) tension.f1.textFill = c("#84c928") else tension.f1.textFill = c("#d22e44")
+//        if (isInRange(m.getHealth(P1), 0, 420)) health.f1.textFill = c("#84c928") else health.f1.textFill = c("#d22e44")
+//        if (isInRange(m.getRisc(P1), -12800, 12800)) risc.f1.textFill = c("#84c928") else risc.f1.textFill = c("#d22e44")
 //
-//        if (isInRange(m.getTension(P2), 0, 10000)) tension.p2.textFill = c("#84c928") else tension.p2.textFill = c("#d22e44")
-//        if (isInRange(m.getHealth(P2), 0, 420)) health.p2.textFill = c("#84c928") else health.p2.textFill = c("#d22e44")
-//        if (isInRange(m.getRisc(P2), -12800, 12800)) risc.p2.textFill = c("#84c928") else risc.p2.textFill = c("#d22e44")
+//        if (isInRange(m.getTension(P2), 0, 10000)) tension.f2.textFill = c("#84c928") else tension.f2.textFill = c("#d22e44")
+//        if (isInRange(m.getHealth(P2), 0, 420)) health.f2.textFill = c("#84c928") else health.f2.textFill = c("#d22e44")
+//        if (isInRange(m.getRisc(P2), -12800, 12800)) risc.f2.textFill = c("#84c928") else risc.f2.textFill = c("#d22e44")
     }
 
 }

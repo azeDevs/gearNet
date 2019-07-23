@@ -251,6 +251,6 @@ fun getRes(fileName: String): URI {
  * This is basically the same as Pair(), except mutable and unsafe.
  */
 class Duo<T>(
-    var p1: T,
-    var p2: T = p1
+    var f1: T,
+    var f2: T = f1
 )

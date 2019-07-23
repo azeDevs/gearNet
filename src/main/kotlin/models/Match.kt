@@ -1,10 +1,10 @@
-package session
+package models
 
 import memscan.MatchData
 
 /**
  *
- * XrdListener                  updates and archives Lobby data.
+ * XrdEventListener                  updates and archives Lobby data.
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data

@@ -11,7 +11,7 @@ import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
-import session.Fighter
+import models.Fighter
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -87,9 +87,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            }
 //        }
 //
-//        val p1 = players.firstOrNull { it.getSeat().toInt() == 0 } ?: Fighter()
-//        val p2 = players.firstOrNull { it.getSeat().toInt() == 1 } ?: Fighter()
-//        applyData(p1, p2, s)
+//        val f1 = players.firstOrNull { it.getSeat().toInt() == 0 } ?: Fighter()
+//        val f2 = players.firstOrNull { it.getSeat().toInt() == 1 } ?: Fighter()
+//        applyData(f1, f2, s)
 //        for (i in 0..3) {
 //            if (players.size > i) {
 //                bountiesGui[i].applyData(players[i], s)
@@ -99,15 +99,15 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     }
 
     fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
-//        if (p1.getId() > 0L) {
-//            bounty0.text = p1.getBountyString()
+//        if (f1.getId() > 0L) {
+//            bounty0.text = f1.getBountyString()
 //            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
 //            else health0.text = ""
-//            rating0.viewport = Rectangle2D(p1.getRatingImage().minX, p1.getRatingImage().minY + 20, p1.getRatingImage().width, p1.getRatingImage().height - 20)
+//            rating0.viewport = Rectangle2D(f1.getRatingImage().minX, f1.getRatingImage().minY + 20, f1.getRatingImage().width, f1.getRatingImage().height - 20)
 //            rating0.isVisible = true
-//            chains0.viewport = p1.getChainImage()
-//            chains0.isVisible = p1.getChain() > 0
-//            spirit0.isVisible = p1.getChain() > 0
+//            chains0.viewport = f1.getChainImage()
+//            chains0.isVisible = f1.getChain() > 0
+//            spirit0.isVisible = f1.getChain() > 0
 //            if (s.matchHandler.clientMatch.getRounds(0) > 0) round10.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
 //            else round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //            if (s.matchHandler.clientMatch.getRounds(0) > 1) round20.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
@@ -120,15 +120,15 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //            round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //        }
-//        if (p2.getId() > 0L) {
-//            bounty1.text = p2.getBountyString()
+//        if (f2.getId() > 0L) {
+//            bounty1.text = f2.getBountyString()
 //            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
 //            else health1.text = ""
-//            rating1.viewport = Rectangle2D(p2.getRatingImage().minX, p2.getRatingImage().minY + 20, p2.getRatingImage().width, p2.getRatingImage().height - 20)
+//            rating1.viewport = Rectangle2D(f2.getRatingImage().minX, f2.getRatingImage().minY + 20, f2.getRatingImage().width, f2.getRatingImage().height - 20)
 //            rating1.isVisible = true
-//            chains1.viewport = p2.getChainImage()
-//            chains1.isVisible = p2.getChain() > 0
-//            spirit1.isVisible = p2.getChain() > 0
+//            chains1.viewport = f2.getChainImage()
+//            chains1.isVisible = f2.getChain() > 0
+//            spirit1.isVisible = f2.getChain() > 0
 //
 //            if (s.matchHandler.clientMatch.getRounds(1) > 0) round11.viewport = Rectangle2D(128.0, 576.0, 64.0, 64.0)
 //            else round11.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)

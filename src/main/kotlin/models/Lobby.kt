@@ -1,10 +1,10 @@
-package session
+package models
 
 import utils.keepInRange
 
 /**
  *
- * XrdListener                  updates and archives Lobby data.
+ * XrdEventListener                  updates and archives Lobby data.
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
@@ -23,8 +23,10 @@ class Lobby (
     fun getMatch(cabinetId: Int): Match = cabinets.get(keepInRange(cabinetId, 0, 3)).match
 
     private fun generateCab(cabinetId:Int, fighters: List<Fighter>, match: Match): Cabinet =
-        Cabinet(fighters.filter { it.getCabinet() == cabinetId && it.getSeat() > 1 },
-            if (match.cabinetId == cabinetId) match else Match())
+        Cabinet(
+            fighters.filter { it.getCabinet() == cabinetId && it.getSeat() > 1 },
+            if (match.cabinetId == cabinetId) match else Match()
+        )
 
     fun getFighters(): List<Fighter> = fighters.filter { it.getId() > 0 }.toList()
 

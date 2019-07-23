@@ -27,11 +27,8 @@ class ApplicationView : View() {
     }
 
     override val root: Form = Form()
-//    private val playersGui: MutableList<ToolsPlayerView> = ArrayList()
-//    private val matchesGui: MutableList<ToolsMatchView> = ArrayList()
     private val session: Session by inject()
     lateinit private var streamViewLayout: StreamViewLayout
-    lateinit private var consoleDrop: Label
     lateinit private var consoleView: Label
     lateinit private var watchKeyView: Label
     lateinit private var watchValView: Label
@@ -40,7 +37,7 @@ class ApplicationView : View() {
 
     private fun cycleGameLoop() {
         GlobalScope.launch {
-            session.updateSession()
+            session.refreshSession()
             updateConsole()
             streamViewLayout.updateStreamLeaderboard(session)
             delay(32); cycleGameLoop()

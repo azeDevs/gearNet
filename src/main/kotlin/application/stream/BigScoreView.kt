@@ -10,10 +10,10 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import session.Character.getCharacterTrademark
-import session.Fighter
+import models.Fighter
 import session.Session
 import tornadofx.*
+import utils.XrdChar.getCharacterTrademark
 import utils.getRes
 
 class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {

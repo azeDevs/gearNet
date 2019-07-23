@@ -1,47 +1,93 @@
 package session
 
-import memscan.XrdListener
-import session.EventType.*
+import events.BotHandler
+import events.EventType.*
+import events.FighterEvent
+import events.XrdEventListener
+import models.Fighter
 import tornadofx.Controller
-import twitch.BotListener
+import twitch.Viewer
 import utils.log
 
 
 class Session : Controller() {
 
-    companion object {
-        const val LOBBY_MODE = 0
-        const val LOADING_MODE = 1
-        const val MATCH_MODE = 2
-        const val SLASH_MODE = 3
-        const val VICTORY_MODE = 4
-    }
+    private var sessionMode = SessionMode.LOADING_MODE
+    private val fighters: HashMap<Long, Fighter> = HashMap()
+    private val viewers: HashMap<Long, Viewer> = HashMap()
 
-    private val xrdListener = XrdListener()
-    private val betListener = BotListener()
+    private val xrdListener = XrdEventListener()
+    private val botListener = BotHandler()
 
-    fun updateSession() {
-        xrdListener.generateUpdate().forEach {
+    fun refreshSession() {
+        // PROCESS Xrd EVENTS
+        xrdListener.generateEvents().forEach {
             when (it.getType()) {
-                NULL_EVENT -> log("null", "-1")
+                NULL_EVENT -> false
                 XRD_CONNECTED -> log("XrdApi connected")
                 XRD_DISCONNECT -> log("XrdApi disconnected")
-                PLAYER_JOINED -> log("Fighter \"${it.getPlayer().getName()}\" joined")
-                PLAYER_MOVED -> log("Fighter \"${it.getPlayer().getName()}\" moved ${if (it.getPlayer().getCabinet()>3) "off cabinet" else "to ${it.getPlayer().getSeatString()}, ${it.getPlayer().getCabinetString()}"}")
+                FIGHTER_JOINED -> runFighterJoined(it)
+                FIGHTER_MOVED -> runFighterMoved(it)
 
-                MATCH_LOADING -> log("Match LOADING with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
-                MATCH_ENDED -> log("Match ENDED with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
-                ROUND_STARTED -> log("Round STARTED with P1 \"${it.getPlayer(0).getName()}\" and P2 \"${it.getPlayer(1).getName()}\"")
-                ROUND_ENDED -> log("Round ENDED with ${if(it.getDelta(0) == 1) "P1 \"${it.getPlayer(0).getName()}\"" else "P2 \"${it.getPlayer(1).getName()}\""} as the winner.")
+                MATCH_LOADING -> runMatchLoading(it)
+                MATCH_ENDED -> runMatchEnded(it)
+                ROUND_STARTED -> runRoundStarted(it)
+                ROUND_ENDED -> runRoundEnded(it)
 
-                BURST_ENABLED -> log(it.getType().name)
-                STRIKE_STUNNED -> log(it.getType().name)
-                DAMAGE_DEALT -> log(it.getType().name)
-
-                LOBBY_DISPLAYED -> log(it.getType().name)
-                MATCH_DISPLAYED -> log(it.getType().name)
+                BURST_ENABLED -> runBurstEnabled(it)
+                STRIKE_STUNNED -> runStrikeStunned(it)
+                DAMAGE_DEALT -> runDamageDealt(it)
             }
         }
+
+        // PROCESS Viewers
+        botListener.parseViewerData()
+
+    }
+
+    private fun runFighterJoined(it: FighterEvent) {
+        log("Fighter \"${it.getFighter().getName()}\" joined")
+    }
+
+    private fun runFighterMoved(it: FighterEvent) {
+        log("Fighter \"${it.getFighter().getName()}\" moved ${
+        if (it.getFighter().getCabinet() > 3) "off cabinet" 
+        else "to ${it.getFighter().getSeatString()
+        }, ${it.getFighter().getCabinetString()}"}")
+    }
+
+    private fun runDamageDealt(it: FighterEvent) {
+        log(it.getType().name)
+    }
+
+    private fun runStrikeStunned(it: FighterEvent) {
+        log(it.getType().name)
+    }
+
+    private fun runBurstEnabled(it: FighterEvent) {
+        log(it.getType().name)
+    }
+
+    private fun runRoundEnded(it: FighterEvent) {
+        log("Round ENDED with ${
+        if (it.getDelta(0) == 1) "P1 \"${it.getFighter(0).getName()}\"" 
+        else "P2 \"${it.getFighter(1).getName()}\""
+        } as the winner.")
+    }
+
+    private fun runRoundStarted(it: FighterEvent) {
+        log("Round STARTED with P1 \"${it.getFighter(0).getName()}\" and P2 \"${it.getFighter(1).getName()}\"")
+    }
+
+    private fun runMatchEnded(it: FighterEvent) {
+        log("Match ENDED with ${
+        if (it.getDelta(0) == 1) "P1 \"${it.getFighter(0).getName()}\"" 
+        else "P2 \"${it.getFighter(1).getName()}\""
+        } as the winner.")
+    }
+
+    private fun runMatchLoading(it: FighterEvent) {
+        log("Match LOADING with P1 \"${it.getFighter(0).getName()}\" and P2 \"${it.getFighter(1).getName()}\"")
     }
 
 }
@@ -55,42 +101,42 @@ class Session : Controller() {
 //        lobbyHandler.getFighters().filter { it.isLoading() }.forEach { p ->
 //
 //            // Lobby Match stuff --------
-//            if (p.getPlaySide() == 0) lobbyMatchPlayers.p1 = p.getData()
-//            else lobbyMatchPlayers.p1 = FighterData()
-//            if (p.getPlaySide() == 1) lobbyMatchPlayers.p2 = p.getData()
-//            else lobbyMatchPlayers.p2 = FighterData()
+//            if (p.getPlaySide() == 0) lobbyMatchPlayers.f1 = p.getData()
+//            else lobbyMatchPlayers.f1 = FighterData()
+//            if (p.getPlaySide() == 1) lobbyMatchPlayers.f2 = p.getData()
+//            else lobbyMatchPlayers.f2 = FighterData()
 //
-//            if (lobbyMatchPlayers.p1.steamId != -1L
-//                && lobbyMatchPlayers.p2.steamId != -1L
-//                && lobbyMatchPlayers.p1.cabinetId == lobbyMatchPlayers.p2.cabinetId) {
-//                val newMatch = Match(matchHandler.archiveMatches.size.toLong(), lobbyMatchPlayers.p1.cabinetId, lobbyMatchPlayers)
+//            if (lobbyMatchPlayers.f1.steamId != -1L
+//                && lobbyMatchPlayers.f2.steamId != -1L
+//                && lobbyMatchPlayers.f1.cabinetId == lobbyMatchPlayers.f2.cabinetId) {
+//                val newMatch = Match(matchHandler.archiveMatches.size.toLong(), lobbyMatchPlayers.f1.cabinetId, lobbyMatchPlayers)
 //                matchHandler.lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
 //            }
 //
 //            // Client Match stuff --------
 //            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 0)
-//                clientMatchPlayers.p1 = p.getData() else clientMatchPlayers.p1 = FighterData()
+//                clientMatchPlayers.f1 = p.getData() else clientMatchPlayers.f1 = FighterData()
 //            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 1)
-//                clientMatchPlayers.p2 = p.getData() else clientMatchPlayers.p2 = FighterData()
+//                clientMatchPlayers.f2 = p.getData() else clientMatchPlayers.f2 = FighterData()
 //            matchHandler.updateClientMatch(lobbyHandler.getMatchData(), this)
 //
 //            // Set sessionMode to MATCH_MODE
 //            if (sessionMode == MATCH_MODE
-//                && clientMatchPlayers.p1.steamId == -1L
-//                && clientMatchPlayers.p2.steamId == -1L) {
+//                && clientMatchPlayers.f1.steamId == -1L
+//                && clientMatchPlayers.f2.steamId == -1L) {
 //                players.values.forEach {
 //                    if (it.getCabinet() == getClient().getCabinet()
 //                        && it.getPlaySide().toInt() == 0)
-//                        clientMatchPlayers.p1 = it.getData()
+//                        clientMatchPlayers.f1 = it.getData()
 //                    if (it.getCabinet() == getClient().getCabinet()
 //                        && it.getPlaySide().toInt() == 1)
-//                        clientMatchPlayers.p2 = it.getData()
+//                        clientMatchPlayers.f2 = it.getData()
 //                }
 //            }
 //            // Set sessionMode to LOADING_MODE
 //            if (matchHandler.clientMatch.matchId == -1L
-//                && clientMatchPlayers.p1.steamId > 0L
-//                && clientMatchPlayers.p2.steamId > 0L) {
+//                && clientMatchPlayers.f1.steamId > 0L
+//                && clientMatchPlayers.f2.steamId > 0L) {
 //                matchHandler.clientMatch =
 //                    Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
 //                utils.log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
@@ -114,7 +160,7 @@ class Session : Controller() {
 //        }
 //
 //        // Filter Twitch messages for valid commands to execute
-//        bettingHandler.updateGamblers()
+//        bettingHandler.parseViewerData()
 //
 //        return somethingChanged
 //    }

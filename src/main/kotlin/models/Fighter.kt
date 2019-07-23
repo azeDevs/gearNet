@@ -1,8 +1,9 @@
-package session
+package models
 
 import javafx.geometry.Rectangle2D
 import memscan.FighterData
-import session.Character.getCharacterName
+import session.Session
+import utils.XrdChar.getCharacterName
 import utils.addCommas
 import utils.getIdString
 import utils.log
@@ -12,7 +13,7 @@ import kotlin.math.min
 
 /**
  *
- * XrdListener                  updates and archives Lobby getData().
+ * XrdEventListener                  updates and archives Lobby getData().
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
@@ -22,7 +23,7 @@ import kotlin.math.min
  * contains Fighter bounty and chains data
  *
  */
-class Fighter(oldData: FighterData = FighterData(), newData: FighterData = FighterData()) {
+class Fighter(oldData: FighterData = FighterData(), newData: FighterData = FighterData()) : PlayerData<FighterData>(oldData, newData, newData.displayName, newData.steamId) {
 
     var present = true
 
@@ -30,14 +31,6 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = Fight
     private var change = 0
     private var chain = 0
     private var idle = 1
-    private var data = Pair(oldData, newData)
-
-    private fun oldData() = data.first
-    fun getData() = data.second
-
-    fun getId() = getData().steamId
-    fun isValid() = getData().steamId > 0
-    fun getName() = getData().displayName
 
     fun getCharacterId() = getData().characterId
 

@@ -8,7 +8,7 @@ import utils.getTokenFromFile
 import utils.log
 
 class TwitchBot : BotApi {
-    private val messageCache: MutableList<Message> = mutableListOf()
+    private val messageCache: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient
 
     init {
@@ -23,11 +23,15 @@ class TwitchBot : BotApi {
             .build()
 
         twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe {
-            messageCache.add(Message(it.user.id, it.user.name, it.message))
+            parseMessage(it)
         }
 
         twitchClient.getChat().joinChannel("azeDevs")
 //        sendMessage("Hi WOrld!")
+    }
+
+    private fun parseMessage(it: ChannelMessageEvent) {
+        messageCache.add(ViewerData(it.user.id, it.user.name, it.message))
     }
 
     fun getViewers() {
@@ -42,10 +46,11 @@ class TwitchBot : BotApi {
 
     override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", message)
 
-    override fun getMessages(): List<Message> = messageCache
+    override fun getViewerData(): List<ViewerData> = messageCache
     fun clearMessages() { messageCache.clear() }
 
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
 
-    fun <T> eval(callback: (client: TwitchClient) -> T): T = callback.invoke(twitchClient)
+
+
 }

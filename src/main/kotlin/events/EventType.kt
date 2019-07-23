@@ -1,15 +1,15 @@
-package session
+package events
+
+import models.Fighter
 
 
-class Event {
-    private var eventType: EventType = EventType.NULL_EVENT
-    private var fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter())
-    private var deltas: Pair<Int, Int> = Pair(0, 0)
+class FighterEvent {
+    private val eventType: EventType
+    private val fighters: Pair<Fighter, Fighter>
+    private val deltas: Pair<Int, Int>
 
     fun getType() = eventType
-    fun getPlayers() = fighters
-    fun getDeltas() = deltas
-    fun getPlayer(i:Int = 0) = if (i == 0) fighters.first else fighters.second
+    fun getFighter(i:Int = 0) = if (i == 0) fighters.first else fighters.second
     fun getDelta(i:Int = 0) = if (i == 0) deltas.first else deltas.second
 
     // 1 0 0
@@ -20,7 +20,8 @@ class Event {
     }
     // 1 1 0
     constructor(eventType: EventType = EventType.NULL_EVENT,
-                fighter: Fighter = Fighter()) {
+                fighter: Fighter = Fighter()
+    ) {
         this.eventType = eventType
         this.fighters = Pair(fighter, fighter)
         this.deltas = Pair(0, 0)
@@ -61,8 +62,8 @@ class Event {
 enum class EventType { NULL_EVENT,
 
     // LOBBY EVENTS
-    PLAYER_JOINED,
-    PLAYER_MOVED,
+    FIGHTER_JOINED,
+    FIGHTER_MOVED,
 
     // MATCH EVENTS
     MATCH_LOADING,
@@ -75,8 +76,6 @@ enum class EventType { NULL_EVENT,
 
     // CLIENT EVENTS
     XRD_CONNECTED,
-    XRD_DISCONNECT,
-    LOBBY_DISPLAYED,
-    MATCH_DISPLAYED
+    XRD_DISCONNECT
 
 }

@@ -1,8 +1,8 @@
-package session
+package models
 
 /**
  *
- * XrdListener                  updates and archives Lobby data.
+ * XrdEventListener                  updates and archives Lobby data.
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
@@ -48,8 +48,8 @@ class Cabinet(
 //
 //    fun getFighters():List<Fighter> {
 //        val allPlayers = emptySet<Fighter>().toMutableSet()
-//        allPlayers.add(fightingPlayers.p1)
-//        allPlayers.add(fightingPlayers.p2)
+//        allPlayers.add(fightingPlayers.f1)
+//        allPlayers.add(fightingPlayers.f2)
 //        allPlayers.addAll(queuedUpPlayers)
 //        allPlayers.addAll(spectatingPlayers)
 //        return allPlayers.toList()
