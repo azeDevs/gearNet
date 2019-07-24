@@ -74,7 +74,8 @@ class ViewerEvent {
 
     fun get() = viewer
     fun getId() = viewer.getId()
-    fun getName() = "“${viewer.getName()}”"
+    fun getName() = viewer.getName()
+    fun getData() = viewer.getData()
 
     fun getType() = eventType
     fun getMessage() = message
@@ -118,6 +119,7 @@ enum class EventType { NULL_EVENT,
 
     // VIEWER EVENTS
     VIEWER_MESSAGE,
+    VIEWER_JOINED,
     COMMAND_BET,
     COMMAND_HELP,
     COMMAND_WALLET

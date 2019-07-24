@@ -1,11 +1,11 @@
 package events
 
-import events.EventType.XRD_CONNECTED
-import events.EventType.XRD_DISCONNECT
+import events.EventType.*
 import memscan.MemHandler
 import memscan.XrdApi
 import models.Fighter
 import models.Match
+import session.SessionState
 import utils.Duo
 import utils.log
 
@@ -33,12 +33,12 @@ class XrdEventListener {
     fun getClient(): Fighter {
         if (lobbyHandler.getFighterPairs().size >= 1 && !clientFighter.isValid()) {
             clientFighter = lobbyHandler.getNewFighters().first { it.getId() == xrdApi.getClientSteamId() }
-            log("XrdApi defined “${clientFighter.getName()}” as client source") }
-        log("client", "${clientFighter.isValid()}")
+            log("XrdApi defined ${clientFighter.getName()} as client source") }
+        log("client", "${clientFighter.getName(false)}")
         return clientFighter
     }
 
-    fun generateFighterEvents(): List<FighterEvent> {
+    fun generateFighterEvents(state: SessionState): List<FighterEvent> {
         events.clear()
         if (xrdApi.isConnected()) { if (!connected) { events.add(FighterEvent(XRD_CONNECTED)); connected = true }
 
@@ -56,8 +56,8 @@ class XrdEventListener {
             // 3. Generate Events
             if (getClient().isValid()) {
                 logUpdateToGUI()
-                getEventsPlayerJoined()
-                getEventsPlayerMoved()
+                getEventsFighterJoined(state)
+                getEventsFighterMoved()
                 getEventsMatchLoading()
                 getEventsMatchEnded()
                 getEventsDamageDealt()
@@ -73,28 +73,23 @@ class XrdEventListener {
         log("totalPlayers","${lobbyHandler.getNewFighters().size}")
     }
 
-    fun getEventsPlayerJoined() {
-        val p1 = lobbyHandler.getOldFighters()
-        val p2 = lobbyHandler.getNewFighters()
-        p2.filter { np -> var flag = true
-            p1.forEach { op -> if (op.getId() == np.getId()) flag = false }
-            flag
-        }.forEach { events.add(FighterEvent(EventType.FIGHTER_JOINED, it)) }
+    fun getEventsFighterJoined(state:SessionState) {
+        lobbyHandler.getNewFighters().forEach {
+            if (!state.containsFighter(it.getId()))
+                events.add(FighterEvent(FIGHTER_JOINED, it)) }
     }
 
-    fun getEventsPlayerMoved() {
-        // FIXME: THIS SHOULD NOT FIRE IMMEDIATELY AFTER FIGHTER_JOINED EVENT
-        val p1 = lobbyHandler.getOldFighters()
-        val p2 = lobbyHandler.getNewFighters()
-        p2.filter { np -> var flag = true
-            p1.forEach { op -> if (
-                op.getSeat() == np.getSeat()
-                && op.getCabinet() == np.getCabinet()
-            ) flag = false }
-            flag
-        }.forEach {
-            events.add(FighterEvent(EventType.FIGHTER_MOVED, it, it.getSeat()))
-        }
+    fun getEventsFighterMoved() {
+            val p1 = lobbyHandler.getOldFighters()
+            val p2 = lobbyHandler.getNewFighters()
+            p2.filter { np -> var flag = true
+                p1.forEach { op -> if (op.getSeat() == np.getSeat() && op.getCabinet() == np.getCabinet()) flag = false }
+                flag
+            }.forEach { movedFighter ->
+                if (events.filter { fighterEvent -> fighterEvent.getType() == FIGHTER_JOINED && fighterEvent.getId() == movedFighter.getId()}.size == 0) {
+                    events.add(FighterEvent(FIGHTER_MOVED, movedFighter, movedFighter.getSeat())) }
+            }
+
     }
 
     fun getEventsMatchLoading() {

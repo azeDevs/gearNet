@@ -27,7 +27,7 @@ class DatabaseApi(host: String = "", password: String = "", username: String = "
                 //CREATES fightData TABLE IF DOESNT EXIST
                 it.execute("create table if not exists fightdata (winnerid bigint, winnerchar smallint, fallenid bigint, fallenchar smallint, occurences int, unique(winnerid, winnerchar, fallenid, fallenchar))")
                 //CREATES userData TABLE IF DOESNT EXIST
-                it.execute("create table if not exists userdata(id bigint unique, displayname text, matcheswon int, matchessum int, bountywon int, bountysum int)")
+                it.execute("create table if not exists userdata(twitchId bigint unique, displayname text, matcheswon int, matchessum int, bountywon int, bountysum int)")
             }
         }
     }

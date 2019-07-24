@@ -23,7 +23,7 @@ interface BotApi {
 }
 
 class ViewerData(
-    val id:Long = -1,
+    val twitchId:Long = -1,
     val name:String = "",
     val text:String = ""
 )

@@ -1,5 +1,7 @@
 package application
 
+import ARTIFACT_NAME
+import BUILD_VERSION
 import application.stream.StreamViewLayout
 import javafx.application.Platform
 import javafx.scene.control.Label
@@ -38,7 +40,7 @@ class ApplicationView : View() {
 
     private fun cycleGameLoop() {
         GlobalScope.launch {
-            session.refreshSession()
+            session.generateEvents()
             updateConsole()
             streamViewLayout.updateStreamLeaderboard(session)
             delay(32); cycleGameLoop()
@@ -46,6 +48,7 @@ class ApplicationView : View() {
     }
 
     init {
+        log("Starting $ARTIFACT_NAME $BUILD_VERSION")
         with(root) {
             addClass(ApplicationStyle.appContainer)
             stackpane {

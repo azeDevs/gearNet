@@ -1,9 +1,6 @@
 package utils
 
-import ARTIFACT_NAME
-import BUILD_VERSION
-
-var consoleLog = arrayListOf("Starting $ARTIFACT_NAME $BUILD_VERSION")
+var consoleLog: MutableList<String> = arrayListOf()
 var watchedLog: MutableMap<String, String> = mutableMapOf()
 
 fun log(text: String) {

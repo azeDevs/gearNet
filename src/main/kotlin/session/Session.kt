@@ -5,29 +5,24 @@ import events.EventType.*
 import events.FighterEvent
 import events.ViewerEvent
 import events.XrdEventListener
-import models.Fighter
 import session.SessionMode.*
 import tornadofx.Controller
 import twitch.TwitchBot
-import twitch.Viewer
-import twitch.ViewerData
 import utils.addCommas
 import utils.log
 
 
 class Session : Controller() {
 
+    private val state = SessionState()
     private var sessionMode = MODE_NULL
-    private val fighters: HashMap<Long, Fighter> = HashMap()
-    private val viewers: HashMap<Long, Viewer> = HashMap()
-
     private val xrdListener = XrdEventListener()
     private val botApi = TwitchBot()
 
-    fun refreshSession() {
+    fun generateEvents() {
         log("sessionMode", sessionMode.name)
         // PROCESS FighterEvents
-        xrdListener.generateFighterEvents().forEach {
+        xrdListener.generateFighterEvents(state).forEach { state.update(it)
             when (it.getType()) {
                 NULL_EVENT -> false
                 XRD_CONNECTED -> log("XrdApi connected")
@@ -47,14 +42,11 @@ class Session : Controller() {
         }
 
         // PROCESS ViewerEvents
-        botApi.generateViewerEvents().forEach {
-            if (!viewers.containsKey(it.get().getId())) {
-                viewers.put(it.get().getId(), it.get())
-                log("Viewer \"${it.getName()}\" added to viewers map")
-            }
+        botApi.generateViewerEvents(state).forEach { state.update(it)
             when (it.getType()) {
                 NULL_EVENT -> false
                 VIEWER_MESSAGE -> runViewerMessage(it)
+                VIEWER_JOINED -> runViewerJoined(it)
 
                 COMMAND_BET -> runCommandBet(it)
                 COMMAND_HELP -> runCommandHelp(it)
@@ -65,13 +57,11 @@ class Session : Controller() {
     }
 
     private fun runViewerMessage(it: ViewerEvent) {
-        log("Viewer ${it.getName()} said \"${it.getMessage()}\"")
+        log("${it.getName()} said “${it.getMessage()}”")
     }
 
-    private fun runCommandUsers(cmd: List<String>, v: ViewerData) {
-        // FIXME: THIS DOESN'T GET USERS DUE TO THE "BOT" BEING A USER AND NOT AN APP
-        log("Viewer ${v.name} initiated \"${cmd[0]}\" ...")
-        botApi.getViewers().forEach { log(" • “$it”") }
+    private fun runViewerJoined(it: ViewerEvent) {
+        log("NEW Viewer ${it.getName()} added to viewers map")
     }
 
     private fun runCommandWallet(it: ViewerEvent) {
@@ -92,15 +82,11 @@ class Session : Controller() {
     }
 
     private fun runFighterJoined(it: FighterEvent) {
-        // NOTE: FIGHTER STATE STUFF GOES HEER
-        if (!fighters.containsKey(it.get().getId())) {
-            fighters.put(it.get().getId(), it.get())
-            log("Fighter \"${it.getName()}\" added to fighters map")
-        }
+        log("NEW Fighter ${it.getName()} added to fighters map")
     }
 
     private fun runFighterMoved(it: FighterEvent) {
-        log("Fighter \"${it.getName()}\" moved ${
+        log("Fighter ${it.getName()} moved ${
         if (it.get().getCabinet() > 3) "off cabinet" 
         else "to ${it.get().getSeatString()
         }, ${it.get().getCabinetString()}"}")
@@ -121,27 +107,27 @@ class Session : Controller() {
     private fun runRoundEnded(it: FighterEvent) {
         sessionMode = MODE_SLASH
         log("Round ENDED with ${
-        if (it.getDelta(0) == 1) "P1 \"${it.get(0).getName()}\"" 
-        else "P2 \"${it.get(1).getName()}\""
+        if (it.getDelta(0) == 1) "P1 ${it.get(0).getName()}" 
+        else "P2 ${it.get(1).getName()}"
         } as the winner.")
     }
 
     private fun runRoundStarted(it: FighterEvent) {
         sessionMode = MODE_MATCH
-        log("Round STARTED with P1 \"${it.get(0).getName()}\" and P2 \"${it.get(1).getName()}\"")
+        log("Round STARTED with P1 ${it.get(0).getName()} and P2 ${it.get(1).getName()}")
     }
 
     private fun runMatchEnded(it: FighterEvent) {
         sessionMode = MODE_VICTORY
         log("Match ENDED with ${
-        if (it.getDelta(0) == 1) "P1 \"${it.get(0).getName()}\"" 
-        else "P2 \"${it.get(1).getName()}\""
+        if (it.getDelta(0) == 1) "P1 ${it.get(0).getName()}" 
+        else "P2 ${it.get(1).getName()}"
         } as the winner.")
     }
 
     private fun runMatchLoading(it: FighterEvent) {
         sessionMode = MODE_LOADING
-        log("Match LOADING with P1 \"${it.get(0).getName()}\" and P2 \"${it.get(1).getName()}\"")
+        log("Match LOADING with P1 ${it.get(0).getName()} and P2 ${it.get(1).getName()}")
     }
 
 }

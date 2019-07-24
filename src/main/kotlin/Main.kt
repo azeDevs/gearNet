@@ -12,7 +12,7 @@ import tornadofx.launch
 fun main(args: Array<String>) = launch<MyApp>(args)
 
 val ARTIFACT_NAME = "GearNet // Bounty Bets"
-val BUILD_VERSION = "0.6.3"
+val BUILD_VERSION = "0.7.1"
 
 val WD = "\uD835\uDE86\$"
 

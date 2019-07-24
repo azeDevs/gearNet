@@ -7,6 +7,7 @@ import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import events.EventType.*
 import events.ViewerEvent
 import models.Fighter
+import session.SessionState
 import utils.getTokenFromFile
 import utils.keepInRange
 import utils.stringToInt
@@ -37,7 +38,7 @@ class TwitchBot : BotApi {
         twitchClient.getChat().joinChannel("azeDevs")
     }
 
-    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", "［ $message ］")
+    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", "$message") //"［$message］"
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
     override fun getViewerData(): List<ViewerData> {
         val outList: MutableList<ViewerData> = arrayListOf()
@@ -48,9 +49,10 @@ class TwitchBot : BotApi {
 
     fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
 
-    fun generateViewerEvents(): List<ViewerEvent> {
+    fun generateViewerEvents(state: SessionState): List<ViewerEvent> {
         val events: MutableList<ViewerEvent> = arrayListOf()
         getViewerData().forEach {
+            if (!state.contains(it)) events.add(ViewerEvent(VIEWER_JOINED, Viewer(it), it.text))
             var eventType = VIEWER_MESSAGE
             var viewer = Viewer(it) // TODO: FIND EXISTING USER, PASS IN oldData, else PASS IN newData only
             var fighter = Fighter()

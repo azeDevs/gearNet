@@ -99,7 +99,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     }
 
     fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
-//        if (f1.getId() > 0L) {
+//        if (f1.getTwitchId() > 0L) {
 //            bounty0.text = f1.getBountyString()
 //            if (s.sessionMode.equals(MODE_MATCH) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
 //            else health0.text = ""
@@ -120,7 +120,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            round10.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //            round20.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
 //        }
-//        if (f2.getId() > 0L) {
+//        if (f2.getTwitchId() > 0L) {
 //            bounty1.text = f2.getBountyString()
 //            if (s.sessionMode.equals(MODE_MATCH) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
 //            else health1.text = ""

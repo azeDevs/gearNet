@@ -3,7 +3,7 @@ package twitch
 import models.PlayerData
 import utils.keepInRange
 
-class Viewer(oldData:ViewerData = ViewerData(), newData:ViewerData = oldData): PlayerData<ViewerData>(oldData, newData, newData.name, newData.id) {
+class Viewer(oldData:ViewerData = ViewerData(), newData:ViewerData = oldData): PlayerData<ViewerData>(oldData, newData, newData.name, newData.twitchId) {
 
     private var scoreTotal = 0
     private var scoreDelta = 0
