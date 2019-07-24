@@ -16,7 +16,7 @@ class MemHandler : XrdApi {
 
     override fun isConnected(): Boolean {
         try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            GG_PROC!!.modules["GuiltyGearXrd.exe"]
+            GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
             return true }
         catch (e: IllegalStateException) { return false }
         catch (e: NullPointerException) { return false }

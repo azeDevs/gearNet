@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import session.Session
 import tornadofx.*
 import utils.consoleLog
+import utils.log
 import utils.watchedLog
 
 class ApplicationView : View() {
@@ -82,7 +83,7 @@ class ApplicationView : View() {
                 }
 
             }
-
+            log("XrdApi waiting for client source...")
             cycleGameLoop()
         }
     }

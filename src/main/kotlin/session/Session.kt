@@ -1,19 +1,23 @@
 package session
 
+import WD
 import events.EventType.*
 import events.FighterEvent
+import events.ViewerEvent
 import events.XrdEventListener
 import models.Fighter
+import session.SessionMode.*
 import tornadofx.Controller
 import twitch.TwitchBot
 import twitch.Viewer
+import twitch.ViewerData
 import utils.addCommas
 import utils.log
 
 
 class Session : Controller() {
 
-    private var sessionMode = SessionMode.LOADING_MODE
+    private var sessionMode = MODE_NULL
     private val fighters: HashMap<Long, Fighter> = HashMap()
     private val viewers: HashMap<Long, Viewer> = HashMap()
 
@@ -21,8 +25,9 @@ class Session : Controller() {
     private val botApi = TwitchBot()
 
     fun refreshSession() {
-        // PROCESS Xrd EVENTS
-        xrdListener.generateEvents().forEach {
+        log("sessionMode", sessionMode.name)
+        // PROCESS FighterEvents
+        xrdListener.generateFighterEvents().forEach {
             when (it.getType()) {
                 NULL_EVENT -> false
                 XRD_CONNECTED -> log("XrdApi connected")
@@ -41,25 +46,64 @@ class Session : Controller() {
             }
         }
 
-        // PROCESS Viewers
-        botApi.getViewerData().forEach {
-            if (it.betAmount > 0) {
-                botApi.sendMessage("${addCommas(it.betAmount)} \uD835\uDE86\$ ${it.betBanner.first} ${it.name}")
-                log("Bet from ${it.name}, ${addCommas(it.betAmount)} W\$ on ${it.betBanner.second}")
-            } else log("Bet failed from Viewer ${it.name}, invalid amount")
+        // PROCESS ViewerEvents
+        botApi.generateViewerEvents().forEach {
+            if (!viewers.containsKey(it.get().getId())) {
+                viewers.put(it.get().getId(), it.get())
+                log("Viewer \"${it.getName()}\" added to viewers map")
+            }
+            when (it.getType()) {
+                NULL_EVENT -> false
+                VIEWER_MESSAGE -> runViewerMessage(it)
+
+                COMMAND_BET -> runCommandBet(it)
+                COMMAND_HELP -> runCommandHelp(it)
+                COMMAND_WALLET -> runCommandWallet(it)
+            }
         }
 
     }
 
+    private fun runViewerMessage(it: ViewerEvent) {
+        log("Viewer ${it.getName()} said \"${it.getMessage()}\"")
+    }
+
+    private fun runCommandUsers(cmd: List<String>, v: ViewerData) {
+        // FIXME: THIS DOESN'T GET USERS DUE TO THE "BOT" BEING A USER AND NOT AN APP
+        log("Viewer ${v.name} initiated \"${cmd[0]}\" ...")
+        botApi.getViewers().forEach { log(" • “$it”") }
+    }
+
+    private fun runCommandWallet(it: ViewerEvent) {
+        log("!WALLET command from ${it.getName()} initiated")
+        botApi.sendMessage("${it.getName()} initiated !WALLET")
+    }
+
+    private fun runCommandHelp(it: ViewerEvent) {
+        log("!HELP command from ${it.getName()} initiated")
+        botApi.sendMessage("${it.getName()} initiated !HELP")
+    }
+
+    private fun runCommandBet(it: ViewerEvent) {
+        if (it.getBetAmount() > 0) {
+            botApi.sendMessage("${addCommas(it.getBetAmount())} \uD835\uDE86\$ ${it.getBetBanner().first} ${it.getName()}")
+            log("!BET command from ${it.getName()}, ${addCommas(it.getBetAmount())} $WD on ${it.getBetBanner().second}, initiated")
+        } else log("!BET command from ${it.getName()} failed to initiate, invalid amount")
+    }
+
     private fun runFighterJoined(it: FighterEvent) {
-        log("Fighter \"${it.getFighter().getName()}\" joined")
+        // NOTE: FIGHTER STATE STUFF GOES HEER
+        if (!fighters.containsKey(it.get().getId())) {
+            fighters.put(it.get().getId(), it.get())
+            log("Fighter \"${it.getName()}\" added to fighters map")
+        }
     }
 
     private fun runFighterMoved(it: FighterEvent) {
-        log("Fighter \"${it.getFighter().getName()}\" moved ${
-        if (it.getFighter().getCabinet() > 3) "off cabinet" 
-        else "to ${it.getFighter().getSeatString()
-        }, ${it.getFighter().getCabinetString()}"}")
+        log("Fighter \"${it.getName()}\" moved ${
+        if (it.get().getCabinet() > 3) "off cabinet" 
+        else "to ${it.get().getSeatString()
+        }, ${it.get().getCabinetString()}"}")
     }
 
     private fun runDamageDealt(it: FighterEvent) {
@@ -75,25 +119,29 @@ class Session : Controller() {
     }
 
     private fun runRoundEnded(it: FighterEvent) {
+        sessionMode = MODE_SLASH
         log("Round ENDED with ${
-        if (it.getDelta(0) == 1) "P1 \"${it.getFighter(0).getName()}\"" 
-        else "P2 \"${it.getFighter(1).getName()}\""
+        if (it.getDelta(0) == 1) "P1 \"${it.get(0).getName()}\"" 
+        else "P2 \"${it.get(1).getName()}\""
         } as the winner.")
     }
 
     private fun runRoundStarted(it: FighterEvent) {
-        log("Round STARTED with P1 \"${it.getFighter(0).getName()}\" and P2 \"${it.getFighter(1).getName()}\"")
+        sessionMode = MODE_MATCH
+        log("Round STARTED with P1 \"${it.get(0).getName()}\" and P2 \"${it.get(1).getName()}\"")
     }
 
     private fun runMatchEnded(it: FighterEvent) {
+        sessionMode = MODE_VICTORY
         log("Match ENDED with ${
-        if (it.getDelta(0) == 1) "P1 \"${it.getFighter(0).getName()}\"" 
-        else "P2 \"${it.getFighter(1).getName()}\""
+        if (it.getDelta(0) == 1) "P1 \"${it.get(0).getName()}\"" 
+        else "P2 \"${it.get(1).getName()}\""
         } as the winner.")
     }
 
     private fun runMatchLoading(it: FighterEvent) {
-        log("Match LOADING with P1 \"${it.getFighter(0).getName()}\" and P2 \"${it.getFighter(1).getName()}\"")
+        sessionMode = MODE_LOADING
+        log("Match LOADING with P1 \"${it.get(0).getName()}\" and P2 \"${it.get(1).getName()}\"")
     }
 
 }
@@ -126,8 +174,8 @@ class Session : Controller() {
 //                clientMatchPlayers.f2 = p.getData() else clientMatchPlayers.f2 = FighterData()
 //            matchHandler.updateClientMatch(lobbyHandler.getMatchData(), this)
 //
-//            // Set sessionMode to MATCH_MODE
-//            if (sessionMode == MATCH_MODE
+//            // Set sessionMode to MODE_MATCH
+//            if (sessionMode == MODE_MATCH
 //                && clientMatchPlayers.f1.steamId == -1L
 //                && clientMatchPlayers.f2.steamId == -1L) {
 //                players.values.forEach {
@@ -139,7 +187,7 @@ class Session : Controller() {
 //                        clientMatchPlayers.f2 = it.getData()
 //                }
 //            }
-//            // Set sessionMode to LOADING_MODE
+//            // Set sessionMode to MODE_LOADING
 //            if (matchHandler.clientMatch.matchId == -1L
 //                && clientMatchPlayers.f1.steamId > 0L
 //                && clientMatchPlayers.f2.steamId > 0L) {
@@ -147,10 +195,10 @@ class Session : Controller() {
 //                    Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
 //                utils.log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
 //                somethingChanged = true
-//                setMode(LOADING_MODE)
+//                setMode(MODE_LOADING)
 //            }
 //            // Set sessionMode to LOBBY_MODE
-//            if (sessionMode != LOBBY_MODE && sessionMode != LOADING_MODE
+//            if (sessionMode != LOBBY_MODE && sessionMode != MODE_LOADING
 //                && matchHandler.clientMatch.getHealth(0) < 0
 //                && matchHandler.clientMatch.getHealth(1) < 0
 //                && matchHandler.clientMatch.getRisc(0) < 0
@@ -184,10 +232,10 @@ class Session : Controller() {
 //        sessionMode = mode
 //        when (mode) {
 //            LOBBY_MODE -> utils.log("[SESS] sessionMode = LOBBY_MODE")
-//            LOADING_MODE -> utils.log("[SESS] sessionMode = LOADING_MODE")
-//            MATCH_MODE -> utils.log("[SESS] sessionMode = MATCH_MODE")
-//            SLASH_MODE -> utils.log("[SESS] sessionMode = SLASH_MODE")
-//            VICTORY_MODE -> utils.log("[SESS] sessionMode = VICTORY_MODE")
+//            MODE_LOADING -> utils.log("[SESS] sessionMode = MODE_LOADING")
+//            MODE_MATCH -> utils.log("[SESS] sessionMode = MODE_MATCH")
+//            MODE_SLASH -> utils.log("[SESS] sessionMode = MODE_SLASH")
+//            MODE_VICTORY -> utils.log("[SESS] sessionMode = MODE_VICTORY")
 //        }
 //    }
 //

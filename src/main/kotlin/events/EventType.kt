@@ -1,15 +1,20 @@
 package events
 
 import models.Fighter
+import twitch.Viewer
 
 
 class FighterEvent {
+
     private val eventType: EventType
     private val fighters: Pair<Fighter, Fighter>
     private val deltas: Pair<Int, Int>
 
+    fun get(i:Int = 0) = if (i == 0) fighters.first else fighters.second
+    fun getId(i:Int = 0) = if (i == 0) fighters.first.getId() else fighters.second.getId()
+    fun getName(i:Int = 0) = if (i == 0) fighters.first.getName() else fighters.second.getName()
+
     fun getType() = eventType
-    fun getFighter(i:Int = 0) = if (i == 0) fighters.first else fighters.second
     fun getDelta(i:Int = 0) = if (i == 0) deltas.first else deltas.second
 
     // 1 0 0
@@ -59,6 +64,39 @@ class FighterEvent {
     }
 }
 
+class ViewerEvent {
+    private val eventType: EventType
+    private val message: String
+    private val viewer: Viewer
+    private val fighter: Fighter
+    private val betBanner: Pair<String, String>
+    private val betAmount: Int
+
+    fun get() = viewer
+    fun getId() = viewer.getId()
+    fun getName() = "“${viewer.getName()}”"
+
+    fun getType() = eventType
+    fun getMessage() = message
+    fun getFighter() = fighter
+    fun getBetBanner() = betBanner
+    fun getBetAmount() = betAmount
+
+    constructor(eventType: EventType = EventType.NULL_EVENT,
+                viewer: Viewer = Viewer(),
+                message: String = "",
+                fighter: Fighter = Fighter(),
+                betBanner: Pair<String, String> = Pair("",""),
+                betAmount: Int = -1) {
+        this.eventType = eventType
+        this.viewer = viewer
+        this.message = message
+        this.fighter = fighter
+        this.betBanner = betBanner
+        this.betAmount = betAmount
+    }
+}
+
 enum class EventType { NULL_EVENT,
 
     // LOBBY EVENTS
@@ -76,6 +114,12 @@ enum class EventType { NULL_EVENT,
 
     // CLIENT EVENTS
     XRD_CONNECTED,
-    XRD_DISCONNECT
+    XRD_DISCONNECT,
+
+    // VIEWER EVENTS
+    VIEWER_MESSAGE,
+    COMMAND_BET,
+    COMMAND_HELP,
+    COMMAND_WALLET
 
 }

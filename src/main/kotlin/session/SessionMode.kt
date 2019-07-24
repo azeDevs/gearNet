@@ -1,9 +1,10 @@
 package session
 
 enum class SessionMode {
-    LOBBY_MODE,
-    LOADING_MODE,
-    MATCH_MODE,
-    SLASH_MODE,
-    VICTORY_MODE
+    MODE_NULL,
+    MODE_LOBBY,
+    MODE_LOADING,
+    MODE_MATCH,
+    MODE_SLASH,
+    MODE_VICTORY
 }

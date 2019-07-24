@@ -1,6 +1,9 @@
 package utils
 
-var consoleLog = arrayListOf("Starting GearNet // Bounty Bets 0.6.3")
+import ARTIFACT_NAME
+import BUILD_VERSION
+
+var consoleLog = arrayListOf("Starting $ARTIFACT_NAME $BUILD_VERSION")
 var watchedLog: MutableMap<String, String> = mutableMapOf()
 
 fun log(text: String) {

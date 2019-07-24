@@ -25,8 +25,5 @@ interface BotApi {
 class ViewerData(
     val id:Long = -1,
     val name:String = "",
-    val text:String = "",
-    val fighterId:Long = -1,
-    val betAmount:Int = -1,
-    val betBanner:Pair<String, String> = Pair("null","❌")
+    val text:String = ""
 )

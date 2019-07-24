@@ -9,9 +9,12 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-fun main(args: Array<String>) {
-    launch<MyApp>(args)
-}
+fun main(args: Array<String>) = launch<MyApp>(args)
+
+val ARTIFACT_NAME = "GearNet // Bounty Bets"
+val BUILD_VERSION = "0.6.3"
+
+val WD = "\uD835\uDE86\$"
 
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 
@@ -23,7 +26,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchSty
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.6.3"
+        view.title = "$ARTIFACT_NAME $BUILD_VERSION"
     }
 
     override fun start(stage: Stage) {

@@ -23,7 +23,7 @@ import kotlin.math.min
  * contains Fighter bounty and chains data
  *
  */
-class Fighter(oldData: FighterData = FighterData(), newData: FighterData = FighterData()) : PlayerData<FighterData>(oldData, newData, newData.displayName, newData.steamId) {
+class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldData) : PlayerData<FighterData>(oldData, newData, newData.displayName, newData.steamId) {
 
     var present = true
 
@@ -108,14 +108,14 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = Fight
     fun getSeatString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
         if (cabId > 3) return ""
         when(sideId) {
-            0 -> return "Fighter One"
-            1 -> return "Fighter Two"
-            2 -> return "2nd (Next)"
-            3 -> return "3rd"
-            4 -> return "4th"
-            5 -> return "5th"
-            6 -> return "6th"
-            7 -> return "Spectating"
+            0 -> return "Red seat"
+            1 -> return "Blue seat"
+            2 -> return "2nd seat"
+            3 -> return "3rd seat"
+            4 -> return "4th seat"
+            5 -> return "5th seat"
+            6 -> return "6th seat"
+            7 -> return "Spectator seat"
             else -> return "[${getSeat()}]"
         }
     }

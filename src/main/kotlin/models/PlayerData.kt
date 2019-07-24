@@ -6,7 +6,6 @@ abstract class PlayerData<T> {
     private val name: String
     private val id: Long
 
-
     constructor(oldData:T, newData:T, name:String, id:Long) {
         this.data = Pair(oldData, newData)
         this.name = name
@@ -18,4 +17,5 @@ abstract class PlayerData<T> {
     fun isValid() = id > 0
     fun oldData() = this.data.first
     fun getData() = this.data.second
+
 }

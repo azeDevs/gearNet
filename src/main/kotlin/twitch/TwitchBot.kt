@@ -4,17 +4,25 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
+import events.EventType.*
+import events.ViewerEvent
+import models.Fighter
 import utils.getTokenFromFile
-import utils.log
+import utils.keepInRange
 import utils.stringToInt
 
+typealias CME = ChannelMessageEvent
+typealias OA2C = OAuth2Credential
+typealias TCB = TwitchClientBuilder
+
 class TwitchBot : BotApi {
-    private val messageCache: MutableList<ViewerData> = mutableListOf()
+
+    private val viewerDatas: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient
 
     init {
-        twitchClient = TwitchClientBuilder.builder()
-            .withChatAccount(OAuth2Credential("twitch", getTokenFromFile("keys", "twitch_bot")))
+        twitchClient = TCB.builder()
+            .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
 //            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
 //            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
             .withEnableChat(true)
@@ -23,57 +31,47 @@ class TwitchBot : BotApi {
             .withEnableTMI(true)
             .build()
 
-        twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe { parseMessage(it) }
-        twitchClient.getChat().joinChannel("azeDevs")
-    }
-
-    private fun parseMessage(it: ChannelMessageEvent) {
-        val v = ViewerData(it.user.id, it.user.name, it.message)
-        log("Viewer ${v.name} said \"${v.text}\"")
-        if (!it.message.isEmpty() && it.message.substring(0,1).equals("!")) {
-            val cmd = it.message.toUpperCase().substring(1).split("\\s".toRegex()).toList()
-            when (cmd[0]) {
-                "R" -> messageCache.add(runBetCommand(cmd, v))
-                "B" -> messageCache.add(runBetCommand(cmd, v))
-                "RED" -> messageCache.add(runBetCommand(cmd, v))
-                "BLU" -> messageCache.add(runBetCommand(cmd, v))
-                "BLUE" -> messageCache.add(runBetCommand(cmd, v))
-                "USERS" -> runUsersCommand(cmd, v)
-                else -> messageCache.add(ViewerData(it.user.id, it.user.name, it.message))
-            }
-
+        twitchClient.chat.eventManager.onEvent(CME::class.java).subscribe {
+            viewerDatas.add(ViewerData(it.user.id, it.user.name, it.message))
         }
-    }
-
-    private fun runBetCommand(cmd: List<String>, v: ViewerData): ViewerData {
-        var fighterId = -1L
-        var betAmount = 5
-        var betBanner = Pair("null","❌")
-        if(cmd[0].equals("R", true)) betBanner = Pair("\uD83D\uDD34","Red")
-        if(cmd[0].equals("B", true)) betBanner = Pair("\uD83D\uDD35","Blue")
-        if(cmd.size.equals(2)) betAmount = stringToInt(cmd[1])
-        return ViewerData(v.id, v.name, v.text, fighterId, betAmount, betBanner)
-    }
-
-    fun runUsersCommand(cmd: List<String>, v: ViewerData) {
-        // FIXME: THIS DOESN'T GET USERS DUE TO THE "BOT" BEING A USER AND NOT AN APP
-        log("Viewer ${v.name} initiated \"${cmd[0]}\" ...")
-        val chatters = twitchClient.messagingInterface.getChatters("azeDevs").execute()
-        log("  VIPs: " + chatters.vips)
-        log("  Mods: " + chatters.moderators)
-        log("  Admins: " + chatters.admins)
-        log("  Staff: " + chatters.staff)
-        log("  Viewers: " + chatters.viewers)
-        log("  All Viewers (sum of the above): " + chatters.allViewers)
+        twitchClient.getChat().joinChannel("azeDevs")
     }
 
     override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", "［ $message ］")
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
     override fun getViewerData(): List<ViewerData> {
         val outList: MutableList<ViewerData> = arrayListOf()
-        messageCache.forEach { outList.add(it) }
-        messageCache.clear()
+        viewerDatas.forEach { outList.add(it) }
+        viewerDatas.clear()
         return outList
+    }
+
+    fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
+
+    fun generateViewerEvents(): List<ViewerEvent> {
+        val events: MutableList<ViewerEvent> = arrayListOf()
+        getViewerData().forEach {
+            var eventType = VIEWER_MESSAGE
+            var viewer = Viewer(it) // TODO: FIND EXISTING USER, PASS IN oldData, else PASS IN newData only
+            var fighter = Fighter()
+            var betBanner = Pair("","")
+            var betAmount = -1
+            if (!it.text.isEmpty() && it.text.substring(0,1).equals("!")) {
+                eventType = COMMAND_HELP
+                val cmd = it.text.toUpperCase().substring(1).split("\\s".toRegex()).toList()
+                if(cmd[0].equals("R", true) || cmd[0].equals("B", true)) {
+                    eventType = COMMAND_BET
+                    when (cmd[0]) {
+                        "R" -> betBanner = Pair("\uD83D\uDD34","Red")
+                        "B" -> betBanner = Pair("\uD83D\uDD35","Blue")
+                    }
+                    if(cmd.size == 2) betAmount = keepInRange(stringToInt(cmd[1]), 5, viewer.getScoreTotal())
+                    else betAmount = 5
+                }
+            }
+            events.add(ViewerEvent(eventType, viewer, it.text, fighter, betBanner, betAmount))
+        }
+        return events
     }
 
 }

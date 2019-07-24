@@ -226,7 +226,7 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
     }
 
     fun applyData(p: Fighter, s: Session) = Platform.runLater {
-            if (p.getId() > 0L) { //  && !s.sessionMode.equals(MATCH_MODE)
+            if (p.getId() > 0L) { //  && !s.sessionMode.equals(MODE_MATCH)
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getName(); handle1.isVisible = true
                 handle2.text = p.getName(); handle2.isVisible = true

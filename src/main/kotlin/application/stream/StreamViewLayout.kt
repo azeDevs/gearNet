@@ -53,7 +53,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //            lockHud = -1
 //            when (s.sessionMode) {
 //
-//                VICTORY_MODE -> {
+//                MODE_VICTORY -> {
 ////                    bountiesGui.forEach { it.setTarget(0.0) }
 //                    lobbyView.isVisible = true
 //                    matchView.isVisible = false
@@ -65,19 +65,19 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //                    matchView.isVisible = false
 //                    showHud = true
 //                }
-//                LOADING_MODE -> {
+//                MODE_LOADING -> {
 ////                    bountiesGui.forEach { it.setTarget(-256.0) }
 //                    lobbyView.isVisible = true
 //                    matchView.isVisible = false
 //                    showHud = true
 //                }
-//                MATCH_MODE -> {
+//                MODE_MATCH -> {
 ////                    bountiesGui.forEach { it.setTarget(2048.0) }
 //                    lobbyView.isVisible = false
 //                    matchView.isVisible = true
 //                    showHud = false
 //                }
-//                SLASH_MODE -> {
+//                MODE_SLASH -> {
 ////                    bountiesGui.forEach { it.setTarget(-256.0) }
 //                    lobbyView.isVisible = false
 //                    matchView.isVisible = true
@@ -101,7 +101,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
 //        if (f1.getId() > 0L) {
 //            bounty0.text = f1.getBountyString()
-//            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
+//            if (s.sessionMode.equals(MODE_MATCH) && s.matchHandler.clientMatch.getHealth(0) > 0) health0.text = s.matchHandler.clientMatch.getHealth(0).toString()
 //            else health0.text = ""
 //            rating0.viewport = Rectangle2D(f1.getRatingImage().minX, f1.getRatingImage().minY + 20, f1.getRatingImage().width, f1.getRatingImage().height - 20)
 //            rating0.isVisible = true
@@ -122,7 +122,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
 //        }
 //        if (f2.getId() > 0L) {
 //            bounty1.text = f2.getBountyString()
-//            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
+//            if (s.sessionMode.equals(MODE_MATCH) && s.matchHandler.clientMatch.getHealth(1) > 0) health1.text = s.matchHandler.clientMatch.getHealth(1).toString()
 //            else health1.text = ""
 //            rating1.viewport = Rectangle2D(f2.getRatingImage().minX, f2.getRatingImage().minY + 20, f2.getRatingImage().width, f2.getRatingImage().height - 20)
 //            rating1.isVisible = true
