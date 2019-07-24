@@ -7,6 +7,7 @@ import models.Fighter
 import tornadofx.Controller
 import twitch.TwitchBot
 import twitch.Viewer
+import utils.addCommas
 import utils.log
 
 
@@ -41,8 +42,12 @@ class Session : Controller() {
         }
 
         // PROCESS Viewers
-        botApi.getViewerData()
-        botApi.clearMessages()
+        botApi.getViewerData().forEach {
+            if (it.betAmount > 0) {
+                botApi.sendMessage("${addCommas(it.betAmount)} \uD835\uDE86\$ ${it.betBanner.first} ${it.name}")
+                log("Bet from ${it.name}, ${addCommas(it.betAmount)} W\$ on ${it.betBanner.second}")
+            } else log("Bet failed from Viewer ${it.name}, invalid amount")
+        }
 
     }
 

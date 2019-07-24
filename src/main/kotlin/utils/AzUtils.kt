@@ -198,6 +198,8 @@ fun truncate(name: String, length: Int): String {
  *
  * @param inStr soon.
  */
+fun addCommas(inLong: Long):String = addCommas(inLong.toString())
+fun addCommas(inInt: Int):String = addCommas(inInt.toString())
 fun addCommas(inStr: String):String {
     val commas = if (inStr.length % 3 == 0) (inStr.length/3)-1 else inStr.length/3
     var outStr = ""
