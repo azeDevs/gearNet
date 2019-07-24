@@ -1,11 +1,11 @@
 package session
 
-import events.BotHandler
 import events.EventType.*
 import events.FighterEvent
 import events.XrdEventListener
 import models.Fighter
 import tornadofx.Controller
+import twitch.TwitchBot
 import twitch.Viewer
 import utils.log
 
@@ -17,7 +17,7 @@ class Session : Controller() {
     private val viewers: HashMap<Long, Viewer> = HashMap()
 
     private val xrdListener = XrdEventListener()
-    private val botListener = BotHandler()
+    private val botApi = TwitchBot()
 
     fun refreshSession() {
         // PROCESS Xrd EVENTS
@@ -41,7 +41,8 @@ class Session : Controller() {
         }
 
         // PROCESS Viewers
-        botListener.parseViewerData()
+        botApi.getViewerData()
+        botApi.clearMessages()
 
     }
 
