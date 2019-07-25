@@ -74,7 +74,6 @@ class Session : Controller() {
     }
 
     private fun runCommandWallet(it: ViewerEvent) {
-        // FIXME: DOESN'T WORK, BRINGS UP !HELP COMMAND INSTEAD
         log("!WALLET command from ${it.getName()} initiated")
         bot.sendMessage("${it.getName()} initiated !WALLET")
     }

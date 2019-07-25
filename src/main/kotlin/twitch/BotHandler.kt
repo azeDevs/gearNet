@@ -71,6 +71,8 @@ class BotHandler : BotApi {
                     }
                     if(cmd.size == 2) betAmount = keepInRange(stringToInt(cmd[1]), 5, viewer.getScoreTotal())
                     else betAmount = 5
+                } else if (cmd[0].equals("WALLET", true)) {
+                    eventType = COMMAND_WALLET
                 }
             }
             events.add(ViewerEvent(eventType, viewer, it.text, fighter, betBanner, betAmount))
