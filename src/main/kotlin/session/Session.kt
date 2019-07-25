@@ -1,13 +1,16 @@
 package session
 
+import BLU_BANNER
+import RED_BANNER
 import WD
 import events.EventType.*
 import events.FighterEvent
 import events.ViewerEvent
-import events.XrdEventListener
+import events.XrdHandler
+import models.Fighter
 import session.SessionMode.*
 import tornadofx.Controller
-import twitch.TwitchBot
+import twitch.BotHandler
 import utils.addCommas
 import utils.log
 
@@ -15,14 +18,19 @@ import utils.log
 class Session : Controller() {
 
     private val state = SessionState()
-    private var sessionMode = MODE_NULL
-    private val xrdListener = XrdEventListener()
-    private val botApi = TwitchBot()
+    private val xrd = XrdHandler()
+    private val bot = BotHandler()
+
+    fun logUpdateToGUI() {
+        log("sessionMode", state.getMode().name)
+        log("totalFighters","${state.getFighters().size}")
+        log("totalViewers","${state.getViewers().size}")
+    }
 
     fun generateEvents() {
-        log("sessionMode", sessionMode.name)
+        logUpdateToGUI()
         // PROCESS FighterEvents
-        xrdListener.generateFighterEvents(state).forEach { state.update(it)
+        xrd.generateFighterEvents(state).forEach { state.update(it)
             when (it.getType()) {
                 NULL_EVENT -> false
                 XRD_CONNECTED -> log("XrdApi connected")
@@ -31,9 +39,10 @@ class Session : Controller() {
                 FIGHTER_MOVED -> runFighterMoved(it)
 
                 MATCH_LOADING -> runMatchLoading(it)
-                MATCH_ENDED -> runMatchEnded(it)
+                MATCH_RESOLVED -> runMatchResolved(it)
                 ROUND_STARTED -> runRoundStarted(it)
-                ROUND_ENDED -> runRoundEnded(it)
+                ROUND_RESOLVED -> runRoundResolved(it)
+                MATCH_CONCLUDED -> runMatchConcluded(it)
 
                 BURST_ENABLED -> runBurstEnabled(it)
                 STRIKE_STUNNED -> runStrikeStunned(it)
@@ -42,7 +51,7 @@ class Session : Controller() {
         }
 
         // PROCESS ViewerEvents
-        botApi.generateViewerEvents(state).forEach { state.update(it)
+        bot.generateViewerEvents(state).forEach { state.update(it)
             when (it.getType()) {
                 NULL_EVENT -> false
                 VIEWER_MESSAGE -> runViewerMessage(it)
@@ -65,18 +74,19 @@ class Session : Controller() {
     }
 
     private fun runCommandWallet(it: ViewerEvent) {
+        // FIXME: DOESN'T WORK, BRINGS UP !HELP COMMAND INSTEAD
         log("!WALLET command from ${it.getName()} initiated")
-        botApi.sendMessage("${it.getName()} initiated !WALLET")
+        bot.sendMessage("${it.getName()} initiated !WALLET")
     }
 
     private fun runCommandHelp(it: ViewerEvent) {
         log("!HELP command from ${it.getName()} initiated")
-        botApi.sendMessage("${it.getName()} initiated !HELP")
+        bot.sendMessage("${it.getName()} initiated !HELP")
     }
 
     private fun runCommandBet(it: ViewerEvent) {
         if (it.getBetAmount() > 0) {
-            botApi.sendMessage("${addCommas(it.getBetAmount())} \uD835\uDE86\$ ${it.getBetBanner().first} ${it.getName()}")
+            bot.sendMessage("${addCommas(it.getBetAmount())} \uD835\uDE86\$ ${it.getBetBanner().first} ${it.getName()}")
             log("!BET command from ${it.getName()}, ${addCommas(it.getBetAmount())} $WD on ${it.getBetBanner().second}, initiated")
         } else log("!BET command from ${it.getName()} failed to initiate, invalid amount")
     }
@@ -104,30 +114,36 @@ class Session : Controller() {
         log(it.getType().name)
     }
 
-    private fun runRoundEnded(it: FighterEvent) {
-        sessionMode = MODE_SLASH
-        log("Round ENDED with ${
-        if (it.getDelta(0) == 1) "P1 ${it.get(0).getName()}" 
-        else "P2 ${it.get(1).getName()}"
-        } as the winner.")
+    private fun runMatchLoading(it: FighterEvent) {
+        if (state.getMode() != MODE_LOADING) log("NEW Match loading... ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
+        state.update(MODE_LOADING)
     }
 
     private fun runRoundStarted(it: FighterEvent) {
-        sessionMode = MODE_MATCH
-        log("Round STARTED with P1 ${it.get(0).getName()} and P2 ${it.get(1).getName()}")
+        state.update(MODE_MATCH)
+        log("Round started with ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
     }
 
-    private fun runMatchEnded(it: FighterEvent) {
-        sessionMode = MODE_VICTORY
-        log("Match ENDED with ${
-        if (it.getDelta(0) == 1) "P1 ${it.get(0).getName()}" 
-        else "P2 ${it.get(1).getName()}"
-        } as the winner.")
+    private fun runRoundResolved(it: FighterEvent) {
+        state.update(MODE_SLASH)
+        var winner = Fighter()
+        if (it.getDelta(0) == 0) winner = it.get(1)
+        if (it.getDelta(1) == 0) winner = it.get(0)
+        log("Round resolved with ${winner.getName()} as the winner.")
     }
 
-    private fun runMatchLoading(it: FighterEvent) {
-        sessionMode = MODE_LOADING
-        log("Match LOADING with P1 ${it.get(0).getName()} and P2 ${it.get(1).getName()}")
+    private fun runMatchResolved(it: FighterEvent) {
+        state.update(MODE_VICTORY)
+        var winner = Fighter()
+        var betBanner: Pair<String, String> = Pair("","")
+        if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = RED_BANNER }
+        if (it.getDelta(1) == 1) { winner = it.get(1); betBanner = BLU_BANNER }
+        bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
+        log("Match resolved, ${betBanner.second} Fighter ${winner.getName()} is the winner.")
+    }
+
+    private fun runMatchConcluded(it: FighterEvent) {
+        state.update(MODE_LOBBY)
     }
 
 }
@@ -154,9 +170,9 @@ class Session : Controller() {
 //            }
 //
 //            // Client Match stuff --------
-//            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 0)
+//            if (p.getCabinet() == getClientFighter().getCabinet() && p.getPlaySide() == 0)
 //                clientMatchPlayers.f1 = p.getData() else clientMatchPlayers.f1 = FighterData()
-//            if (p.getCabinet() == getClient().getCabinet() && p.getPlaySide() == 1)
+//            if (p.getCabinet() == getClientFighter().getCabinet() && p.getPlaySide() == 1)
 //                clientMatchPlayers.f2 = p.getData() else clientMatchPlayers.f2 = FighterData()
 //            matchHandler.updateClientMatch(lobbyHandler.getMatchData(), this)
 //
@@ -165,10 +181,10 @@ class Session : Controller() {
 //                && clientMatchPlayers.f1.steamId == -1L
 //                && clientMatchPlayers.f2.steamId == -1L) {
 //                players.values.forEach {
-//                    if (it.getCabinet() == getClient().getCabinet()
+//                    if (it.getCabinet() == getClientFighter().getCabinet()
 //                        && it.getPlaySide().toInt() == 0)
 //                        clientMatchPlayers.f1 = it.getData()
-//                    if (it.getCabinet() == getClient().getCabinet()
+//                    if (it.getCabinet() == getClientFighter().getCabinet()
 //                        && it.getPlaySide().toInt() == 1)
 //                        clientMatchPlayers.f2 = it.getData()
 //                }
@@ -178,7 +194,7 @@ class Session : Controller() {
 //                && clientMatchPlayers.f1.steamId > 0L
 //                && clientMatchPlayers.f2.steamId > 0L) {
 //                matchHandler.clientMatch =
-//                    Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
+//                    Match(matchHandler.archiveMatches.size.toLong(), getClientFighter().getCabinet(), clientMatchPlayers)
 //                utils.log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
 //                somethingChanged = true
 //                setMode(MODE_LOADING)

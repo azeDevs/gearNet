@@ -13,7 +13,7 @@ import kotlin.math.min
 
 /**
  *
- * XrdEventListener                  updates and archives Lobby getData().
+ * XrdHandler                  updates and archives Lobby getData().
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data

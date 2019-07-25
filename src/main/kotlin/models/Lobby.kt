@@ -4,7 +4,7 @@ import utils.keepInRange
 
 /**
  *
- * XrdEventListener                  updates and archives Lobby data.
+ * XrdHandler                  updates and archives Lobby data.
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data

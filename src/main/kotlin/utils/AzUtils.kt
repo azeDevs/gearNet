@@ -181,10 +181,11 @@ fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : Time
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Limit the length of a String by length
  *
- * @param name soon.
- * @param length soon.
+ * @param name the name to be truncated
+ * @param length the maximum number of characters allowed in the String
+ * @return the truncated name as a String
  */
 fun truncate(name: String, length: Int): String {
     val re = Regex("[^A-Za-z0-9_!@#$%^&*()“”`'~|.,\"\\-=+\\[\\]{}\\\\<>/「」 ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９]")
@@ -194,9 +195,12 @@ fun truncate(name: String, length: Int): String {
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Adds a comma every 3 digits when the parameter is a valid number
  *
- * @param inStr soon.
+ * @param inLong the Long representing the number to be formatted
+ * @param inInt the Int representing the number to be formatted
+ * @param inStr the String representing the number to be formatted
+ * @return the number formatted with commas as a String
  */
 fun addCommas(inLong: Long):String = addCommas(inLong.toString())
 fun addCommas(inInt: Int):String = addCommas(inInt.toString())
@@ -209,27 +213,34 @@ fun addCommas(inStr: String):String {
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Return a clamped minimum / maximum value of a given number.
  *
- * uhhh
+ * @param value the value to be checked and changed
+ * @param minimum the minimum the return value can be
+ * @param maximum the maximum the return value can be
+ * @param retainMax should the value be over maximum, return the maximum
+ * @return boolean for whether or not the value was within the indicated range
  */
 fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, retainMax:Boolean = false): Int = if (value > maximum || value < minimum) { if (retainMax) maximum else minimum } else value
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Check if value is equal to or between 2 given numbers.
  *
- * uhhh
+ * @param value the value to be checked
+ * @param minimum the minimum value while still returning true
+ * @param maximum the maximum value while still returning true
+ * @return boolean for whether or not the value was within the indicated range
  */
 fun isInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
 
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Write a String to a local text file
  *
- * @param fileName soon.
- * @param text soon.
+ * @param fileName the name of the file
+ * @param text the text to be written
  */
 fun writeToFile(fileName: String, text: String) {
     File(fileName).writeText(text)
@@ -237,9 +248,9 @@ fun writeToFile(fileName: String, text: String) {
 
 
 /**
- * TODO: WTF DOES THIS DO?
+ * Get a URI for a local project resource
  *
- * @param fileName soon.
+ * @param fileName the file to be retrieved from resources package.
  * @return the file path as a `URI`
  */
 fun getRes(fileName: String): URI {
@@ -248,8 +259,6 @@ fun getRes(fileName: String): URI {
 
 
 /**
- * TODO: WTF DOES THIS DO?
- *
  * This is basically the same as Pair(), except mutable and unsafe.
  */
 class Duo<T>(

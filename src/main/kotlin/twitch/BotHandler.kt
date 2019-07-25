@@ -1,5 +1,7 @@
 package twitch
 
+import BLU_BANNER
+import RED_BANNER
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
@@ -16,7 +18,7 @@ typealias CME = ChannelMessageEvent
 typealias OA2C = OAuth2Credential
 typealias TCB = TwitchClientBuilder
 
-class TwitchBot : BotApi {
+class BotHandler : BotApi {
 
     private val viewerDatas: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient
@@ -64,8 +66,8 @@ class TwitchBot : BotApi {
                 if(cmd[0].equals("R", true) || cmd[0].equals("B", true)) {
                     eventType = COMMAND_BET
                     when (cmd[0]) {
-                        "R" -> betBanner = Pair("\uD83D\uDD34","Red")
-                        "B" -> betBanner = Pair("\uD83D\uDD35","Blue")
+                        "R" -> betBanner = RED_BANNER
+                        "B" -> betBanner = BLU_BANNER
                     }
                     if(cmd.size == 2) betAmount = keepInRange(stringToInt(cmd[1]), 5, viewer.getScoreTotal())
                     else betAmount = 5

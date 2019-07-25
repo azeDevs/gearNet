@@ -4,7 +4,7 @@ import memscan.MatchData
 
 /**
  *
- * XrdEventListener                  updates and archives Lobby data.
+ * XrdHandler                  updates and archives Lobby data.
  *  ┗━ Duo<Lobby>               contains past and present Lobby data
  *      ┗━ List<Cabinet>        contains Match and Players seating data
  *          ┣━ Match            contains fighting Players and Match data
@@ -37,15 +37,5 @@ class Match (
     fun getHealth() = health
     fun getHealth(seatId:Int) = if (seatId == 0) health.first else health.second
     fun geRounds(seatId:Int) = if (seatId == 0) rounds.first else rounds.second
-
-    fun getCabinetString(cabId:Int = cabinetId): String {
-        return when(cabId) {
-            0 -> "CABINET A"
-            1 -> "CABINET B"
-            2 -> "CABINET C"
-            3 -> "CABINET D"
-            else -> "$cabId"
-        }
-    }
 
 }

@@ -9,7 +9,6 @@ import utils.keepInRange
 class LobbyHandler {
     private val lobby: Duo<Lobby> = Duo(Lobby(), Lobby())
 
-    fun getLobby() = lobby
     fun update(fighters: List<Fighter>, clientMatch: Match) {
         lobby.f1 = lobby.f2
         lobby.f2 = Lobby(fighters, clientMatch)

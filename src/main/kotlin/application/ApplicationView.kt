@@ -86,7 +86,6 @@ class ApplicationView : View() {
                 }
 
             }
-            log("XrdApi waiting for client source...")
             cycleGameLoop()
         }
     }
