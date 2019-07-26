@@ -115,16 +115,16 @@ class Session : Controller() {
 
     private fun runMatchLoading(it: FighterEvent) {
         if (state.getMode() != MODE_LOADING) log("NEW Match loading... ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
-        state.update(MODE_LOADING)
+        state.updateMode(MODE_LOADING)
     }
 
     private fun runRoundStarted(it: FighterEvent) {
-        state.update(MODE_MATCH)
+        state.updateMode(MODE_MATCH)
         log("Round started with ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
     }
 
     private fun runRoundResolved(it: FighterEvent) {
-        state.update(MODE_SLASH)
+        state.updateMode(MODE_SLASH)
         var winner = Fighter()
         if (it.getDelta(0) == 0) winner = it.get(1)
         if (it.getDelta(1) == 0) winner = it.get(0)
@@ -132,8 +132,8 @@ class Session : Controller() {
     }
 
     private fun runMatchResolved(it: FighterEvent) {
-        if (state.isMode(MODE_LOADING)) state.update(MODE_LOBBY)
-        else state.update(MODE_VICTORY)
+        if (state.isMode(MODE_LOADING)) state.updateMode(MODE_LOBBY)
+        else state.updateMode(MODE_VICTORY)
         var winner = Fighter()
         var betBanner: Pair<String, String> = Pair("","")
         if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = RED_BANNER }
@@ -143,7 +143,7 @@ class Session : Controller() {
     }
 
     private fun runMatchConcluded(it: FighterEvent) {
-        state.update(MODE_LOBBY)
+        state.updateMode(MODE_LOBBY)
     }
 
 }

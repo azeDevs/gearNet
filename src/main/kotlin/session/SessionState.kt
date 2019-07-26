@@ -10,28 +10,22 @@ import twitch.Viewer
 import twitch.ViewerData
 import utils.log
 
+
+
 class SessionState {
 
     private var matchSnaps: MutableList<Match> = arrayListOf()
-    private var sessionMode: SessionMode = MODE_NULL
 
     private val fighters: HashMap<Long, Fighter> = HashMap()
     private val viewers: HashMap<Long, Viewer> = HashMap()
+    private var mode: SessionMode = SessionMode.MODE_NULL
 
-    fun isMode(vararg mode:SessionMode) = mode.filter { it == sessionMode }.isNotEmpty()
-    fun getMode() = sessionMode
-    fun getMatch() = if (matchSnaps.isNotEmpty()) matchSnaps[matchSnaps.lastIndex] else Match()
-    fun getFighters() = fighters.values.filter { it.isValid() }
-    fun getFighter(id:Long) = fighters.getOrDefault(id, Fighter())
-    fun getViewers() = viewers.values.filter { it.isValid() }
-    fun getViewer(id:Long) = viewers.getOrDefault(id, Viewer())
+    fun getMode() = mode
+    fun isMode(vararg mode:SessionMode) = mode.filter { it == this.mode }.isNotEmpty()
 
-    fun update(f:FighterEvent) = fighters.put(f.get().getId(), Fighter(fighters.getOrDefault(f.getId(), Fighter()).getData(), f.get().getData()))
-    fun update(v:ViewerEvent) = viewers.put(v.get().getId(), Viewer(viewers.getOrDefault(v.getId(), Viewer()).getData(), v.get().getData()))
-    fun update(m:Match) = matchSnaps.add(m)
-    fun update(updatedMode:SessionMode): Boolean {
+    fun updateMode(updatedMode:SessionMode): Boolean {
         var updated = false
-        if (updatedMode != sessionMode) {
+        if (updatedMode != mode) {
             if (isMode(MODE_NULL)) updated = true
             when (updatedMode) {
                 MODE_LOBBY -> if (isMode(MODE_VICTORY)) updated = true
@@ -42,12 +36,22 @@ class SessionState {
                 else -> updated = false
             }
             if (updated) {
-                log("Session changed to [${updatedMode.name}] (formerly ${sessionMode.name.toLowerCase()})")
-                sessionMode = updatedMode
+                log("Session changed to [${updatedMode.name}] (formerly ${mode.name.toLowerCase()})")
+                mode = updatedMode
             }
         }
         return updated
     }
+
+    fun getMatch() = if (matchSnaps.isNotEmpty()) matchSnaps[matchSnaps.lastIndex] else Match()
+    fun getFighters() = fighters.values.filter { it.isValid() }
+    fun getFighter(id:Long) = fighters.getOrDefault(id, Fighter())
+    fun getViewers() = viewers.values.filter { it.isValid() }
+    fun getViewer(id:Long) = viewers.getOrDefault(id, Viewer())
+
+    fun update(f:FighterEvent) = fighters.put(f.get().getId(), Fighter(fighters.getOrDefault(f.getId(), Fighter()).getData(), f.get().getData()))
+    fun update(v:ViewerEvent) = viewers.put(v.get().getId(), Viewer(viewers.getOrDefault(v.getId(), Viewer()).getData(), v.get().getData()))
+    fun update(m:Match) = matchSnaps.add(m)
 
     fun contains(fighter:Fighter) = fighters.containsKey(fighter.getId())
     fun contains(viewer:Viewer) = viewers.containsKey(viewer.getId())

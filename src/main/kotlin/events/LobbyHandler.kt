@@ -4,7 +4,6 @@ import models.Fighter
 import models.Lobby
 import models.Match
 import utils.Duo
-import utils.keepInRange
 
 class LobbyHandler {
     private val lobby: Duo<Lobby> = Duo(Lobby(), Lobby())
@@ -15,7 +14,8 @@ class LobbyHandler {
     }
 
     // Match
-    fun getMatch(cabinet: Int = 0) = Pair(lobby.f1.getMatch(keepInRange(cabinet, 0, 3)), lobby.f2.getMatch(keepInRange(cabinet, 0, 3)))
+    fun getOldMatch() = lobby.f1.getMatch(0)
+    fun getMatch() = lobby.f2.getMatch(0)
 
     // Fighters
     fun getOldFighters() = lobby.f1.getFighters()

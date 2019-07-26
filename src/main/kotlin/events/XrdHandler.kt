@@ -26,6 +26,9 @@ class XrdHandler {
 
     private val xrdApi: XrdApi = MemHandler()
     private val events: MutableList<FighterEvent> = arrayListOf()
+    // TODO: THERE'S SOME CONFUSION WITH LobbyHandler AND SessionState
+    // As far  where Match data comes from, LobbyHandler seems like overkill right now
+    // Maybe move LobbyHandler data into SessionState and remove all multi-cabinet support
     private val lobbyHandler: LobbyHandler = LobbyHandler()
 
     private var connected = false
@@ -34,7 +37,7 @@ class XrdHandler {
     private fun getClientFighter(state: SessionState): Fighter {
         if (lobbyHandler.getFighterPairs().isNotEmpty() && !clientFighter.isValid()) {
             clientFighter = lobbyHandler.getNewFighters().first { it.getId() == xrdApi.getClientSteamId() }
-            state.update(MODE_LOBBY)
+            state.updateMode(MODE_LOBBY)
             log("XrdApi defined ${clientFighter.getName()} as client source") }
         return clientFighter
     }
@@ -51,7 +54,6 @@ class XrdHandler {
             val matchFighter0 = fighters.firstOrNull { it.getCabinet() == clientFighter.getCabinet() && it.getSeat() == 0 } ?: Fighter()
             val matchFighter1 = fighters.firstOrNull { it.getCabinet() == clientFighter.getCabinet() && it.getSeat() == 1 } ?: Fighter()
             val clientMatch = Match(Pair(matchFighter0, matchFighter1), clientFighter.getCabinet(), xrdApi.getMatchData())
-            state.update(clientMatch)
 
             log("Match Timer","${clientMatch.getMatchTimer()}")
             log("R Rounds","${clientMatch.getRounds(0)}")
@@ -72,13 +74,13 @@ class XrdHandler {
 
             // 3. Generate Events
             if (getClientFighter(state).isValid()) {
-                getEventsFighterJoined(state)
+                getEventsFighterJoined()
                 getEventsFighterMoved()
                 getEventsMatchLoading()
                 getEventsMatchResolved()
                 //getEventsDamageDealt()
+                getEventsRoundResolved()
                 getEventsRoundStarted(state)
-                getEventsRoundResolved(state)
                 getEventsMatchConcluded(state)
             }
 
@@ -86,15 +88,18 @@ class XrdHandler {
         return events
     }
 
-    private fun getEventsMatchConcluded(state:SessionState) {
-        if (state.getMatch().getMatchTimer() == -1 && state.isMode(MODE_VICTORY))
+    private fun getEventsMatchConcluded(state: SessionState) {
+        if (lobbyHandler.getMatch().getMatchTimer() == -1 && state.isMode(MODE_VICTORY))
             events.add(FighterEvent(MATCH_CONCLUDED))
     }
 
-    private fun getEventsFighterJoined(state:SessionState) {
-        lobbyHandler.getNewFighters().forEach {
-            if (!state.containsFighter(it.getId()))
-                events.add(FighterEvent(FIGHTER_JOINED, it)) }
+    private fun getEventsFighterJoined() {
+        // TODO: THIS DOESN'T WORK, BUT DOESN'T TEHCNICALLY NEED TO. BACKBURNER.
+        lobbyHandler.getNewFighters().filter { nf ->
+            var flag = true
+            lobbyHandler.getFighterPairs().forEach { pair -> if (pair.first.getId() == nf.getId()) flag = false }
+            flag
+        }.forEach { events.add(FighterEvent(FIGHTER_JOINED, it)) }
     }
 
     private fun getEventsFighterMoved() {
@@ -107,7 +112,6 @@ class XrdHandler {
                 if (events.none { fighterEvent -> fighterEvent.getType() == FIGHTER_JOINED && fighterEvent.getId() == movedFighter.getId() }) {
                     events.add(FighterEvent(FIGHTER_MOVED, movedFighter, movedFighter.getSeat())) }
             }
-
     }
 
     private fun getEventsMatchLoading() {
@@ -143,15 +147,15 @@ class XrdHandler {
         )
     }
 
-    private fun getEventsRoundStarted(state:SessionState) {
-        if(state.getMatch().getHealth(0) == 420 && state.getMatch().getHealth(1) == 420) {
-            if(!state.isMode(MODE_MATCH, MODE_VICTORY)) events.add(FighterEvent(ROUND_STARTED, state.getMatch().fighters))
+    private fun getEventsRoundStarted(state: SessionState) {
+        if(lobbyHandler.getMatch().getHealth(0) == 420 && lobbyHandler.getMatch().getHealth(1) == 420) {
+            if(!state.isMode(MODE_MATCH, MODE_VICTORY)) events.add(FighterEvent(ROUND_STARTED, lobbyHandler.getMatch().fighters))
         }
     }
 
-    private fun getEventsRoundResolved(state:SessionState) {
-        val oldMatch = lobbyHandler.getMatch(getClientFighter(state).getCabinet()).first
-        val newMatch = lobbyHandler.getMatch(getClientFighter(state).getCabinet()).second
+    private fun getEventsRoundResolved() {
+        val oldMatch = lobbyHandler.getOldMatch()
+        val newMatch = lobbyHandler.getMatch()
         if((newMatch.getHealth(0) == 0 && oldMatch.getHealth(0) != 0) || (newMatch.getHealth(1) == 0 && oldMatch.getHealth(1) != 0))
             events.add(FighterEvent(ROUND_RESOLVED, newMatch.fighters, newMatch.getHealth()))
     }
