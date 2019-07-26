@@ -15,12 +15,11 @@ class LobbyHandler {
     }
 
     // Match
-    fun getMatch(cabinet: Int) = Pair(lobby.f1.getMatch(keepInRange(cabinet, 0, 3)), lobby.f2.getMatch(keepInRange(cabinet, 0, 3)))
+    fun getMatch(cabinet: Int = 0) = Pair(lobby.f1.getMatch(keepInRange(cabinet, 0, 3)), lobby.f2.getMatch(keepInRange(cabinet, 0, 3)))
 
     // Fighters
     fun getOldFighters() = lobby.f1.getFighters()
     fun getNewFighters() = lobby.f2.getFighters()
-    fun getFighter(id:Long) = lobby.f2.getFighters().firstOrNull { it.getId() == id }
     fun getFighterPairs(): List<Pair<Fighter, Fighter>> {
         val pairs: MutableList<Pair<Fighter, Fighter>> = mutableListOf()
         val fighters1 = lobby.f1.getFighters()

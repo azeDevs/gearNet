@@ -14,13 +14,13 @@ import utils.keepInRange
  * contains past and present Lobby data
  *
  */
-class Lobby (
+data class Lobby (
     private val fighters: List<Fighter> = emptyList(),
-    match: Match = Match()
+    private val match: Match = Match()
 ) {
-    val cabinets: List<Cabinet> = listOf(generateCab(0, fighters, match), generateCab(1, fighters, match), generateCab(2, fighters, match), generateCab(3, fighters, match))
+    private val cabinets: List<Cabinet> = listOf(generateCab(0, fighters, match), generateCab(1, fighters, match), generateCab(2, fighters, match), generateCab(3, fighters, match))
 
-    fun getMatch(cabinetId: Int): Match = cabinets.get(keepInRange(cabinetId, 0, 3)).match
+    fun getMatch(cabinetId: Int = 0): Match = cabinets[keepInRange(cabinetId, 0, 3)].match
 
     private fun generateCab(cabinetId:Int, fighters: List<Fighter>, match: Match): Cabinet =
         Cabinet(

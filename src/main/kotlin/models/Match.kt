@@ -14,12 +14,11 @@ import memscan.MatchData
  * contains fighting Players and Match data
  *
  */
-class Match (
+data class Match (
     val fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter()),
     val cabinetId: Int = -1,
     val matchData: MatchData = MatchData()
 ) {
-    val winner = -1
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private val character = Pair(fighters.first.getCharacterId(), fighters.second.getCharacterId())
@@ -34,8 +33,13 @@ class Match (
     private val guardGauge = Pair(matchData.guardGauge.first, matchData.guardGauge.second)
 
     // Getters
-    fun getHealth() = health
+    fun getRounds(seatId:Int) = if (seatId == 0) rounds.first else rounds.second
     fun getHealth(seatId:Int) = if (seatId == 0) health.first else health.second
-    fun geRounds(seatId:Int) = if (seatId == 0) rounds.first else rounds.second
+    fun getHealth() = health
+    fun getMatchTimer() = matchTimer
+    fun getTension(seatId:Int) = if (seatId == 0) tension.first else tension.second
+    fun getCanBurst(seatId:Int) = if (seatId == 0) canBurst.first else canBurst.second
+    fun getStrikeStun(seatId:Int) = if (seatId == 0) strikeStun.first else strikeStun.second
+    fun getGuardGauge(seatId:Int) = if (seatId == 0) guardGauge.first else guardGauge.second
 
 }

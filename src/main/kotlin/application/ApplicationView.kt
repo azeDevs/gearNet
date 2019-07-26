@@ -41,9 +41,15 @@ class ApplicationView : View() {
     private fun cycleGameLoop() {
         GlobalScope.launch {
             session.generateEvents()
+            delay(4); cycleGameLoop()
+        }
+    }
+
+    private fun cycleUILoop() {
+        GlobalScope.launch {
             updateConsole()
             streamViewLayout.updateStreamLeaderboard(session)
-            delay(32); cycleGameLoop()
+            delay(20); cycleUILoop()
         }
     }
 
@@ -87,6 +93,7 @@ class ApplicationView : View() {
 
             }
             cycleGameLoop()
+            cycleUILoop()
         }
     }
 }

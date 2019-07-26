@@ -12,7 +12,7 @@ package models
  * contains Match and Players seating data
  *
  */
-class Cabinet(
+data class Cabinet(
     private val queue: List<Fighter> = emptyList(),
     val match: Match = Match()
 ) {

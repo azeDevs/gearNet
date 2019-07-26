@@ -21,26 +21,26 @@ typealias TCB = TwitchClientBuilder
 class BotHandler : BotApi {
 
     private val viewerDatas: MutableList<ViewerData> = mutableListOf()
-    private val twitchClient: TwitchClient
-
-    init {
-        twitchClient = TCB.builder()
-            .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
+    private val twitchClient: TwitchClient = TCB.builder()
+        .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
 //            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
 //            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
-            .withEnableChat(true)
-            .withEnableHelix(true)
-            .withEnableKraken(true)
-            .withEnableTMI(true)
-            .build()
+        .withEnableChat(true)
+        .withEnableHelix(true)
+        .withEnableKraken(true)
+        .withEnableTMI(true)
+        .build()
+
+    init {
 
         twitchClient.chat.eventManager.onEvent(CME::class.java).subscribe {
             viewerDatas.add(ViewerData(it.user.id, it.user.name, it.message))
         }
-        twitchClient.getChat().joinChannel("azeDevs")
+        twitchClient.chat.joinChannel("azeDevs")
+//        sendMessage("\uD83D\uDC4B Hello World! \uD83E\uDD16")
     }
 
-    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", "$message") //"［$message］"
+    override fun sendMessage(message: String) = twitchClient.chat.sendMessage("azeDevs", message) //"［$message］"
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
     override fun getViewerData(): List<ViewerData> {
         val outList: MutableList<ViewerData> = arrayListOf()
@@ -49,18 +49,21 @@ class BotHandler : BotApi {
         return outList
     }
 
-    fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
+    //fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
 
     fun generateViewerEvents(state: SessionState): List<ViewerEvent> {
         val events: MutableList<ViewerEvent> = arrayListOf()
         getViewerData().forEach {
-            if (!state.contains(it)) events.add(ViewerEvent(VIEWER_JOINED, Viewer(it), it.text))
+            var viewer = Viewer(it)
+            if (!state.contains(it)) events.add(ViewerEvent(VIEWER_JOINED, viewer, it.text))
+            else viewer = Viewer(state.getViewer(it.twitchId).getData(), it)
+
             var eventType = VIEWER_MESSAGE
-            var viewer = Viewer(it) // TODO: FIND EXISTING USER, PASS IN oldData, else PASS IN newData only
+            // TODO: DEFINE fighter USING REFERENCED MATCH DATA AND VIEWER ENTRY
             var fighter = Fighter()
             var betBanner = Pair("","")
             var betAmount = -1
-            if (!it.text.isEmpty() && it.text.substring(0,1).equals("!")) {
+            if (it.text.isNotEmpty() && it.text.substring(0,1).equals("!")) {
                 eventType = COMMAND_HELP
                 val cmd = it.text.toUpperCase().substring(1).split("\\s".toRegex()).toList()
                 if(cmd[0].equals("R", true) || cmd[0].equals("B", true)) {

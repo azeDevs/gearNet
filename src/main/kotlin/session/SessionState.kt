@@ -18,10 +18,9 @@ class SessionState {
     private val fighters: HashMap<Long, Fighter> = HashMap()
     private val viewers: HashMap<Long, Viewer> = HashMap()
 
-    fun isMode(mode:SessionMode) = sessionMode == mode
+    fun isMode(vararg mode:SessionMode) = mode.filter { it == sessionMode }.isNotEmpty()
     fun getMode() = sessionMode
-    fun getMatch() = if (!matchSnaps.isEmpty()) matchSnaps[matchSnaps.lastIndex] else Match()
-    fun getMatchSnaps() = matchSnaps
+    fun getMatch() = if (matchSnaps.isNotEmpty()) matchSnaps[matchSnaps.lastIndex] else Match()
     fun getFighters() = fighters.values.filter { it.isValid() }
     fun getFighter(id:Long) = fighters.getOrDefault(id, Fighter())
     fun getViewers() = viewers.values.filter { it.isValid() }
@@ -36,13 +35,14 @@ class SessionState {
             if (isMode(MODE_NULL)) updated = true
             when (updatedMode) {
                 MODE_LOBBY -> if (isMode(MODE_VICTORY)) updated = true
-                MODE_LOADING -> if (isMode(MODE_LOBBY) || isMode(MODE_VICTORY)) updated = true
-                MODE_MATCH -> if (isMode(MODE_LOADING) || isMode(MODE_SLASH)) updated = true
+                MODE_LOADING -> if (isMode(MODE_LOBBY)) updated = true
+                MODE_MATCH -> if (isMode(MODE_LOADING, MODE_SLASH)) updated = true
                 MODE_SLASH -> if (isMode(MODE_MATCH)) updated = true
-                MODE_VICTORY -> if (isMode(MODE_SLASH) || isMode(MODE_MATCH)) updated = true
+                MODE_VICTORY -> if (isMode(MODE_SLASH, MODE_MATCH)) updated = true
+                else -> updated = false
             }
             if (updated) {
-                log("Session changed to ${updatedMode.name} (formerly ${sessionMode.name.toLowerCase()})")
+                log("Session changed to [${updatedMode.name}] (formerly ${sessionMode.name.toLowerCase()})")
                 sessionMode = updatedMode
             }
         }

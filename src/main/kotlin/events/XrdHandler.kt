@@ -5,7 +5,7 @@ import memscan.MemHandler
 import memscan.XrdApi
 import models.Fighter
 import models.Match
-import session.SessionMode
+import session.SessionMode.*
 import session.SessionState
 import utils.Duo
 import utils.log
@@ -31,12 +31,11 @@ class XrdHandler {
     private var connected = false
     private var clientFighter = Fighter()
 
-    fun getClientFighter(state: SessionState): Fighter {
-        if (lobbyHandler.getFighterPairs().size >= 1 && !clientFighter.isValid()) {
+    private fun getClientFighter(state: SessionState): Fighter {
+        if (lobbyHandler.getFighterPairs().isNotEmpty() && !clientFighter.isValid()) {
             clientFighter = lobbyHandler.getNewFighters().first { it.getId() == xrdApi.getClientSteamId() }
-            state.update(SessionMode.MODE_LOBBY)
+            state.update(MODE_LOBBY)
             log("XrdApi defined ${clientFighter.getName()} as client source") }
-        log("client", "${clientFighter.getName(false)}")
         return clientFighter
     }
 
@@ -52,6 +51,23 @@ class XrdHandler {
             val matchFighter0 = fighters.firstOrNull { it.getCabinet() == clientFighter.getCabinet() && it.getSeat() == 0 } ?: Fighter()
             val matchFighter1 = fighters.firstOrNull { it.getCabinet() == clientFighter.getCabinet() && it.getSeat() == 1 } ?: Fighter()
             val clientMatch = Match(Pair(matchFighter0, matchFighter1), clientFighter.getCabinet(), xrdApi.getMatchData())
+            state.update(clientMatch)
+
+            log("Match Timer","${clientMatch.getMatchTimer()}")
+            log("R Rounds","${clientMatch.getRounds(0)}")
+            log("R Health","${clientMatch.getHealth(0)}")
+            log("R Tension","${clientMatch.getTension(0)}")
+            log("R Guard","${clientMatch.getGuardGauge(0)}")
+            log("R Stunned","${clientMatch.getStrikeStun(0)}")
+            log("R Burst","${clientMatch.getCanBurst(0)}")
+
+            log("B Rounds","${clientMatch.getRounds(1)}")
+            log("B Health","${clientMatch.getHealth(1)}")
+            log("B Tension","${clientMatch.getTension(1)}")
+            log("B Guard","${clientMatch.getGuardGauge(1)}")
+            log("B Stunned","${clientMatch.getStrikeStun(1)}")
+            log("B Burst","${clientMatch.getCanBurst(1)}")
+
             lobbyHandler.update(fighters, clientMatch)
 
             // 3. Generate Events
@@ -60,18 +76,19 @@ class XrdHandler {
                 getEventsFighterMoved()
                 getEventsMatchLoading()
                 getEventsMatchResolved()
-                getEventsDamageDealt()
+                //getEventsDamageDealt()
                 getEventsRoundStarted(state)
                 getEventsRoundResolved(state)
-                getEventsMatchConcluded()
+                getEventsMatchConcluded(state)
             }
 
         } else if (connected)  { events.add(FighterEvent(XRD_DISCONNECT)); connected = false }
         return events
     }
 
-    private fun getEventsMatchConcluded() {
-        TODO("parse FighterData and MatchData for values that indicate a return to lobby")
+    private fun getEventsMatchConcluded(state:SessionState) {
+        if (state.getMatch().getMatchTimer() == -1 && state.isMode(MODE_VICTORY))
+            events.add(FighterEvent(MATCH_CONCLUDED))
     }
 
     private fun getEventsFighterJoined(state:SessionState) {
@@ -87,7 +104,7 @@ class XrdHandler {
                 p1.forEach { op -> if (op.getSeat() == np.getSeat() && op.getCabinet() == np.getCabinet()) flag = false }
                 flag
             }.forEach { movedFighter ->
-                if (events.filter { fighterEvent -> fighterEvent.getType() == FIGHTER_JOINED && fighterEvent.getId() == movedFighter.getId()}.size == 0) {
+                if (events.none { fighterEvent -> fighterEvent.getType() == FIGHTER_JOINED && fighterEvent.getId() == movedFighter.getId() }) {
                     events.add(FighterEvent(FIGHTER_MOVED, movedFighter, movedFighter.getSeat())) }
             }
 
@@ -96,8 +113,8 @@ class XrdHandler {
     private fun getEventsMatchLoading() {
         val fighters = lobbyHandler.getFighterPairs().filter { it.second.isLoading() }
         if (fighters.size == 2) {
-            log("Red % Loaded", fighters[0].second.getLoadPercent().toString())
-            log("Blu % Loaded", fighters[1].second.getLoadPercent().toString())
+            log("R Loaded", fighters[0].second.getLoadPercent().toString())
+            log("B Loaded", fighters[1].second.getLoadPercent().toString())
             events.add(FighterEvent(MATCH_LOADING, Pair(fighters[0].second, fighters[1].second)))
         }
     }
@@ -127,13 +144,9 @@ class XrdHandler {
     }
 
     private fun getEventsRoundStarted(state:SessionState) {
-        val oldMatch = lobbyHandler.getMatch(getClientFighter(state).getCabinet()).first
-        val newMatch = lobbyHandler.getMatch(getClientFighter(state).getCabinet()).second
-        log("Red Healthbar","${newMatch.getHealth(0)}")
-        log("Blu Healthbar","${newMatch.getHealth(1)}")
-        if(oldMatch.getHealth(0) != 420 || oldMatch.getHealth(1) != 420)
-            if(newMatch.getHealth(0) == 420 && newMatch.getHealth(1) == 420 && !state.isMode(SessionMode.MODE_VICTORY))
-                events.add(FighterEvent(ROUND_STARTED, newMatch.fighters))
+        if(state.getMatch().getHealth(0) == 420 && state.getMatch().getHealth(1) == 420) {
+            if(!state.isMode(MODE_MATCH, MODE_VICTORY)) events.add(FighterEvent(ROUND_STARTED, state.getMatch().fighters))
+        }
     }
 
     private fun getEventsRoundResolved(state:SessionState) {
@@ -141,21 +154,6 @@ class XrdHandler {
         val newMatch = lobbyHandler.getMatch(getClientFighter(state).getCabinet()).second
         if((newMatch.getHealth(0) == 0 && oldMatch.getHealth(0) != 0) || (newMatch.getHealth(1) == 0 && oldMatch.getHealth(1) != 0))
             events.add(FighterEvent(ROUND_RESOLVED, newMatch.fighters, newMatch.getHealth()))
-
-//            // Has the round ended, and did player 1 win?
-//            if (roundOngoing && getWinner() == -1 && getHealth(P2) == 0 && getHealth(P1) != getHealth(P2) ) {
-//                roundOngoing = false
-//                session.setMode(MODE_SLASH)
-//                utils.log("[MATC] ID$matchId P1 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
-//            }
-//
-//            // Has the round ended, and did player 2 win?
-//            if (roundOngoing && getWinner() == -1 && getHealth(P1) == 0 && getHealth(P2) != getHealth(P1)) {
-//                roundOngoing = false
-//                session.setMode(MODE_SLASH)
-//                utils.log("[MATC] ID$matchId P2 wins Duel ${getRounds(P1) + getRounds(P2) + 1}")
-//            }
-        //add(FighterEvent(ROUND_RESOLVED))
     }
 
     fun getEventsDamageDealt() {

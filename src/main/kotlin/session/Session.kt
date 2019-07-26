@@ -54,8 +54,8 @@ class Session : Controller() {
         bot.generateViewerEvents(state).forEach { state.update(it)
             when (it.getType()) {
                 NULL_EVENT -> false
-                VIEWER_MESSAGE -> runViewerMessage(it)
                 VIEWER_JOINED -> runViewerJoined(it)
+                VIEWER_MESSAGE -> runViewerMessage(it)
 
                 COMMAND_BET -> runCommandBet(it)
                 COMMAND_HELP -> runCommandHelp(it)
@@ -132,7 +132,8 @@ class Session : Controller() {
     }
 
     private fun runMatchResolved(it: FighterEvent) {
-        state.update(MODE_VICTORY)
+        if (state.isMode(MODE_LOADING)) state.update(MODE_LOBBY)
+        else state.update(MODE_VICTORY)
         var winner = Fighter()
         var betBanner: Pair<String, String> = Pair("","")
         if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = RED_BANNER }
@@ -146,107 +147,6 @@ class Session : Controller() {
     }
 
 }
-
-
-
-//        // New match underway?
-//        val lobbyMatchPlayers = Duo(FighterData(), FighterData())
-//        val clientMatchPlayers = Duo(FighterData(), FighterData())
-//
-//        lobbyHandler.getFighters().filter { it.isLoading() }.forEach { p ->
-//
-//            // Lobby Match stuff --------
-//            if (p.getPlaySide() == 0) lobbyMatchPlayers.f1 = p.getData()
-//            else lobbyMatchPlayers.f1 = FighterData()
-//            if (p.getPlaySide() == 1) lobbyMatchPlayers.f2 = p.getData()
-//            else lobbyMatchPlayers.f2 = FighterData()
-//
-//            if (lobbyMatchPlayers.f1.steamId != -1L
-//                && lobbyMatchPlayers.f2.steamId != -1L
-//                && lobbyMatchPlayers.f1.cabinetId == lobbyMatchPlayers.f2.cabinetId) {
-//                val newMatch = Match(matchHandler.archiveMatches.size.toLong(), lobbyMatchPlayers.f1.cabinetId, lobbyMatchPlayers)
-//                matchHandler.lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
-//            }
-//
-//            // Client Match stuff --------
-//            if (p.getCabinet() == getClientFighter().getCabinet() && p.getPlaySide() == 0)
-//                clientMatchPlayers.f1 = p.getData() else clientMatchPlayers.f1 = FighterData()
-//            if (p.getCabinet() == getClientFighter().getCabinet() && p.getPlaySide() == 1)
-//                clientMatchPlayers.f2 = p.getData() else clientMatchPlayers.f2 = FighterData()
-//            matchHandler.updateClientMatch(lobbyHandler.getMatchData(), this)
-//
-//            // Set sessionMode to MODE_MATCH
-//            if (sessionMode == MODE_MATCH
-//                && clientMatchPlayers.f1.steamId == -1L
-//                && clientMatchPlayers.f2.steamId == -1L) {
-//                players.values.forEach {
-//                    if (it.getCabinet() == getClientFighter().getCabinet()
-//                        && it.getPlaySide().toInt() == 0)
-//                        clientMatchPlayers.f1 = it.getData()
-//                    if (it.getCabinet() == getClientFighter().getCabinet()
-//                        && it.getPlaySide().toInt() == 1)
-//                        clientMatchPlayers.f2 = it.getData()
-//                }
-//            }
-//            // Set sessionMode to MODE_LOADING
-//            if (matchHandler.clientMatch.matchId == -1L
-//                && clientMatchPlayers.f1.steamId > 0L
-//                && clientMatchPlayers.f2.steamId > 0L) {
-//                matchHandler.clientMatch =
-//                    Match(matchHandler.archiveMatches.size.toLong(), getClientFighter().getCabinet(), clientMatchPlayers)
-//                utils.log("[SESS] Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
-//                somethingChanged = true
-//                setMode(MODE_LOADING)
-//            }
-//            // Set sessionMode to LOBBY_MODE
-//            if (sessionMode != LOBBY_MODE && sessionMode != MODE_LOADING
-//                && matchHandler.clientMatch.getHealth(0) < 0
-//                && matchHandler.clientMatch.getHealth(1) < 0
-//                && matchHandler.clientMatch.getRisc(0) < 0
-//                && matchHandler.clientMatch.getRisc(1) < 0
-//                && matchHandler.clientMatch.getTension(0) < 0
-//                && matchHandler.clientMatch.getTension(1) < 0
-//            ) {
-//                matchHandler.clientMatch = Match()
-//                somethingChanged = true
-//                setMode(LOBBY_MODE)
-//            }
-//
-//        }
-//
-//        // Filter Twitch messages for valid commands to execute
-//        bettingHandler.parseViewerData()
-//
-//        return somethingChanged
-//    }
-//
-//    fun updateClientMatch(xrdApi: XrdApi): Boolean {
-//        return matchHandler.updateClientMatch(xrdApi.getMatchData(), this)
-//    }
-//
-//    fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
-//
-//
-//    var sessionMode: Int = 0
-//
-//    fun setMode(mode: Int) {
-//        sessionMode = mode
-//        when (mode) {
-//            LOBBY_MODE -> utils.log("[SESS] sessionMode = LOBBY_MODE")
-//            MODE_LOADING -> utils.log("[SESS] sessionMode = MODE_LOADING")
-//            MODE_MATCH -> utils.log("[SESS] sessionMode = MODE_MATCH")
-//            MODE_SLASH -> utils.log("[SESS] sessionMode = MODE_SLASH")
-//            MODE_VICTORY -> utils.log("[SESS] sessionMode = MODE_VICTORY")
-//        }
-//    }
-//
-//    fun getPlayersList(): List<Fighter> = players.values.toList()
-//        .sortedByDescending { item -> item.getRating() }
-//        .sortedByDescending { item -> item.getBounty() }
-//        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
-//
-
-//}
 
 
 

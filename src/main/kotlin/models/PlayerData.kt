@@ -1,15 +1,16 @@
 package models
 
-abstract class PlayerData<T> {
+abstract class PlayerData<T>(
+    oldData: T,
+    newData: T,
+    private val name: String,
+    private val id: Long
+) {
 
     private val data: Pair<T,T>
-    private val name: String
-    private val id: Long
 
-    constructor(oldData:T, newData:T, name:String, id:Long) {
+    init {
         this.data = Pair(oldData, newData)
-        this.name = name
-        this.id = id
     }
 
     fun getId() = id

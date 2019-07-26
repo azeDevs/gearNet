@@ -12,14 +12,14 @@ import java.nio.ByteBuffer
 
 class MemHandler : XrdApi {
 
-    private var GG_PROC: Win32Process? = null
+    private var xrdProcess: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        try { GG_PROC = openProcess(processIDByName("GuiltyGearXrd.exe"))
-            GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
-            return true }
-        catch (e: IllegalStateException) { return false }
-        catch (e: NullPointerException) { return false }
+        return try { xrdProcess = openProcess(processIDByName("GuiltyGearXrd.exe"))
+            xrdProcess!!.modules["GuiltyGearXrd.exe"]!!.pointer
+            true }
+        catch (e: IllegalStateException) { false }
+        catch (e: NullPointerException) { false }
     }
 
     override fun getClientSteamId(): Long = try {
@@ -30,19 +30,19 @@ class MemHandler : XrdApi {
     @UseExperimental(ExperimentalUnsignedTypes::class)
     private fun getByteBufferFromAddress(offsets: LongArray, numBytes: Int): ByteBuffer? {
         if (!isConnected()) return null
-        val procBaseAddr: Pointer = GG_PROC!!.modules["GuiltyGearXrd.exe"]!!.pointer
+        val procBaseAddr: Pointer = xrdProcess!!.modules["GuiltyGearXrd.exe"]!!.pointer
         var bufferMem = Memory(4L)
         var lastPointer: Pointer = procBaseAddr
         for (i in 0..offsets.size - 2) {
             val newPointer = Pointer(Pointer.nativeValue(lastPointer) + offsets[i])
-            if (ReadProcessMemory(GG_PROC!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
+            if (ReadProcessMemory(xrdProcess!!.handle.pointer, newPointer, bufferMem, 4, 0) == 0L) {
                 return null
             }
             lastPointer = Pointer(bufferMem.getInt(0L).toUInt().toLong())
         }
         val dataAddr = Pointer(Pointer.nativeValue(lastPointer) + offsets[offsets.size - 1])
         bufferMem = Memory(numBytes.toLong())
-        if (ReadProcessMemory(GG_PROC!!.handle.pointer, dataAddr, bufferMem, numBytes, 0) == 0L) {
+        if (ReadProcessMemory(xrdProcess!!.handle.pointer, dataAddr, bufferMem, numBytes, 0) == 0L) {
             return null
         }
         return bufferMem.getByteBuffer(0L, numBytes.toLong())

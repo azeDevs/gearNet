@@ -11,17 +11,16 @@ import tornadofx.launch
 
 fun main(args: Array<String>) = launch<MyApp>(args)
 
-val ARTIFACT_NAME = "GearNet // Bounty Bets"
-val BUILD_VERSION = "0.7.1"
+const val ARTIFACT_NAME = "GearNet // Bounty Bets"
+const val BUILD_VERSION = "0.7.2"
 
-val WD = "\uD835\uDE86\$"
-val RED_BANNER = Pair("\uD83D\uDD34","Red")
+const val WD = "\uD835\uDE86\$"
+val RED_BANNER: Pair<String, String> = Pair("\uD83D\uDD34","Red")
 val BLU_BANNER = Pair("\uD83D\uDD35","Blue")
 
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 
     companion object {
-        const val SIMULATE_MODE = false
         const val TRACE_BORDERS = false
         const val GHOST_OPACITY = 0.64
     }
@@ -39,3 +38,10 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchSty
     }
 
 }
+
+/*
+     f1 - 7 chain  [ VS ]  chain 1 - f2
+               bet 64% payout  |  p2chain*4 percent payout reduction
+                                  p1chain*8 percent payout bonus
+     p1bet = 100             p2bet = 1000
+*/
