@@ -4,13 +4,10 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import events.EventType.VIEWER_JOINED
-import events.EventType.VIEWER_MESSAGE
+import events.EventType.*
 import events.ViewerEvent
 import session.SessionState
 import utils.getTokenFromFile
-import utils.keepInRange
-import utils.strToInt
 
 typealias CME = ChannelMessageEvent
 typealias OA2C = OAuth2Credential
@@ -51,16 +48,14 @@ class BotHandler : BotApi {
     fun generateViewerEvents(state: SessionState): List<ViewerEvent> {
         val events: MutableList<ViewerEvent> = arrayListOf()
         getViewerData().forEach {
-            var eventType = VIEWER_MESSAGE
             var viewer = Viewer(it)
             if (!state.contains(it)) events.add(ViewerEvent(VIEWER_JOINED, viewer, it.text))
             else viewer = Viewer(state.getViewer(it.twitchId).getData(), it)
-            // TODO: CHECK IF THE VIEWER PLACED A BET, AND ADD IT TO THE MATCH PRE-EVENT
-            events.add(ViewerEvent(eventType, viewer, it.text))
+            events.add(ViewerEvent(VIEWER_MESSAGE, viewer, it.text))
+            if (ViewerBet(viewer).isValid())
+                events.add(ViewerEvent(COMMAND_BET, viewer, it.text))
         }
         return events
     }
-
-    private fun getBetAmount(cmd: List<String>, viewer: Viewer): Int = if (cmd.size == 2) keepInRange(strToInt(cmd[1]), 10, viewer.getScoreTotal()) else 10
 
 }

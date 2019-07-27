@@ -62,11 +62,10 @@ class ViewerEvent(
     private val message: String
 ) {
 
-    fun get() = viewer
+    fun getViewer() = viewer
     fun getId() = viewer.getId()
     fun getName() = viewer.getName()
     fun getData() = viewer.getData()
-
     fun getType() = eventType
     fun getMessage() = message
 

@@ -4,9 +4,9 @@ import events.EventType.*
 import memscan.MemHandler
 import memscan.XrdApi
 import session.Fighter
+import session.Session.Mode
 import session.SessionState
 import utils.Duo
-import utils.SessionMode.*
 import utils.log
 
 /**
@@ -26,7 +26,7 @@ class XrdHandler {
         if (xrdApi.isConnected()) { if (!connected) { events.add(FighterEvent(XRD_CONNECTED)); connected = true }
             xrdApi.getFighterData().map { fighterData -> if (fighterData.isValid() && !state.update(fighterData)) { events.add(FighterEvent(FIGHTER_JOINED, state.getFighter(fighterData))) } }
             state.update(xrdApi.getMatchData())
-            if (state.getFighters().isNotEmpty() && state.isMode(MODE_NULL)) state.update(MODE_LOBBY)
+            if (state.getFighters().isNotEmpty() && state.isMode(Mode.NULL)) state.update(Mode.LOBBY)
 
             getEventsFighterMoved(state)
             getEventsMatchLoading(state)
@@ -40,7 +40,7 @@ class XrdHandler {
     }
 
     private fun getEventsMatchConcluded(state: SessionState) {
-        if (state.getMatch().getTimer() == -1 && state.isMode(MODE_VICTORY))
+        if (state.getMatch().getTimer() == -1 && state.isMode(Mode.VICTORY))
             events.add(FighterEvent(MATCH_CONCLUDED))
     }
 
@@ -80,14 +80,14 @@ class XrdHandler {
     }
 
     private fun getEventsRoundStarted(state: SessionState) {
-        if(state.getMatch().getHealth(0) == 420 && state.getMatch().getHealth(1) == 420 && state.isMode(MODE_LOADING, MODE_SLASH)) {
-            if(!state.isMode(MODE_MATCH, MODE_VICTORY)) events.add(FighterEvent(ROUND_STARTED, state.getMatch().getFighters()))
+        if(state.getMatch().getHealth(0) == 420 && state.getMatch().getHealth(1) == 420 && state.isMode(Mode.LOADING, Mode.SLASH)) {
+            if(!state.isMode(Mode.MATCH, Mode.VICTORY)) events.add(FighterEvent(ROUND_STARTED, state.getMatch().getFighters()))
         }
     }
 
     private fun getEventsRoundResolved(state: SessionState) {
         val m = state.getMatch()
-        if ((m.getHealth(0) == 0 || m.getHealth(1) == 0) && state.isMode(MODE_MATCH))
+        if ((m.getHealth(0) == 0 || m.getHealth(1) == 0) && state.isMode(Mode.MATCH))
             events.add(FighterEvent(ROUND_RESOLVED, Pair(m.getFighter(0), m.getFighter(1)), Pair(m.getHealth(0), m.getHealth(1))))
     }
 

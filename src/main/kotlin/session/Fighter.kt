@@ -80,6 +80,8 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
 
     fun getChange() = change
 
+    fun hasId(fighter:Fighter) = getId() == fighter.getId()
+
     fun getChangeString(ramp:Float = 1f, change:Int = this.change): String {
         if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
         else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"

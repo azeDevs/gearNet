@@ -18,9 +18,9 @@ class Viewer(oldData:ViewerData = ViewerData(), newData:ViewerData = oldData): P
     fun getScoreTotal() = scoreTotal
     fun getScoreDelta() = scoreDelta
 
-    fun changeScore(value:Int): Int {
-        scoreTotal = keepInRange(scoreTotal+value, 0)
-        scoreDelta = value
+    fun changeScore(value:Int, subtraction:Int = 0): Int {
+        scoreDelta = value-subtraction
+        scoreTotal = keepInRange(scoreTotal+scoreDelta, 0)
         return scoreTotal
     }
 
