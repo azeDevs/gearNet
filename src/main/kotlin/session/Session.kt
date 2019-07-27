@@ -1,17 +1,14 @@
 package session
 
-import BLU_BANNER
-import RED_BANNER
-import WD
 import events.EventType.*
 import events.FighterEvent
 import events.ViewerEvent
 import events.XrdHandler
-import models.Fighter
-import session.SessionMode.*
 import tornadofx.Controller
+import twitch.BLU_CHIP
 import twitch.BotHandler
-import utils.addCommas
+import twitch.RED_CHIP
+import utils.SessionMode.*
 import utils.log
 
 
@@ -26,7 +23,7 @@ class Session : Controller() {
         log("totalFighters","${state.getFighters().size}")
         log("totalViewers","${state.getViewers().size}")
 
-        log("Match Timer", "${state.getMatch().getMatchTimer()}")
+        log("Match Timer", "${state.getMatch().getTimer()}")
         log("R Rounds", "${state.getMatch().getRounds(0)}")
         log("R Health", "${state.getMatch().getHealth(0)}")
         log("R Tension", "${state.getMatch().getTension(0)}")
@@ -98,11 +95,17 @@ class Session : Controller() {
         bot.sendMessage("${it.getName()} initiated !HELP")
     }
 
+
     private fun runCommandBet(it: ViewerEvent) {
-        if (it.getBetAmount() > 0) {
-            bot.sendMessage("${addCommas(it.getBetAmount())} \uD835\uDE86\$ ${it.getBetBanner().first} ${it.getName()}")
-            log("!BET command from ${it.getName()}, ${addCommas(it.getBetAmount())} $WD on ${it.getBetBanner().second}, initiated")
-        } else log("!BET command from ${it.getName()} failed to initiate, invalid amount")
+        // TODO: ADD ViewerBet TO UPCOMING Match HERE
+//        val bet = it.get().getBet()
+//        val sb = StringBuilder("Viewer ${it.getName()} bet ")
+//        if (bet.isValid()) {
+//            if (bet.getChips(0)>0) sb.append("${bet.getChips(0)}0% (${addCommas(bet.getWager(0))} $WD) on Red")
+//            if (bet.getChips(0)>0 && bet.getChips(1)>0) sb.append(" & ")
+//            if (bet.getChips(1)>0) sb.append("${bet.getChips(1)}0% (${addCommas(bet.getWager(1))} $WD) on Blue")
+//            log(sb.toString())
+//        }
     }
 
     private fun runFighterJoined(it: FighterEvent) {
@@ -151,8 +154,8 @@ class Session : Controller() {
         else state.update(MODE_VICTORY)
         var winner = Fighter()
         var betBanner: Pair<String, String> = Pair("","")
-        if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = RED_BANNER }
-        if (it.getDelta(1) == 1) { winner = it.get(1); betBanner = BLU_BANNER }
+        if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = Pair("Red", RED_CHIP) }
+        if (it.getDelta(1) == 1) { winner = it.get(1); betBanner = Pair("Blue", BLU_CHIP) }
         bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
         log("Match resolved, ${betBanner.second} Fighter ${winner.getName()} is the winner.")
     }

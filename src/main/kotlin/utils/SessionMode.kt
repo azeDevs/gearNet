@@ -1,4 +1,4 @@
-package session
+package utils
 
 enum class SessionMode {
     MODE_NULL,

@@ -29,7 +29,7 @@ val pathHome = Paths.get(System.getProperty("user.dir"))
 val trueFuture = CompletableFuture.completedFuture(true)
 
 
-fun stringToInt(param: String): Int {
+fun strToInt(param: String): Int {
     for (c in param.toCharArray()) {
         if (!Character.isDigit(c))
             return -1

@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import models.Fighter
+import session.Fighter
 import session.Session
 import tornadofx.*
 import utils.XrdChar.getCharacterTrademark

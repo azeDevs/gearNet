@@ -15,8 +15,6 @@ const val ARTIFACT_NAME = "GearNet // Bounty Bets"
 const val BUILD_VERSION = "0.7.2"
 
 const val WD = "\uD835\uDE86\$"
-val RED_BANNER: Pair<String, String> = Pair("\uD83D\uDD34","Red")
-val BLU_BANNER = Pair("\uD83D\uDD35","Blue")
 
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 

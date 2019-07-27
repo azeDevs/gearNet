@@ -1,8 +1,7 @@
-package models
+package session
 
 import javafx.geometry.Rectangle2D
 import memscan.FighterData
-import session.Session
 import utils.XrdChar.getCharacterName
 import utils.addCommas
 import utils.getIdString

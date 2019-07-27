@@ -4,13 +4,11 @@ import events.FighterEvent
 import events.ViewerEvent
 import memscan.FighterData
 import memscan.MatchData
-import models.Fighter
-import models.Match
-import session.SessionMode.*
 import twitch.Viewer
 import twitch.ViewerData
+import utils.SessionMode
+import utils.SessionMode.*
 import utils.log
-
 
 
 class SessionState {
@@ -27,6 +25,7 @@ class SessionState {
     fun getMatch() = if (matchSnaps.isNotEmpty()) matchSnaps[matchSnaps.lastIndex] else Match()
     fun oldMatch() = if (matchSnaps.size > 1) matchSnaps[matchSnaps.lastIndex] else getMatch()
     fun getFighters() = fighters.values.filter { it.isValid() }
+    fun getMatchFighters() = Pair(fighters.values.firstOrNull { it.isSeated(0) } ?: Fighter(), fighters.values.firstOrNull { it.isSeated(1) } ?: Fighter())
     fun getFighter(fighterData:FighterData) = fighters.getOrDefault(fighterData.steamId, Fighter(fighterData))
 
     fun getViewers() = viewers.values.filter { it.isValid() }
@@ -77,7 +76,7 @@ class SessionState {
         return updated
     }
 
-    fun contains(fighter:Fighter) = fighters.containsKey(fighter.getId())
+    fun contains(fighter: Fighter) = fighters.containsKey(fighter.getId())
     fun contains(viewer:Viewer) = viewers.containsKey(viewer.getId())
     fun contains(fighter:FighterEvent) = fighters.containsKey(fighter.getId())
     fun contains(viewer:ViewerEvent) = viewers.containsKey(viewer.getId())
@@ -85,3 +84,4 @@ class SessionState {
     fun contains(viewer:ViewerData) = viewers.containsKey(viewer.twitchId)
 
 }
+

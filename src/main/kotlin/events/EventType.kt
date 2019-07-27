@@ -1,6 +1,6 @@
 package events
 
-import models.Fighter
+import session.Fighter
 import twitch.Viewer
 
 
@@ -46,14 +46,6 @@ class FighterEvent {
         this.fighters = Pair(fighters.first, fighters.second)
         this.deltas = Pair(0, 0)
     }
-    // 1 2 1
-    constructor(eventType: EventType = EventType.NULL_EVENT,
-                fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter()),
-                delta: Int = 0) {
-        this.eventType = eventType
-        this.fighters = Pair(fighters.first, fighters.second)
-        this.deltas = Pair(delta, delta)
-    }
     // 1 2 2
     constructor(eventType: EventType = EventType.NULL_EVENT,
                 fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter()),
@@ -64,13 +56,11 @@ class FighterEvent {
     }
 }
 
-class ViewerEvent {
-    private val eventType: EventType
+class ViewerEvent(
+    private val eventType: EventType,
+    private val viewer: Viewer,
     private val message: String
-    private val viewer: Viewer
-    private val fighter: Fighter
-    private val betBanner: Pair<String, String>
-    private val betAmount: Int
+) {
 
     fun get() = viewer
     fun getId() = viewer.getId()
@@ -79,23 +69,7 @@ class ViewerEvent {
 
     fun getType() = eventType
     fun getMessage() = message
-    fun getFighter() = fighter
-    fun getBetBanner() = betBanner
-    fun getBetAmount() = betAmount
 
-    constructor(eventType: EventType = EventType.NULL_EVENT,
-                viewer: Viewer = Viewer(),
-                message: String = "",
-                fighter: Fighter = Fighter(),
-                betBanner: Pair<String, String> = Pair("",""),
-                betAmount: Int = -1) {
-        this.eventType = eventType
-        this.viewer = viewer
-        this.message = message
-        this.fighter = fighter
-        this.betBanner = betBanner
-        this.betAmount = betAmount
-    }
 }
 
 enum class EventType { NULL_EVENT,

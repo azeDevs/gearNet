@@ -1,4 +1,4 @@
-package models
+package session
 
 abstract class PlayerData<T>(
     oldData: T,
