@@ -9,6 +9,6 @@ fun log(text: String) {
     println(text)
 }
 
-fun log(tag:String, text:String) {
-    watchedLog.put(tag, text)
-}
+fun log(tag:String, text:String) = watchedLog.put(tag, text)
+
+fun log(tag:String, value:Int) = watchedLog.put(tag, value.toString())

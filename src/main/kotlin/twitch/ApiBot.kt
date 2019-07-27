@@ -22,8 +22,10 @@ interface BotApi {
 
 }
 
-class ViewerData(
+data class ViewerData(
     val twitchId:Long = -1,
     val name:String = "",
     val text:String = ""
-)
+) {
+    fun isValid() = twitchId > 0
+}

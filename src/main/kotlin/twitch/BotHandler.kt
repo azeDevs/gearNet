@@ -23,8 +23,6 @@ class BotHandler : BotApi {
     private val viewerDatas: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient = TCB.builder()
         .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
-//            .withClientId(getTokenFromFile("keys", "twitch_bot_client"))
-//            .withClientSecret(getTokenFromFile("keys", "twitch_bot_secret"))
         .withEnableChat(true)
         .withEnableHelix(true)
         .withEnableKraken(true)

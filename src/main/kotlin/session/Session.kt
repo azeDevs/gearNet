@@ -25,12 +25,27 @@ class Session : Controller() {
         log("sessionMode", state.getMode().name)
         log("totalFighters","${state.getFighters().size}")
         log("totalViewers","${state.getViewers().size}")
+
+        log("Match Timer", "${state.getMatch().getMatchTimer()}")
+        log("R Rounds", "${state.getMatch().getRounds(0)}")
+        log("R Health", "${state.getMatch().getHealth(0)}")
+        log("R Tension", "${state.getMatch().getTension(0)}")
+        log("R Guard", "${state.getMatch().getGuardGauge(0)}")
+        log("R Stunned", "${state.getMatch().getStrikeStun(0)}")
+        log("R Burst", "${state.getMatch().getCanBurst(0)}")
+
+        log("B Rounds", "${state.getMatch().getRounds(1)}")
+        log("B Health", "${state.getMatch().getHealth(1)}")
+        log("B Tension", "${state.getMatch().getTension(1)}")
+        log("B Guard", "${state.getMatch().getGuardGauge(1)}")
+        log("B Stunned", "${state.getMatch().getStrikeStun(1)}")
+        log("B Burst", "${state.getMatch().getCanBurst(1)}")
     }
 
     fun generateEvents() {
         logUpdateToGUI()
         // PROCESS FighterEvents
-        xrd.generateFighterEvents(state).forEach { state.update(it)
+        xrd.generateFighterEvents(state).forEach {
             when (it.getType()) {
                 NULL_EVENT -> false
                 XRD_CONNECTED -> log("XrdApi connected")
@@ -51,7 +66,7 @@ class Session : Controller() {
         }
 
         // PROCESS ViewerEvents
-        bot.generateViewerEvents(state).forEach { state.update(it)
+        bot.generateViewerEvents(state).forEach {
             when (it.getType()) {
                 NULL_EVENT -> false
                 VIEWER_JOINED -> runViewerJoined(it)
@@ -91,7 +106,7 @@ class Session : Controller() {
     }
 
     private fun runFighterJoined(it: FighterEvent) {
-        log("NEW Fighter ${it.getName()} added to fighters map")
+        log("NEW Fighter ${it.getName()} added to fighters map with Steam ID ${it.getId()}")
     }
 
     private fun runFighterMoved(it: FighterEvent) {
@@ -115,16 +130,16 @@ class Session : Controller() {
 
     private fun runMatchLoading(it: FighterEvent) {
         if (state.getMode() != MODE_LOADING) log("NEW Match loading... ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
-        state.updateMode(MODE_LOADING)
+        state.update(MODE_LOADING)
     }
 
     private fun runRoundStarted(it: FighterEvent) {
-        state.updateMode(MODE_MATCH)
+        state.update(MODE_MATCH)
         log("Round started with ${it.get(0).getName()} as Red, and ${it.get(1).getName()} as Blue")
     }
 
     private fun runRoundResolved(it: FighterEvent) {
-        state.updateMode(MODE_SLASH)
+        state.update(MODE_SLASH)
         var winner = Fighter()
         if (it.getDelta(0) == 0) winner = it.get(1)
         if (it.getDelta(1) == 0) winner = it.get(0)
@@ -132,8 +147,8 @@ class Session : Controller() {
     }
 
     private fun runMatchResolved(it: FighterEvent) {
-        if (state.isMode(MODE_LOADING)) state.updateMode(MODE_LOBBY)
-        else state.updateMode(MODE_VICTORY)
+        if (state.isMode(MODE_LOADING)) state.update(MODE_LOBBY)
+        else state.update(MODE_VICTORY)
         var winner = Fighter()
         var betBanner: Pair<String, String> = Pair("","")
         if (it.getDelta(0) == 1) { winner = it.get(0); betBanner = RED_BANNER }
@@ -143,7 +158,7 @@ class Session : Controller() {
     }
 
     private fun runMatchConcluded(it: FighterEvent) {
-        state.updateMode(MODE_LOBBY)
+        state.update(MODE_LOBBY)
     }
 
 }

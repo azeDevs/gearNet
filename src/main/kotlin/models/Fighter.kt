@@ -103,6 +103,7 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
         }
     }
 
+    fun isSeated(seatId:Int) = getData().seatingId == seatId
     fun getSeat() = getData().seatingId
 
     fun getSeatString(cabId:Int = getCabinet(), sideId:Int = getSeat()): String {
@@ -126,11 +127,11 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
 
     fun isLoading() = getData().loadingPct > 0 && getData().loadingPct < 100
 
-    fun hasPlayed() = getData().matchesSum > oldData().matchesSum
+    fun justPlayed() = getData().matchesSum > oldData().matchesSum
 
-    fun isLoser() = getData().matchesWon == oldData().matchesWon && hasPlayed()
+    fun justLost() = getData().matchesWon == oldData().matchesWon && justPlayed()
 
-    fun isWinner() = getData().matchesWon > oldData().matchesWon && hasPlayed()
+    fun justWon() = getData().matchesWon > oldData().matchesWon && justPlayed()
 
     fun getRating():Float {
         if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getChain()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()

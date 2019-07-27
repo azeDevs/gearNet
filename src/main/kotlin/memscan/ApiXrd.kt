@@ -47,6 +47,7 @@ data class FighterData(
             other.matchesWon == matchesWon &&
             other.matchesSum == matchesSum &&
             other.loadingPct == loadingPct
+    fun isValid() = steamId > 0
 }
 
 data class MatchData(
@@ -71,4 +72,5 @@ data class MatchData(
             canBurst.second == other.canBurst.second &&
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
+    fun isValid() = timer > 0
 }
