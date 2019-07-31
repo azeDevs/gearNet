@@ -3,9 +3,9 @@ package application
 import MyApp.Companion.ARTIFACT_NAME
 import MyApp.Companion.BUILD_VERSION
 import javafx.application.Platform
-import javafx.geometry.Pos
+import javafx.geometry.Insets
 import javafx.scene.control.Label
-import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,7 +17,9 @@ import utils.watchedLog
 
 class AppView : View() {
 
-    private var debugView: HBox
+    val logEntryView = find(LogEntryView::class)
+
+    private var debugView: VBox
     private val session: Session by inject()
     lateinit private var consoleView: Label
     lateinit private var watchKeyView: Label
@@ -42,17 +44,10 @@ class AppView : View() {
 
     init { log("Starting $ARTIFACT_NAME $BUILD_VERSION")
         with(root) { addClass(AppStyle.appContainer)
-                debugView = hbox { alignment = Pos.CENTER
+                debugView = vbox { padding = Insets(64.0)
+                    hbox {
 
-                    hbox { addClass(AppStyle.debugContainer)
-                        consoleView = label { addClass(AppStyle.debugConsole) }
                     }
-
-                    hbox { addClass(AppStyle.debugContainer)
-                        watchKeyView = label { addClass(AppStyle.debugWatchKey) }
-                        watchValView = label { addClass(AppStyle.debugWatchVal) }
-                    }
-
                 }
 
             }

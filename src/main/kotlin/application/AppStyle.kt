@@ -1,11 +1,13 @@
 package application
 
 import javafx.geometry.Pos
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 class AppStyle : Stylesheet() {
 
     companion object {
+        val fontFiraCodeLight = loadFont("/fonts/FiraCode-Light.ttf", 16.0)
         val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
         val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val appContainer by cssclass()
@@ -13,51 +15,53 @@ class AppStyle : Stylesheet() {
         val debugWatchKey by cssclass()
         val debugWatchVal by cssclass()
         val debugContainer by cssclass()
-
-        val debugFontSize = 14.px
-        val debugViewHeight = 640.px
     }
 
     init {
 
-        appContainer { backgroundColor += c("#FF00FFff") }
+        appContainer {
+            backgroundColor += c("#FF00FFff")
+        }
 
         debugContainer {
-
             padding = box(0.px, 6.px, 4.px, 6.px)
             backgroundColor += c("#00000066")
             borderColor += box(c("#333333"))
             borderWidth += box(2.px)
-            minHeight = debugViewHeight
-            maxHeight = debugViewHeight
         }
 
         label {
-            fontFiraCodeBold?.let { font = it }
-            alignment = Pos.BOTTOM_LEFT
-            textFill = c("#cccccc")
-            backgroundColor += c("#000000")
-            borderColor += box(c("#ffff00"))
+            fontFiraCodeRegular?.let { font = it }
+            alignment = Pos.CENTER_LEFT
+            textFill = c("#faa61a")
+            fontSize = 18.px
+            backgroundColor += c("#151517")
+            borderColor += box(c("#2f3033"))
             borderWidth += box(1.px)
-            minHeight = debugViewHeight-16
-            maxHeight = debugViewHeight-16
-            padding = box(0.px, 6.px, 4.px, 6.px)
-            spacing = 4.px
+            padding = box(0.px, 8.px, 6.px, 8.px)
 
             and(debugConsole) {
-                fontSize = debugFontSize
+                fontFiraCodeLight?.let { font = it }
+                textFill = c("#dcddde")
+                borderWidth += box(2.px)
                 minWidth = 800.px
                 maxWidth = 800.px
+                minHeight = 600.px
+                maxHeight = 600.px
             }
             and(debugWatchKey) {
-                fontSize = debugFontSize
-                minWidth = 320.px
-                maxWidth = 320.px
+                borderWidth += box(2.px)
+                alignment = Pos.CENTER_LEFT
+                minWidth = 220.px
+                maxWidth = 220.px
             }
             and(debugWatchVal) {
-                fontSize = debugFontSize
-                minWidth = 100.px
-                maxWidth = 100.px
+                fontFiraCodeBold?.let { font = it }
+                borderWidth += box(2.px)
+                alignment = Pos.CENTER_RIGHT
+                textAlignment = TextAlignment.RIGHT
+                minWidth = 112.px
+                maxWidth = 112.px
                 textFill = c("#aaff33")
             }
 
