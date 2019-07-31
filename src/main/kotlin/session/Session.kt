@@ -1,6 +1,6 @@
 package session
 
-import WD
+import MyApp.Companion.WD
 import events.EventType.*
 import events.FighterEvent
 import events.ViewerEvent

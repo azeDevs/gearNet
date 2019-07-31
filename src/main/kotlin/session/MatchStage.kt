@@ -1,6 +1,6 @@
 package session
 
-import WD
+import MyApp.Companion.WD
 import memscan.MatchData
 import twitch.ViewerBet
 import utils.addCommas

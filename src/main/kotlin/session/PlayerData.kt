@@ -17,5 +17,6 @@ abstract class PlayerData<T>(
     fun oldData() = this.data.first
     fun getData() = this.data.second
     fun update(newData:T) { data = Pair(data.second, newData) }
+    fun getIdString() = if (id.toString().length > 8) "ID${id.toString().substring(id.toString().length-8, id.toString().length)}" else "ID${id}"
 
 }

@@ -1,38 +1,26 @@
-import application.ApplicationStyle
-import application.ApplicationView
-import application.stream.BigScoreStyle
-import application.stream.InMatchStyle
-import application.tools.ToolsMatchStyle
-import application.tools.ToolsPlayerStyle
+import application.AppStyle
+import application.AppView
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
 fun main(args: Array<String>) = launch<MyApp>(args)
-
-const val ARTIFACT_NAME = "GearNet // Bounty Bets"
-const val BUILD_VERSION = "0.7.2"
-
-const val WD = "\uD835\uDE86\$"
-
-class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
+class MyApp : App(AppView::class, AppStyle::class) {
 
     companion object {
-        const val TRACE_BORDERS = false
-        const val GHOST_OPACITY = 0.64
+        const val ARTIFACT_NAME = "GearNet // Bounty Bets"
+        const val BUILD_VERSION = "0.7.2"
+        const val WD = "\uD835\uDE86\$"
     }
 
-    override fun onBeforeShow(view: UIComponent) {
-        super.onBeforeShow(view)
-        view.title = "$ARTIFACT_NAME $BUILD_VERSION"
-    }
+    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        stage.width  = 1296.0 // 1280
-        stage.height = 759.0  // 720
+    override fun start(stage: Stage) { super.start(stage)
+        stage.width  = 1936.0 // +16
+        stage.height = 1119.0 // +39
         stage.isResizable = false
+//        stage.isFullScreen = true
     }
 
 }

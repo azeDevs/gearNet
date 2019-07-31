@@ -10,32 +10,36 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
-import java.util.concurrent.CompletableFuture
+import kotlin.random.Random
 
 
 /**
- * A shortcut value for providing the directory path to the
+ * A shortcut value for providing the path to the
  * application's root directory.
  *
  * @return the Path to the application's root directory
  */
 val pathHome = Paths.get(System.getProperty("user.dir"))
 
+
 /**
- * A shortcut value for providing a completed CompletableFuture.
+ *log
  *
- * @return a truely completed CompletableFuture
+ * @return ???
  */
-val trueFuture = CompletableFuture.completedFuture(true)
+var consoleLog: MutableList<String> = arrayListOf(); var watchedLog: MutableMap<String, String> = mutableMapOf()
+fun log(text: String) { if (consoleLog.size >= 20) consoleLog.removeAt(0); consoleLog.add(text); println(text) }
+fun log(tag:String, value:Int) = watchedLog.put(tag, value.toString())
+fun log(tag:String, text:String) = watchedLog.put(tag, text)
 
 
-fun strToInt(param: String): Int {
-    for (c in param.toCharArray()) {
-        if (!Character.isDigit(c))
-            return -1
-    }
-    return Integer.valueOf(param)
-}
+/**
+ *strToInt
+ *
+ * @return Int
+ */
+fun strToInt(param: String): Int { for (c in param.toCharArray()) if (!Character.isDigit(c)) return -1; return Integer.valueOf(param) }
+
 
 /**
  * Concatenate an "s" to the end of an existing String, based on
@@ -84,10 +88,7 @@ fun prnt(vararg text: String) = text.forEach { s -> print(s) }
  *
  * @return input from the console as a String
  */
-fun input(): String {
-    print("▶")
-    return Scanner(System.`in`).next()
-}
+fun input(): String { print("▶"); return Scanner(System.`in`).next() }
 
 
 /**
@@ -97,14 +98,9 @@ fun input(): String {
  * file that contains the token to be read
  * @return the token as a `String`
  */
-fun getTokenFromFile(vararg path: String): String {
-    val sb = StringBuilder()
-    try { val fileScan = Scanner(FileReader(Paths.get("$pathHome", *path).toFile()))
-        while (fileScan.hasNext()) sb.append(fileScan.next())
-        fileScan.close()
-    } catch (e: FileNotFoundException) { e.printStackTrace() }
-    return sb.toString()
-}
+fun getTokenFromFile(vararg path: String): String { val sb = StringBuilder()
+    try { val fileScan = Scanner(FileReader(Paths.get("$pathHome", *path).toFile())); while (fileScan.hasNext()) sb.append(fileScan.next()); fileScan.close()
+    } catch (e: FileNotFoundException) { e.printStackTrace() }; return sb.toString() }
 
 
 /**
@@ -121,9 +117,7 @@ fun time(epochMilli: Long) = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT
  *
  * @return the formatted date and time as a `String`
  */
-fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(
-    timeMillis()
-))
+fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(timeMillis()))
 
 
 /**
@@ -141,14 +135,10 @@ fun timeMillis() = System.currentTimeMillis()
  * @param text  the text to be formatted
  * @return the formatted table as a `String`
  */
-fun table(width: Int, vararg text: String): String {
-    val column = StringBuilder()
-    text.forEach { s ->
-        column.append(s)
-        (0 until width - s.length).forEach { column.append(" ") }
-    }
-    return column.toString()
-}
+fun table(width: Int, vararg text: String): String { val column = StringBuilder()
+    text.forEach { s -> column.append(s); (0 until width - s.length).forEach { column.append(" ") } }
+    return column.toString() }
+
 
 /**
  * Exit the application with a Shutdown.
@@ -156,10 +146,8 @@ fun table(width: Int, vararg text: String): String {
  * @param code the exit code to display after Shutdown
  * @param text the text to display before shutdown
  */
-fun exit(code: Int, text: String) {
-    println("\uD83D\uDED1 $text")
-    System.exit(code)
-}
+fun exit(code: Int, text: String) { println("\uD83D\uDED1 $text"); System.exit(code) }
+
 
 /**
  * Add a Shutdown Hook to the application.
@@ -175,9 +163,7 @@ fun addShutdownHook(text: String) = Runtime.getRuntime().addShutdownHook(Thread 
  * @param interval the interval
  * @param runnable the runnable
  */
-fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : TimerTask() {
-    override fun run() { runnable.run() }
-}, interval, interval)
+fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : TimerTask() { override fun run() { runnable.run() } }, interval, interval)
 
 
 /**
@@ -235,16 +221,13 @@ fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, 
 fun isInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
 
 
-
 /**
  * Write a String to a local text file
  *
  * @param fileName the name of the file
  * @param text the text to be written
  */
-fun writeToFile(fileName: String, text: String) {
-    File(fileName).writeText(text)
-}
+fun writeToFile(fileName: String, text: String) = File(fileName).writeText(text)
 
 
 /**
@@ -253,8 +236,30 @@ fun writeToFile(fileName: String, text: String) {
  * @param fileName the file to be retrieved from resources package.
  * @return the file path as a `URI`
  */
-fun getRes(fileName: String): URI {
-    return URI("${pathHome.toUri().toURL()}src/main/resources/${fileName}")
+fun getRes(fileName: String): URI = URI("${pathHome.toUri().toURL()}src/main/resources/${fileName}")
+
+
+/**
+ * getRandomName
+ *
+ * @param ???
+ * @return ???
+ */
+fun getRandomName():String {
+    val rn1 = arrayListOf("a","ze","st","ar","Koov","er","Te","chno","Lost","Ill","usion","isio","avi","La","bryz","Cath","at","icus","gry","phen","Soff","ish","Aoi","Mai","den","epo","ck","robo","sting","ray","sw","eet","X","jam","Tar","kus","Ev","ir","Dwa","jio","Big","bow","sa","TK","sha","dow","Del","rian","son","ny","wort","zik","Bon","bei","beez","uz","agri","guck","le","Jub","Kiz","zer","Day","men","dou","Pep","pery","Sp","lash","Kuro","gane","Ri","ven","Whoo","Boo","st","Whom","Sput","nik","Mk0","Cre","amy","Shits","Poo","Lord","Shin","Mun","chy","Mad","ao","Pan","Je","yu","dus","Sin","Pom","pa","dude","Riss","ay","Ja","yne","Mk1","Bea","Whi","Octo","pimp","Bon","bei","eez","us","Guck","le","oki","zeme","69","420","XxX","xXx","Seph","iroth","Sex","Haver","Weed","Pan","zee","boo","ties","Der","win","Sla","Elv","Sha","dow","Bla","ck","Sna","ke","Pru","sha","Cute","Miku","Rock","Man","Girl","Boy","Bitch","Bro","tato","seph","heim","Free","Wind","Jutsu","Ninja","obi","chan","kun","Kami","Poke","Kill","mon","Digi","Ahe","gao","Face","ken","dojo","Dead","State","God","Gren","dy","lici","ous","Love","Fire","Flame","Ice","Elf","Fair","Drag","Devil","Jin","Muge","Moog","Lock","Kara","Sol","Badguy","Jelly","Rich","Fake","Fraud","Pro","Sport","Spice","Butt","Blood","Evil","Goo","HUE","HUEHUE","HURR","HNNG","Gai","jen","Ota","ku","con","Fucker","Fast","Sonic","Blur","Red","Black","Green","Blue","Pink","White","Macha","mito","Anji","Flash","Shad","Eden","War","ior","Priest","ess","Fal","len","Ang","ing","est","ery"," the ","Fl","ip","up","Throw","Tier","Nerf","Ost","ia","Rhi","ne","hart","Swag","Sal","Faul","ty","Def","ense","Goku"); val rn2 = arrayListOf("b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","z"); val rn3 = arrayListOf("a","e","i","o","u","a","e","i","o","u","y")
+    val out = StringBuilder("${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}"); var nameStep = 0
+    for (i in 0..Random.nextInt(2,4)) { var part = StringBuilder()
+        if (nameStep++ % 2 == 0) part.append("${rn2[Random.nextInt(rn2.size)]}${rn3[Random.nextInt(rn3.size)]}") else part.append(rn1[Random.nextInt(rn1.size)])
+        when (Random.nextInt(15)) {
+            1 -> part.append(" ${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}")
+            2 -> part.append("_${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}")
+            3 -> part.append("${rn3[Random.nextInt(rn3.size)]}${rn2[Random.nextInt(rn2.size)]}")
+            4 -> part.append(Random.nextInt(10,1000))
+            5 -> part = StringBuilder(part.toString().toUpperCase())
+            6 -> part = StringBuilder(part.toString().toLowerCase())
+            7 -> { val pick = Random.nextInt(part.length); part.replace(pick,pick+1, if (Random.nextBoolean()) part.get(pick).toString().toUpperCase() else part.get(pick).toString().toLowerCase()) }
+            else -> part.append("") }; out.append(part)
+    }; return out.toString()
 }
 
 

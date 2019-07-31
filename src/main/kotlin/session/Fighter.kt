@@ -4,7 +4,6 @@ import javafx.geometry.Rectangle2D
 import memscan.FighterData
 import utils.XrdChar.getCharacterName
 import utils.addCommas
-import utils.getIdString
 import utils.log
 import kotlin.math.abs
 import kotlin.math.max
@@ -47,7 +46,7 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
                 idle = 0
             } else {
 //                idle = max(1,s.getActivePlayerCount())
-                log("P: ${getIdString(getId())} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getData().displayName})")
+                log("P: ${getIdString()} is idle ... Standby reset to ${idle} and chain reduced by 1 (${getData().displayName})")
             }
         }
     }
