@@ -23,6 +23,7 @@ class MyView : View() {
             }
         }
     }
+
 }
 
 class ConsoleInputView : Fragment() {

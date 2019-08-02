@@ -21,9 +21,9 @@ class AppView : View() {
 
     private var debugView: VBox
     private val session: Session by inject()
-    lateinit private var consoleView: Label
-    lateinit private var watchKeyView: Label
-    lateinit private var watchValView: Label
+    private lateinit var consoleView: Label
+    private lateinit var watchKeyView: Label
+    private lateinit var watchValView: Label
     override val root: Form = Form()
 
     private fun cycleGameLoop() { GlobalScope.launch {
@@ -36,20 +36,21 @@ class AppView : View() {
         delay(20); cycleUILoop() }
     }
 
-    fun updateConsole() = Platform.runLater { val sb = StringBuilder()
-        consoleLog.forEach { sb.append("\n${it}") }; consoleView.setText(sb.toString()); sb.clear()
-        watchedLog.forEach { sb.append("\n${it.key}") }; watchKeyView.setText(sb.toString()); sb.clear()
-        watchedLog.forEach { sb.append("\n${it.value}") }; watchValView.setText(sb.toString()); sb.clear()
+    private fun updateConsole() = Platform.runLater { val sb = StringBuilder()
+        consoleLog.forEach { sb.append("\n$it") }; consoleView.text = sb.toString(); sb.clear()
+        watchedLog.forEach { sb.append("\n${it.key}") }; watchKeyView.text = sb.toString(); sb.clear()
+        watchedLog.forEach { sb.append("\n${it.value}") }; watchValView.text = sb.toString(); sb.clear()
     }
 
     init { log("Starting $ARTIFACT_NAME $BUILD_VERSION")
         with(root) { addClass(AppStyle.appContainer)
                 debugView = vbox { padding = Insets(64.0)
                     hbox {
-
+                        consoleView = label("consoleView")
+                        watchKeyView = label("watchKeyView")
+                        watchValView = label("watchValView")
                     }
                 }
-
             }
 
             cycleGameLoop()

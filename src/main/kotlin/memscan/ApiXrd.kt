@@ -55,8 +55,8 @@ data class MatchData(
     val health: Pair<Int, Int> = Pair(-1, -1),
     val rounds: Pair<Int, Int> = Pair(-1, -1),
     val tension: Pair<Int, Int> = Pair(-1, -1),
-    val canBurst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
-    val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
+    val canBurst: Pair<Boolean, Boolean> = Pair(false, false),
+    val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
     val guardGauge: Pair<Int, Int> = Pair(-1, -1)
 ) {
     fun equals(other: MatchData) = timer == other.timer &&

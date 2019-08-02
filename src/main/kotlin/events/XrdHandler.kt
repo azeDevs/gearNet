@@ -1,7 +1,9 @@
 package events
 
+import MyApp.Companion.LINUX_WIN_SIM
 import events.EventType.*
 import memscan.MemHandler
+import memscan.MemSimulator
 import memscan.XrdApi
 import session.Fighter
 import session.Session.Mode
@@ -17,7 +19,7 @@ import utils.log
  */
 class XrdHandler {
 
-    private val xrdApi: XrdApi = MemHandler()
+    private val xrdApi: XrdApi = if (LINUX_WIN_SIM) MemSimulator() else MemHandler()
     private val events: MutableList<FighterEvent> = arrayListOf()
     private var connected = false
 
