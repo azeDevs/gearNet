@@ -1,11 +1,11 @@
 package session
 
 import MyApp.Companion.WD
+import application.log
 import memscan.MatchData
 import twitch.ViewerBet
 import utils.addCommas
 import utils.isInRange
-import utils.log
 import utils.plural
 import kotlin.math.abs
 
@@ -79,7 +79,7 @@ class MatchStage {
         when (getLastMatch().getWinner()) {
             0 -> match = Match(stageId, Pair(getLastMatch().getWinningFighter(), prospect))
             1 -> match = Match(stageId, Pair(prospect, getLastMatch().getWinningFighter()))
-            else -> log("Match stage ")
+            else -> log("Match stage attempted")
         }
     }
 

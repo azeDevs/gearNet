@@ -9,19 +9,15 @@ fun main(args: Array<String>) = launch<MyApp>(args)
 class MyApp : App(AppView::class, AppStyle::class) {
 
     companion object {
-        const val LINUX_WIN_SIM = true
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
         const val BUILD_VERSION = "0.7.2"
         const val WD = "\uD835\uDE86\$"
     }
 
     override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
-
-    override fun start(stage: Stage) { super.start(stage)
+    override fun start(stage: Stage) { super.start(stage); stage.toBack(); stage.isResizable = false
         stage.width  = 1920.0 + 16
         stage.height = 1080.0 + 39
-        stage.isResizable = false
-//        stage.isFullScreen = true
     }
 
 }

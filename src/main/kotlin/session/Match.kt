@@ -1,8 +1,8 @@
 package session
 
+import application.log
 import memscan.MatchData
 import twitch.ViewerBet
-import utils.log
 import java.lang.Math.abs
 
 /**

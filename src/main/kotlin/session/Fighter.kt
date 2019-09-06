@@ -1,10 +1,10 @@
 package session
 
+import application.log
 import javafx.geometry.Rectangle2D
 import memscan.FighterData
 import utils.XrdChar.getCharacterName
 import utils.addCommas
-import utils.log
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -26,7 +26,7 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
     var present = true
 
     private var bounty = 0
-    private var change = 0
+    private var delta = 0
     private var chain = 0
     private var idle = 1
 
@@ -53,15 +53,15 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
 
     fun getBounty() = bounty
 
-    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
-    else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
+    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getDelta()+(getDelta()*ramp).toInt(), getBounty()))} W$"
+    else "${addCommas(max(getBounty()-getDelta()+(getDelta()*ramp).toInt(), getBounty()))} W$"
 
-    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (change!=0) ramp else 1f) else "FREE"
+    fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (delta!=0) ramp else 1f) else "FREE"
 
     fun getRecordString() = "W:${getMatchesWon()}  /  M:${getMatchesPlayed()}"
 
     fun changeBounty(amount:Int) {
-        change = amount
+        delta = amount
         bounty += amount
         if (bounty < 10) bounty = 0
     }
@@ -77,13 +77,13 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
         return chain
     }
 
-    fun getChange() = change
+    fun getDelta() = delta
 
     fun hasId(fighter:Fighter) = getId() == fighter.getId()
 
-    fun getChangeString(ramp:Float = 1f, change:Int = this.change): String {
-        if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
-        else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"
+    fun getChangeString(ramp:Float = 1f, change:Int = this.delta): String {
+        if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt())} W$"
+        else if (change < 0) return "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()))} W$"
         else return ""
     }
 

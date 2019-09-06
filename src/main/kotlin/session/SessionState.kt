@@ -1,7 +1,5 @@
 package session
 
-import events.FighterEvent
-import events.ViewerEvent
 import memscan.FighterData
 import memscan.MatchData
 import session.Session.Mode
@@ -50,8 +48,6 @@ class SessionState {
 
     fun contains(fighter: Fighter) = fighters.containsKey(fighter.getId())
     fun contains(viewer:Viewer) = viewers.containsKey(viewer.getId())
-    fun contains(fighter:FighterEvent) = fighters.containsKey(fighter.getId())
-    fun contains(viewer:ViewerEvent) = viewers.containsKey(viewer.getId())
     fun contains(fighter:FighterData) = fighters.containsKey(fighter.steamId)
     fun contains(viewer:ViewerData) = viewers.containsKey(viewer.twitchId)
 

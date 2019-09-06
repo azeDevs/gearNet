@@ -4,6 +4,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
 import java.time.ZoneId
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 import kotlin.random.Random
+import kotlin.system.exitProcess
 
 
 /**
@@ -19,18 +21,7 @@ import kotlin.random.Random
  *
  * @return the Path to the application's root directory
  */
-val pathHome = Paths.get(System.getProperty("user.dir"))
-
-
-/**
- *log
- *
- * @return ???
- */
-var consoleLog: MutableList<String> = arrayListOf(); var watchedLog: MutableMap<String, String> = mutableMapOf()
-fun log(text: String) { if (consoleLog.size >= 20) consoleLog.removeAt(0); consoleLog.add(text); println(text) }
-fun log(tag:String, value:Int) = watchedLog.put(tag, value.toString())
-fun log(tag:String, text:String) = watchedLog.put(tag, text)
+val pathHome: Path = Paths.get(System.getProperty("user.dir"))
 
 
 /**
@@ -109,7 +100,7 @@ fun getTokenFromFile(vararg path: String): String { val sb = StringBuilder()
  * @param epochMilli the time as epoch milli
  * @return the formatted date and time as a `String`
  */
-fun time(epochMilli: Long) = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(epochMilli))
+fun time(epochMilli: Long) = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(epochMilli)) ?: ""
 
 
 /**
@@ -117,7 +108,7 @@ fun time(epochMilli: Long) = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT
  *
  * @return the formatted date and time as a `String`
  */
-fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(timeMillis()))
+fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.US).withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(timeMillis())) ?: ""
 
 
 /**
@@ -136,7 +127,7 @@ fun timeMillis() = System.currentTimeMillis()
  * @return the formatted table as a `String`
  */
 fun table(width: Int, vararg text: String): String { val column = StringBuilder()
-    text.forEach { s -> column.append(s); (0 until width - s.length).forEach { column.append(" ") } }
+    text.forEach { s -> column.append(truncate(s,width)); repeat((0 until width - s.length).count()) { column.append(" ") } }
     return column.toString() }
 
 
@@ -146,7 +137,7 @@ fun table(width: Int, vararg text: String): String { val column = StringBuilder(
  * @param code the exit code to display after Shutdown
  * @param text the text to display before shutdown
  */
-fun exit(code: Int, text: String) { println("\uD83D\uDED1 $text"); System.exit(code) }
+fun exit(code: Int, text: String) { println("\uD83D\uDED1 $text"); exitProcess(code) }
 
 
 /**
@@ -175,25 +166,21 @@ fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : Time
  */
 fun truncate(name: String, length: Int): String {
     val re = Regex("[^A-Za-z0-9_!@#$%^&*()“”`'~|.,\"\\-=+\\[\\]{}\\\\<>/「」 ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９]")
-    if (name.length > length) return re.replace(name, "?").substring(0, length)
-    else return re.replace(name, "?")
+    return if (name.length > length) re.replace(name, "?").substring(0, length) else re.replace(name, "?")
 }
 
 
 /**
- * Adds a comma every 3 digits when the parameter is a valid number
+ * Adds commas to a given Integer every 3 digits.
  *
- * @param inLong the Long representing the number to be formatted
  * @param inInt the Int representing the number to be formatted
- * @param inStr the String representing the number to be formatted
  * @return the number formatted with commas as a String
  */
-fun addCommas(inLong: Long):String = addCommas(inLong.toString())
-fun addCommas(inInt: Int):String = addCommas(inInt.toString())
-fun addCommas(inStr: String):String {
-    val commas = if (inStr.length % 3 == 0) (inStr.length/3)-1 else inStr.length/3
+fun addCommas(inInt: Int): String {
     var outStr = ""
-    for (i in 0..commas-1) outStr = if (inStr.length > 3) ",${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}" else "${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}"
+    val inStr = inInt.toString()
+    val commas = if (inStr.length % 3 == 0) (inStr.length/3)-1 else inStr.length/3
+    for (i in 0 until commas) outStr = if (inStr.length > 3) ",${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}" else "${inStr.substring(inStr.length-(3*(i+1)), inStr.length-(3*i))}${outStr}"
     return inStr.substring(0, inStr.length-(3*commas)) + outStr
 }
 
@@ -218,8 +205,8 @@ fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, 
  * @param maximum the maximum value while still returning true
  * @return boolean for whether or not the value was within the indicated range
  */
-fun isInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
-
+fun isInRange(value:Int, minimum:Int = 0, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
+fun isWithin(value:Int, maximum:Int): Boolean = isInRange(value, 0, maximum)
 
 /**
  * Write a String to a local text file
@@ -236,7 +223,7 @@ fun writeToFile(fileName: String, text: String) = File(fileName).writeText(text)
  * @param fileName the file to be retrieved from resources package.
  * @return the file path as a `URI`
  */
-fun getRes(fileName: String): URI = URI("${pathHome.toUri().toURL()}src/main/resources/${fileName}")
+fun getRes(fileName: String): URI = URI("${pathHome.toUri().toURL()}src/main/resources/$fileName")
 
 
 /**
@@ -248,8 +235,9 @@ fun getRes(fileName: String): URI = URI("${pathHome.toUri().toURL()}src/main/res
 fun getRandomName():String {
     val rn1 = arrayListOf("a","ze","st","ar","Koov","er","Te","chno","Lost","Ill","usion","isio","avi","La","bryz","Cath","at","icus","gry","phen","Soff","ish","Aoi","Mai","den","epo","ck","robo","sting","ray","sw","eet","X","jam","Tar","kus","Ev","ir","Dwa","jio","Big","bow","sa","TK","sha","dow","Del","rian","son","ny","wort","zik","Bon","bei","beez","uz","agri","guck","le","Jub","Kiz","zer","Day","men","dou","Pep","pery","Sp","lash","Kuro","gane","Ri","ven","Whoo","Boo","st","Whom","Sput","nik","Mk0","Cre","amy","Shits","Poo","Lord","Shin","Mun","chy","Mad","ao","Pan","Je","yu","dus","Sin","Pom","pa","dude","Riss","ay","Ja","yne","Mk1","Bea","Whi","Octo","pimp","Bon","bei","eez","us","Guck","le","oki","zeme","69","420","XxX","xXx","Seph","iroth","Sex","Haver","Weed","Pan","zee","boo","ties","Der","win","Sla","Elv","Sha","dow","Bla","ck","Sna","ke","Pru","sha","Cute","Miku","Rock","Man","Girl","Boy","Bitch","Bro","tato","seph","heim","Free","Wind","Jutsu","Ninja","obi","chan","kun","Kami","Poke","Kill","mon","Digi","Ahe","gao","Face","ken","dojo","Dead","State","God","Gren","dy","lici","ous","Love","Fire","Flame","Ice","Elf","Fair","Drag","Devil","Jin","Muge","Moog","Lock","Kara","Sol","Badguy","Jelly","Rich","Fake","Fraud","Pro","Sport","Spice","Butt","Blood","Evil","Goo","HUE","HUEHUE","HURR","HNNG","Gai","jen","Ota","ku","con","Fucker","Fast","Sonic","Blur","Red","Black","Green","Blue","Pink","White","Macha","mito","Anji","Flash","Shad","Eden","War","ior","Priest","ess","Fal","len","Ang","ing","est","ery"," the ","Fl","ip","up","Throw","Tier","Nerf","Ost","ia","Rhi","ne","hart","Swag","Sal","Faul","ty","Def","ense","Goku"); val rn2 = arrayListOf("b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","z"); val rn3 = arrayListOf("a","e","i","o","u","a","e","i","o","u","y")
     val out = StringBuilder("${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}"); var nameStep = 0
-    for (i in 0..Random.nextInt(2,4)) { var part = StringBuilder()
-        if (nameStep++ % 2 == 0) part.append("${rn2[Random.nextInt(rn2.size)]}${rn3[Random.nextInt(rn3.size)]}") else part.append(rn1[Random.nextInt(rn1.size)])
+    repeat((0..Random.nextInt(2,4)).count()) { var part = StringBuilder()
+        if (nameStep++ % 2 == 0) part.append("${rn2[Random.nextInt(rn2.size)]}${rn3[Random.nextInt(rn3.size)]}")
+        else part.append(rn1[Random.nextInt(rn1.size)])
         when (Random.nextInt(15)) {
             1 -> part.append(" ${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}")
             2 -> part.append("_${rn2[Random.nextInt(rn2.size)].toUpperCase()}${rn3[Random.nextInt(rn3.size)]}")
@@ -263,10 +251,3 @@ fun getRandomName():String {
 }
 
 
-/**
- * This is basically the same as Pair(), except mutable and unsafe.
- */
-class Duo<T>(
-    var f1: T,
-    var f2: T = f1
-)

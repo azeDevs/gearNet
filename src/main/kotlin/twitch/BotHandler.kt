@@ -4,16 +4,17 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import events.EventType.*
-import events.ViewerEvent
-import session.SessionState
+import events.CommandBetEvent
+import events.ViewerJoinedEvent
+import events.ViewerMessageEvent
+import session.Session
 import utils.getTokenFromFile
 
 typealias CME = ChannelMessageEvent
 typealias OA2C = OAuth2Credential
 typealias TCB = TwitchClientBuilder
 
-class BotHandler : BotApi {
+class BotHandler(private val s: Session) : BotApi {
 
     private val viewerDatas: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient = TCB.builder()
@@ -45,17 +46,14 @@ class BotHandler : BotApi {
     //sendMessage("\uD83D\uDC4B Hello World! \uD83E\uDD16")
     //fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
 
-    fun generateViewerEvents(state: SessionState): List<ViewerEvent> {
-        val events: MutableList<ViewerEvent> = arrayListOf()
+    fun generateViewerEvents() {
         getViewerData().forEach {
             var viewer = Viewer(it)
-            if (!state.contains(it)) events.add(ViewerEvent(VIEWER_JOINED, viewer, it.text))
-            else viewer = Viewer(state.getViewer(it.twitchId).getData(), it)
-            events.add(ViewerEvent(VIEWER_MESSAGE, viewer, it.text))
-            if (ViewerBet(viewer).isValid())
-                events.add(ViewerEvent(COMMAND_BET, viewer, it.text))
+            if (!s.state.contains(viewer)) s.fire(ViewerJoinedEvent(viewer))
+            else viewer = Viewer(s.state.getViewer(it.twitchId).getData(), it)
+            s.fire(ViewerMessageEvent(viewer, it.text))
+            if (ViewerBet(viewer).isValid()) s.fire(CommandBetEvent(viewer, ViewerBet(viewer)))
         }
-        return events
     }
 
 }

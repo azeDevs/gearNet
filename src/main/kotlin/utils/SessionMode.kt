@@ -1,12 +1,18 @@
 package utils
 
+import application.LogText
+import application.LogText.Effect.LOW
+import application.LogText.Effect.YLW
+import application.log
 import session.Session.Mode
 import session.Session.Mode.*
+
+typealias L = LogText
 
 class SessionMode(private var mode: Mode = NULL) {
 
     fun get() = mode
-    fun isMode(vararg mode:Mode) = mode.filter { it == this.mode }.isNotEmpty()
+    fun isMode(vararg mode:Mode) = mode.any { it == this.mode }
 
     fun update(updatedMode:Mode): Boolean {
         var updated = false
@@ -21,7 +27,8 @@ class SessionMode(private var mode: Mode = NULL) {
                 else -> updated = false
             }
             if (updated) {
-                log("Session changed to [${updatedMode.name}] (formerly ${mode.name.toLowerCase()})")
+                log(L("Session changed to"), L(updatedMode.name,YLW), L("(formerly ${mode.name})",LOW))
+//                log("Session changed to [${updatedMode.name}] (formerly ${mode.name.toLowerCase()})")
                 mode = updatedMode
             }
         }
