@@ -2,8 +2,7 @@ package session
 
 import MyApp.Companion.WD
 import application.LogText
-import application.LogText.Effect.BLU
-import application.LogText.Effect.LOW
+import application.LogText.Effect.*
 import application.log
 import events.*
 import tornadofx.Controller
@@ -47,12 +46,12 @@ class Session : Controller() {
 
     private fun runViewerMessage(e: ViewerMessageEvent) {
         state.update(e.viewer.getData())
-        log("${e.viewer.getName()} said “${e.text}”")
+        log(L(e.viewer.getName(), GRN), L(" said ", LOW), L(e.text))
     }
 
     private fun runViewerJoined(e: ViewerJoinedEvent) {
         state.putViewer(e.viewer)
-        log("NEW Viewer ${e.viewer.getName()} added to viewers map")
+        log(L("NEW Viewer "), L(e.viewer.getName(), GRN), L(" added to viewers map"))
     }
 
     private fun runCommandBet(e: CommandBetEvent) {
@@ -74,7 +73,7 @@ class Session : Controller() {
     }
 
     private fun runFighterMoved(e: FighterMovedEvent) {
-        log("Fighter ${e.fighter.getName(false)} moved ${if (e.fighter.getCabinet() > 3) "off cabinet" else "to ${e.fighter.getSeatString()}, ${e.fighter.getCabinetString()}"}")
+        log(L("Fighter "), L(e.fighter.getName(false), BLU), L(" moved "), L(if (e.fighter.getCabinet() > 3) "off cabinet" else "to ${e.fighter.getSeatString()}, "), L(e.fighter.getCabinetString(), YLW))
         if (e.fighter.oldData().seatingId == 0 || e.fighter.oldData().seatingId == 1) state.getStage().finalizeMatch(state)
     }
 
@@ -85,7 +84,7 @@ class Session : Controller() {
 
     private fun runRoundStarted(e: RoundStartedEvent) {
         state.update(Mode.MATCH)
-        log("Round started with ${e.match.getFighter(0).getName()} as Red, and ${e.match.getFighter(1).getName()} as Blue")
+        log(L("Round started with "), L(e.match.getFighter(0).getName(), RED), L(" as Red, and "), L(e.match.getFighter(1).getName()), L(" as Blue", BLU))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
@@ -93,7 +92,11 @@ class Session : Controller() {
         var winner = Fighter()
         if (e.match.getFighter(0).getDelta() == 0) winner = e.match.getFighter(1)
         if (e.match.getFighter(1).getDelta() == 0) winner = e.match.getFighter(0)
-        log("Round resolved with ${winner.getName()} as the winner.")
+        when {
+            winner.getSeat() == 0 -> log(L("Round resolved with "), L(e.match.getFighter(0).getName(), RED))
+            winner.getSeat() == 1 -> log(L("Round resolved with "), L(e.match.getFighter(1).getName(), BLU))
+            else -> log(L("Round resolved with no winner", RED))
+        }
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {

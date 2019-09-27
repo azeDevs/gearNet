@@ -48,7 +48,8 @@ class AppView : View() {
         with(root) {
             debugBox = vbox {
                 addClass(AppStyle.debugContainer)
-                translateY -= 160
+                translateY -= 220
+                translateX += 240
                 console = textflow {
                     addClass(AppStyle.debugConsole)
                     translateY += 16

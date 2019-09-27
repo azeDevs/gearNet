@@ -17,8 +17,8 @@ class MyApp : App(AppView::class, AppStyle::class) {
 
     override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
     override fun start(stage: Stage) { super.start(stage); stage.toBack(); stage.isResizable = false
-        stage.width  = 1920.0 + 16
-        stage.height = 1080.0 + 39
+        stage.width  = 1600.0 + 16
+        stage.height = 900.0 + 39
     }
 
 }

@@ -1,6 +1,8 @@
 package session
 
 import MyApp.Companion.WD
+import application.LogText.Effect.RED
+import application.LogText.Effect.YLW
 import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
@@ -37,7 +39,7 @@ class MatchStage {
                 it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
                 logViewerBetResolution(it)
             }
-            log("Match finalized")
+            log(L("Match finalized", RED))
             archiveMatch()
         }
         stageMatch(state)
@@ -60,10 +62,10 @@ class MatchStage {
      */
     private fun archiveMatch() {
         if (archivedMatches.containsKey(match.getId())) {
-            log("Match ${match.getId()} has failed to archive due to duplicate IDs")
+            log(L("Match ${match.getId()} has failed to archive due to duplicate IDs", RED))
         } else {
             archivedMatches.put(match.getId(), match)
-            log("Match ${match.getId()} has been archived.")
+            log(L("Match ${match.getId()} has been archived.", RED))
         }
     }
 
@@ -73,8 +75,8 @@ class MatchStage {
      *  With the Seated Winner and Seat 2, create a new Match.
      */
     private fun stageMatch(state:SessionState, newId:Boolean = true) {
-        var stageId = 0L
-        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
+        var stageId = getLastMatch().getId() + 1
+//        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
 
         var prospect = state.getFighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()
         val twoFighters = !prospect.isValid()
@@ -82,7 +84,7 @@ class MatchStage {
         when (getLastMatch().getWinner()) {
             0 -> match = Match(stageId, Pair(getLastMatch().getWinningFighter(), prospect))
             1 -> match = Match(stageId, Pair(prospect, getLastMatch().getWinningFighter()))
-            else -> log("Match stage attempted")
+            else -> log(L("Match stage attempted", YLW))
         }
     }
 
