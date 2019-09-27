@@ -4,7 +4,7 @@ package memscan
 /**
  * memscan.XrdApi
  * provides [FighterData]
- * provides [MatchData]
+ * provides [MatchSnap]
  */
 interface XrdApi {
 
@@ -26,7 +26,7 @@ interface XrdApi {
     /**
      * @return data from current match
      */
-    fun getMatchData(): MatchData
+    fun getMatchData(): MatchSnap
 
 }
 
@@ -50,7 +50,7 @@ data class FighterData(
     fun isValid() = steamId > 0
 }
 
-data class MatchData(
+data class MatchSnap(
     val timer: Int = -1,
     val health: Pair<Int, Int> = Pair(-1, -1),
     val rounds: Pair<Int, Int> = Pair(-1, -1),
@@ -59,7 +59,7 @@ data class MatchData(
     val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
     val guardGauge: Pair<Int, Int> = Pair(-1, -1)
 ) {
-    fun equals(other: MatchData) = timer == other.timer &&
+    fun equals(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&

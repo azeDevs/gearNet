@@ -48,6 +48,15 @@ fun log(vararg logTexts:LogText) {
     }
 }
 
+fun updateLogs(console: TextFlow) {
+    logs.forEach { log -> log.logTexts.forEach { it.appendTo(console) } }
+    logs.clear()
+}
+
+//private fun clearConsole() = Platform.runLater {
+//    console.children.forEach { it.removeFromParent() }
+//}
+
 class LogLine(val logTexts:List<LogText>) {
     fun getText():String { val sb = StringBuilder()
         logTexts.forEach { sb.append(it.getText()) }

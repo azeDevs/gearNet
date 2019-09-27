@@ -1,6 +1,5 @@
 package events
 
-import application.log
 import memscan.MemHandler
 import memscan.XrdApi
 import session.Fighter
@@ -49,8 +48,8 @@ class XrdHandler(private val s: Session) {
     private fun getEventsMatchLoading() {
         val fighters = s.state.getFighters().filter { it.isLoading() }
         if (fighters.size == 2) {
-            log("R Loaded", fighters[0].getLoadPercent().toString())
-            log("B Loaded", fighters[1].getLoadPercent().toString())
+//            log("R Loaded", fighters[0].getLoadPercent().toString())
+//            log("B Loaded", fighters[1].getLoadPercent().toString())
             s.fire(MatchLoadingEvent(s.state.getMatch()))
         }
     }

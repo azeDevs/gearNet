@@ -27,8 +27,7 @@ class SessionMode(private var mode: Mode = NULL) {
                 else -> updated = false
             }
             if (updated) {
-                log(L("Session changed to"), L(updatedMode.name,YLW), L("(formerly ${mode.name})",LOW))
-//                log("Session changed to [${updatedMode.name}] (formerly ${mode.name.toLowerCase()})")
+                log(L("Session changed to "), L(updatedMode.name,YLW), L(" (formerly ${mode.name})",LOW))
                 mode = updatedMode
             }
         }

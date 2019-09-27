@@ -12,6 +12,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
         const val BUILD_VERSION = "0.7.2"
         const val WD = "\uD835\uDE86\$"
+        const val SILENCE_BOT = true
     }
 
     override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }

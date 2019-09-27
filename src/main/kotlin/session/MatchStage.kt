@@ -2,7 +2,7 @@ package session
 
 import MyApp.Companion.WD
 import application.log
-import memscan.MatchData
+import memscan.MatchSnap
 import twitch.ViewerBet
 import utils.addCommas
 import utils.isInRange
@@ -20,7 +20,7 @@ class MatchStage {
     fun getMatches(): List<Match> = archivedMatches.values.filter { it.isValid() }
     fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
     fun getMatch() = match
-    fun update(md: MatchData):Boolean = getMatch().update(md)
+    fun addSnap(ms: MatchSnap):Boolean = getMatch().update(ms)
     fun addBet(vb: ViewerBet):Boolean = getMatch().addViewerBet(vb)
     fun getBets() = match.getViewerBets()
 
@@ -45,9 +45,10 @@ class MatchStage {
 
     private fun logViewerBetResolution(it: ViewerBet) {
         val sb = StringBuilder("Viewer ${it.getViewer().getName()} ")
-        if (it.getViewer().getScoreDelta() > 0) sb.append("WON ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
-        else if (it.getViewer().getScoreDelta() < 0) sb.append("LOST ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
-        else sb.append("BROKE EVEN, ")
+        when {
+            it.getViewer().getScoreDelta() > 0 -> sb.append("WON ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
+            it.getViewer().getScoreDelta() < 0 -> sb.append("LOST ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
+            else -> sb.append("BROKE EVEN, ") }
         sb.append("wallet total now ${addCommas(it.getViewer().getScoreTotal())} $WD")
         log(sb.toString())
     }
@@ -72,7 +73,9 @@ class MatchStage {
      *  With the Seated Winner and Seat 2, create a new Match.
      */
     private fun stageMatch(state:SessionState, newId:Boolean = true) {
-        val stageId = if (newId) match.getId() + 1 else match.getId()
+        var stageId = 0L
+        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
+
         var prospect = state.getFighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()
         val twoFighters = !prospect.isValid()
         if (twoFighters) prospect = getLastMatch().getLosingFighter()

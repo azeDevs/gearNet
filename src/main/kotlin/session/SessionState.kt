@@ -1,7 +1,7 @@
 package session
 
 import memscan.FighterData
-import memscan.MatchData
+import memscan.MatchSnap
 import session.Session.Mode
 import twitch.Viewer
 import twitch.ViewerBet
@@ -43,7 +43,7 @@ class SessionState {
 
     fun getStage() = matchStage
     fun getMatch() = matchStage.getMatch()
-    fun update(md: MatchData):Boolean = matchStage.update(md)
+    fun update(md: MatchSnap):Boolean = matchStage.addSnap(md)
     fun addBet(vb: ViewerBet):Boolean = matchStage.addBet(vb)
 
     fun contains(fighter: Fighter) = fighters.containsKey(fighter.getId())

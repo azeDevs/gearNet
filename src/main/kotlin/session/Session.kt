@@ -70,7 +70,7 @@ class Session : Controller() {
     }
 
     private fun runFighterJoined(e: FighterJoinedEvent) {
-        log(L("Fighter"), L(e.fighter.getName(false), BLU), L("added to fighters map"), L("[${e.fighter.getIdString()}]", LOW))
+        log(L("Fighter "), L(e.fighter.getName(false), BLU), L(" added to fighters map"), L(" [${e.fighter.getIdString()}]", LOW))
     }
 
     private fun runFighterMoved(e: FighterMovedEvent) {
@@ -79,8 +79,7 @@ class Session : Controller() {
     }
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
-        if (state.getMode() != Mode.LOADING)
-            log("NEW Match loading... ${e.match.getFighter(0).getName()} as Red, and ${e.match.getFighter(1).getName()} as Blue")
+//        if (state.getMode() != Mode.LOADING) log("NEW Match loading... ${e.match.getFighter(0).getName()} as Red, and ${e.match.getFighter(1).getName()} as Blue")
         state.update(Mode.LOADING)
     }
 

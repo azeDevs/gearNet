@@ -74,7 +74,7 @@ class MemHandler : XrdApi {
         return pDatas
     }
 
-    override fun getMatchData(): MatchData {
+    override fun getMatchData(): MatchSnap {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64)
         val p1offs = longArrayOf(0x1B18C78L, 0L)
         val p2offs = longArrayOf(0x1B18C78L, 0L)
@@ -102,9 +102,9 @@ class MemHandler : XrdApi {
             val tension = Pair(getByteBufferFromAddress(p1offs, 4)!!.int, getByteBufferFromAddress(p2offs, 4)!!.int)
             val timer = getByteBufferFromAddress(timeroffs, 4)!!.int
             val rounds = Pair(getByteBufferFromAddress(p1roundoffset, 4)!!.int, getByteBufferFromAddress(p2roundoffset, 4)!!.int)
-            return MatchData(timer, health, rounds, tension, canBurst, strikeStun, guardGauge)
+            return MatchSnap(timer, health, rounds, tension, canBurst, strikeStun, guardGauge)
         } catch (e: NullPointerException) {
-            return MatchData()
+            return MatchSnap()
         }
     }
 
