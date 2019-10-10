@@ -3,26 +3,22 @@ package twitch
 import session.PlayerData
 import utils.keepInRange
 
-// FIXME: REMOVE SessionState AS A DEPENDENCY!!!
 /*
 
-
-    Store all ViewerBets in the relevant Match.
+    // TODO: Store all ViewerBets in the relevant Match.
     - remember htf matches work
 
-
-    Should the Match invalidate, so do the ViewerBets.
+    // TODO: Should the Match invalidate, so do the ViewerBets.
     - ezpz
 
-    Have Match handle MatchData snaps instead of SessionState handling Match snaps.
+    // TODO: Have Match handle MatchData snaps instead of SessionState handling Match snaps.
     - remember how MatchData snaps propogate
 
-    Give every Match a unique ID, and store alongside Fighter and Viewer maps.
+    // TODO: Give every Match a unique ID, and store alongside Fighter and Viewer maps.
     - find out wtf Fighter names don't display in console
 
-
-
 */
+
 class Viewer(oldData:ViewerData = ViewerData(), newData:ViewerData = oldData): PlayerData<ViewerData>(oldData, newData, newData.name, newData.twitchId) {
 
     private var scoreTotal = 1000

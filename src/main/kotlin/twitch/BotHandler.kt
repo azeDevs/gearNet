@@ -52,8 +52,8 @@ class BotHandler(private val s: Session) : BotApi {
     fun generateViewerEvents() {
         getViewerData().forEach {
             var viewer = Viewer(it)
-            if (!s.state().contains(viewer)) s.fire(ViewerJoinedEvent(viewer))
-            else viewer = Viewer(s.state().getViewer(it.twitchId).getData(), it)
+            if (!s.getViewer(viewer.getId()).isValid()) s.fire(ViewerJoinedEvent(viewer))
+            else viewer = Viewer(s.getViewer(it.twitchId).getData(), it)
             s.fire(ViewerMessageEvent(viewer, it.text))
             if (ViewerBet(viewer).isValid()) s.fire(CommandBetEvent(viewer, ViewerBet(viewer)))
         }

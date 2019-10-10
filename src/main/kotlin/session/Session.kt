@@ -36,8 +36,8 @@ class Session : Controller() {
     fun update(mode: SessionMode.Mode) = this.mode.update(mode)
 
     // FIGHTER STUFF
-    fun fighters() = fighters.values
     private fun addFighter(fighter: Fighter) { fighters[fighter.getId()] = fighter }
+    fun fighters() = fighters.values
     fun getFighter(id: Long) = fighters().firstOrNull{ it.getId() == id } ?: Fighter()
     fun getFighters(): List<Fighter> = fighters().filter { it.isValid() }
     fun update(fd: FighterData):Boolean {
@@ -49,9 +49,9 @@ class Session : Controller() {
     }
 
     // VIEWER STUFF
-    fun viewers() = viewers.values
     private fun addViewer(viewer: Viewer) { viewers[viewer.getId()] = viewer }
-    private fun getViewer(id:Long) = viewers().firstOrNull{ it.getId() == id } ?: Viewer()
+    fun viewers() = viewers.values
+    fun getViewer(id:Long) = viewers().firstOrNull{ it.getId() == id } ?: Viewer()
     fun update(vd: ViewerData):Boolean {
         val viewer = viewers().filter { it.isValid() }.firstOrNull { it.getId() == vd.twitchId } ?: Viewer(vd)
         val flag = getViewer(viewer.getId()).isValid() // Map contains Viewer?
