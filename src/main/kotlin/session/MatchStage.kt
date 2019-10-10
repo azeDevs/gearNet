@@ -6,6 +6,8 @@ import application.LogText.Effect.YLW
 import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
+import utils.SessionMode
+import utils.SessionMode.Mode.VICTORY
 import utils.addCommas
 import utils.isInRange
 import utils.plural
@@ -13,37 +15,40 @@ import kotlin.math.abs
 
 /**
  *  [MatchStage]
- *
+ *  MatchStage handles all match creation, identification, and processing.
+ *  It also stores state for ViewerBets so that bets are tied to Match lifecycle
  */
-class MatchStage {
+class MatchStage(private val s: Session) {
     private val archivedMatches: HashMap<Long, Match> = HashMap()
     private var match: Match = Match()
 
     private fun getMatches(): List<Match> = archivedMatches.values.filter { it.isValid() }
     private fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
-    // FIXME: These all get called by SessionState 🢇
-    fun getMatch() = match
-    fun addSnap(ms: MatchSnap):Boolean = getMatch().update(ms)
-    fun addBet(vb: ViewerBet):Boolean = getMatch().addViewerBet(vb)
-    private fun getBets() = match.getViewerBets()
+    fun isMatchValid() = match.isValid()
+    fun match() = match
+
+    fun addSnap(ms: MatchSnap):Boolean = match.update(ms)
+    fun addBet(vb: ViewerBet):Boolean = match.addViewerBet(vb)
 
     /**
      *  [FINALIZING]
      *  For the current match to be finalized means to payout on all of its ViewerBets,
      *  and to archive it with a winner defined.
      */
-    fun finalizeMatch(state: SessionState) {
+    fun finalizeMatch() {
         if (!isInRange(match.getWinner(), 0, 1)) {
-            if (getBets().isNotEmpty()) log("Match invalidated ${getBets().size} ${plural("bet", getBets().size)}")
+            if (match.getBets().isNotEmpty())
+                log("Match invalidated ${match.getBets().size} ${plural("bet", match.getBets().size)}")
         } else {
-            match.getViewerBets().forEach {
+            match.getBets().forEach {
                 it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
                 logViewerBetResolution(it)
             }
             log(L("Match finalized", RED))
             archiveMatch()
         }
-        stageMatch(state)
+        s.update(VICTORY)
+        stageMatch()
     }
 
     private fun logViewerBetResolution(it: ViewerBet) {
@@ -75,11 +80,11 @@ class MatchStage {
      *  If the new Match will NOT have the same Fighters as current Seat 0 and 1
      *  With the Seated Winner and Seat 2, create a new Match.
      */
-    private fun stageMatch(state:SessionState) {
+    private fun stageMatch() {
         val stageId = getLastMatch().getId() + 1
 //        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
 
-        var prospect = state.getFighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()
+        var prospect = s.fighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()
         val twoFighters = !prospect.isValid()
         if (twoFighters) prospect = getLastMatch().getLosingFighter()
         when (getLastMatch().getWinner()) {
@@ -88,5 +93,12 @@ class MatchStage {
             else -> log(L("Match stage attempted", YLW))
         }
     }
+
+    /**
+     *  [EVENT_CONDITIONS]
+     *  ...
+     */
+    fun isMatchConcluded() = match.getTimer() == -1 && s.isMode(SessionMode.Mode.VICTORY)
+
 
 }

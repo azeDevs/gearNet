@@ -5,11 +5,12 @@ import application.LogText
 import application.LogText.Effect.*
 import application.log
 import events.*
+import memscan.FighterData
+import memscan.MatchSnap
 import tornadofx.Controller
-import twitch.BLU_CHIP
-import twitch.BotHandler
-import twitch.RED_CHIP
-import twitch.ViewerBet
+import twitch.*
+import utils.SessionMode
+import utils.SessionMode.Mode.*
 import utils.addCommas
 
 typealias L = LogText
@@ -17,11 +18,50 @@ typealias L = LogText
 
 class Session : Controller() {
 
-    private val state = SessionState()
     private val xrd = XrdHandler(this)
     private val bot = BotHandler(this)
 
+    private val mode: SessionMode = SessionMode()
+    private val stage: MatchStage = MatchStage(this)
+    private val viewers: HashMap<Long, Viewer> = HashMap()
+    private val fighters: HashMap<Long, Fighter> = HashMap()
+
+
+    // MATCH STUFF
+    fun stage() = stage
+    fun update(matchSnap: MatchSnap) = stage.addSnap(matchSnap)
+
+    // MODE STUFF
+    fun isMode(vararg mode: SessionMode.Mode) = this.mode.isMode(*mode)
+    fun update(mode: SessionMode.Mode) = this.mode.update(mode)
+
+    // FIGHTER STUFF
+    fun fighters() = fighters.values
+    private fun addFighter(fighter: Fighter) { fighters[fighter.getId()] = fighter }
+    fun getFighter(id: Long) = fighters().firstOrNull{ it.getId() == id } ?: Fighter()
+    fun getFighters(): List<Fighter> = fighters().filter { it.isValid() }
+    fun update(fd: FighterData):Boolean {
+        val fighter = fighters().firstOrNull{ it.getId() == fd.steamId } ?: Fighter(fd)
+        val flag = getFighter(fighter.getId()).isValid() // Map contains Fighter?
+        if (flag) fighter.update(fd)
+        else addFighter(fighter)
+        return flag
+    }
+
+    // VIEWER STUFF
+    fun viewers() = viewers.values
+    private fun addViewer(viewer: Viewer) { viewers[viewer.getId()] = viewer }
+    private fun getViewer(id:Long) = viewers().firstOrNull{ it.getId() == id } ?: Viewer()
+    fun update(vd: ViewerData):Boolean {
+        val viewer = viewers().filter { it.isValid() }.firstOrNull { it.getId() == vd.twitchId } ?: Viewer(vd)
+        val flag = getViewer(viewer.getId()).isValid() // Map contains Viewer?
+        if (flag) viewer.update(vd)
+        else addViewer(viewer)
+        return flag
+    }
+
     init {
+        subscribe<XrdConnectionEvent> { runXrdConnection(it) }
         subscribe<ViewerMessageEvent> { runViewerMessage(it) }
         subscribe<ViewerJoinedEvent> { runViewerJoined(it) }
         subscribe<CommandBetEvent> { runCommandBet(it) }
@@ -34,28 +74,33 @@ class Session : Controller() {
         subscribe<MatchConcludedEvent> { runMatchConcluded(it) }
     }
 
+    private fun runXrdConnection(e: XrdConnectionEvent) {
+        if (e.connected) log(L("Xrd", YLW), L(" has "), L("CONNECTED", GRN))
+        else log(L("Xrd", YLW), L(" has "), L("DISCONNECTED", RED))
+    }
+
     fun generateEvents() {
         logUpdateToGUI()
-        // PROCESS FighterEvents
-        xrd.generateFighterEvents()
-
-        // PROCESS ViewerEvents
-        bot.generateViewerEvents()
-
+        xrd.generateFighterEvents() // PROCESS FighterEvents
+        bot.generateViewerEvents() // PROCESS ViewerEvents
     }
 
     private fun runViewerMessage(e: ViewerMessageEvent) {
-        state.update(e.viewer.getData())
-        log(L(e.viewer.getName(), GRN), L(" said ", LOW), L(e.text))
+        update(e.viewer.getData())
+        log(L(e.viewer.getName(), GRN),
+            L(" said ", LOW),
+            L(e.text))
     }
 
     private fun runViewerJoined(e: ViewerJoinedEvent) {
-        state.putViewer(e.viewer)
-        log(L("NEW Viewer "), L(e.viewer.getName(), GRN), L(" added to viewers map"))
+        addViewer(e.viewer)
+        log(L("NEW Viewer "),
+            L(e.viewer.getName(), GRN),
+            L(" added to viewers map"))
     }
 
     private fun runCommandBet(e: CommandBetEvent) {
-        if (state.getMatch().isValid()) {
+        if (stage.isMatchValid()) {
             val bet = ViewerBet(e.viewer)
             val sb = StringBuilder("Viewer ${e.viewer.getName()} bet ")
             if (bet.isValid()) {
@@ -63,47 +108,59 @@ class Session : Controller() {
                 if (bet.getChips(0)>0 && bet.getChips(1)>0) sb.append(" & ")
                 if (bet.getChips(1)>0) sb.append("${bet.getChips(1)}0% (${addCommas(bet.getWager(1))} $WD) on Blue")
                 log(sb.toString())
-                state.addBet(bet)
+                stage.addBet(bet)
             }
         } else log("Viewer ${e.viewer.getName()} bet fizzled, betting is locked")
     }
 
     private fun runFighterJoined(e: FighterJoinedEvent) {
-        log(L("Fighter "), L(e.fighter.getName(false), BLU), L(" added to fighters map"), L(" [${e.fighter.getIdString()}]", LOW))
+        log(L("Fighter "),
+            L(e.fighter.getName(false), YLW),
+            L(" added to fighters map"),
+            L(" [${e.fighter.getIdString()}]", LOW))
     }
 
     private fun runFighterMoved(e: FighterMovedEvent) {
-        log(L("Fighter "), L(e.fighter.getName(false), BLU), L(" moved "), L(if (e.fighter.getCabinet() > 3) "off cabinet" else "to ${e.fighter.getSeatString()}, "), L(e.fighter.getCabinetString(), YLW))
-        if (e.fighter.oldData().seatingId == 0 || e.fighter.oldData().seatingId == 1) state.getStage().finalizeMatch(state)
+        // TODO: Make this use GRN for generic moves, YLW for seat 2, and RED/BLU for seats 0 and 1
+        log(L("Fighter "),
+            L(e.fighter.getName(false), YLW),
+            L(" moved "),
+            L(if (e.fighter.getCabinet() > 3) "off cabinet" else "to ${e.fighter.getSeatString()}, "),
+            L(e.fighter.getCabinetString(), YLW))
+        if (e.fighter.oldData().seatingId == 0 || e.fighter.oldData().seatingId == 1) stage.finalizeMatch()
     }
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
-//        if (state.getMode() != Mode.LOADING) log("NEW Match loading... ${e.match.getFighter(0).getName()} as Red, and ${e.match.getFighter(1).getName()} as Blue")
-        state.update(Mode.LOADING)
+        if (mode.get() != LOADING) {
+            log(L("Match loading ...   "), L(e.match.getFighter(0).getName(), RED),
+                L(" vs "), L(e.match.getFighter(1).getName(), BLU))
+        }
+        update(LOADING)
     }
 
     private fun runRoundStarted(e: RoundStartedEvent) {
-        state.update(Mode.MATCH)
-        log(L("Round started with "), L(e.match.getFighter(0).getName(), RED), L(" as Red, and "), L(e.match.getFighter(1).getName()), L(" as Blue", BLU))
+        update(MATCH)
+        log(L("Round started ...   "), L(e.match.getFighter(0).getName(), RED),
+            L(" vs "), L(e.match.getFighter(1).getName(), BLU))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
-        state.update(Mode.SLASH)
+        update(SLASH)
         var winner = Fighter()
         if (e.match.getFighter(0).getDelta() == 0) winner = e.match.getFighter(1)
         if (e.match.getFighter(1).getDelta() == 0) winner = e.match.getFighter(0)
         when {
-            winner.getSeat() == 0 -> log(L("Round resolved with "), L(e.match.getFighter(0).getName(), RED))
-            winner.getSeat() == 1 -> log(L("Round resolved with "), L(e.match.getFighter(1).getName(), BLU))
-            else -> log(L("Round resolved with no winner", RED))
+            winner.getSeat() == 0 -> log(L("Round resolved, "), L(e.match.getFighter(0).getName(), RED), L(" wins"))
+            winner.getSeat() == 1 -> log(L("Round resolved, "), L(e.match.getFighter(1).getName(), BLU), L(" wins"))
+            else -> log(L("Round resolved as a "), L("DRAW", YLW))
         }
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
-        if (state.isMode(Mode.LOADING)) state.update(Mode.LOBBY)
+        if (isMode(LOADING)) update(LOBBY)
         else {
-            state.update(Mode.VICTORY)
-            state.getStage().finalizeMatch(state)
+
+            stage.finalizeMatch()
         }
         var winner = Fighter()
         var betBanner: Pair<String, String> = Pair("","")
@@ -114,49 +171,41 @@ class Session : Controller() {
     }
 
     private fun runMatchConcluded(e: MatchConcludedEvent) {
-        state.update(Mode.LOBBY)
+        update(LOBBY)
     }
 
-    fun state() = state
-
-    enum class Mode {
-        NULL,
-        LOBBY,
-        LOADING,
-        MATCH,
-        SLASH,
-        VICTORY
-    }
 
     private fun logUpdateToGUI() {
 //        log("---- SESSION ----", "--------")
-//        log("Session Mode", state.getMode().name)
-//        log("Total Fighters","${state.getFighters().size}")
-//        log("Total Viewers","${state.getViewers().size}")
-//        log("Total Matches","${state.getStage().getMatches().size}")
+//        log("Session Mode", logic.getMode().name)
+//        log("Total Fighters","${logic.getFighters().size}")
+//        log("Total Viewers","${logic.getViewers().size}")
+//        log("Total Matches","${logic.getStage().getMatches().size}")
 //        log("---- MATCH ----", "--------")
-//        log("Match Snaps", state.getMatch().getSnaps().size)
-//        log("Match Timer", "${state.getMatch().getTimer()}")
-//        log("Red Rounds", "${state.getMatch().getRounds(0)}")
-//        log("Red Health", "${state.getMatch().getHealth(0)}")
-//        log("Blu Rounds", "${state.getMatch().getRounds(1)}")
-//        log("Blu Health", "${state.getMatch().getHealth(1)}")
+//        log("Match Snaps", logic.getMatch().getSnaps().size)
+//        log("Match Timer", "${logic.getMatch().getTimer()}")
+//        log("Red Rounds", "${logic.getMatch().getRounds(0)}")
+//        log("Red Health", "${logic.getMatch().getHealth(0)}")
+//        log("Blu Rounds", "${logic.getMatch().getRounds(1)}")
+//        log("Blu Health", "${logic.getMatch().getHealth(1)}")
 //        log("---- VIEWERS ----", "--------")
-//        log("Total Bets", state.getMatch().getViewerBets().size)
-//        log("Red Chips", state.getMatch().getChips(0))
-//        log("Blu Chips", state.getMatch().getChips(1))
-//        log("Red Wagers", state.getMatch().getWagers(0))
-//        log("Blu Wagers", state.getMatch().getWagers(0))
+//        log("Total Bets", logic.getMatch().getViewerBets().size)
+//        log("Red Chips", logic.getMatch().getChips(0))
+//        log("Blu Chips", logic.getMatch().getChips(1))
+//        log("Red Wagers", logic.getMatch().getWagers(0))
+//        log("Blu Wagers", logic.getMatch().getWagers(0))
 //        log("---- FIGHTERS ----", "--------")
-//        log("R Tension", "${state.getMatch().getTension(0)}")
-//        log("R Guard", "${state.getMatch().getGuardGauge(0)}")
-//        log("R Stunned", "${state.getMatch().getStrikeStun(0)}")
-//        log("R Burst", "${state.getMatch().getCanBurst(0)}")
-//        log("B Tension", "${state.getMatch().getTension(1)}")
-//        log("B Guard", "${state.getMatch().getGuardGauge(1)}")
-//        log("B Stunned", "${state.getMatch().getStrikeStun(1)}")
-//        log("B Burst", "${state.getMatch().getCanBurst(1)}")
+//        log("R Tension", "${logic.getMatch().getTension(0)}")
+//        log("R Guard", "${logic.getMatch().getGuardGauge(0)}")
+//        log("R Stunned", "${logic.getMatch().getStrikeStun(0)}")
+//        log("R Burst", "${logic.getMatch().getCanBurst(0)}")
+//        log("B Tension", "${logic.getMatch().getTension(1)}")
+//        log("B Guard", "${logic.getMatch().getGuardGauge(1)}")
+//        log("B Stunned", "${logic.getMatch().getStrikeStun(1)}")
+//        log("B Burst", "${logic.getMatch().getCanBurst(1)}")
     }
+
+
 
 }
 

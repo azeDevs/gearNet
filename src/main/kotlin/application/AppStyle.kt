@@ -9,9 +9,9 @@ class AppStyle : Stylesheet() {
         val entryWidth = 962.px
         private const val fontSize = 16.0
 
-        val fontFiraCodeLight = loadFont("/fonts/FiraCode-Light.ttf", fontSize)
-        val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", fontSize)
-        val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", fontSize)
+        val fontFiraLight = loadFont("/fonts/FiraCode-Light.ttf", fontSize)
+        val fontFiraRegular = loadFont("/fonts/FiraCode-Regular.ttf", fontSize)
+        val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf", fontSize)
         val appContainer by cssclass()
 
         val debugContainer by cssclass()

@@ -9,12 +9,12 @@ import twitch.ViewerBet
 
 class XrdConnectionEvent(val connected: Boolean) : FXEvent(BackgroundThread)
 class FighterJoinedEvent(val fighter: Fighter) : FXEvent(BackgroundThread)
-class FighterMovedEvent(val fighter: Fighter, seatingId: Int) : FXEvent(BackgroundThread)
+class FighterMovedEvent(val fighter: Fighter) : FXEvent(BackgroundThread)
 
 class MatchLoadingEvent(val match: Match) : FXEvent(BackgroundThread)
 class RoundStartedEvent(val match: Match) : FXEvent(BackgroundThread)
-class RoundResolvedEvent(val match: Match, val winner: Int) : FXEvent(BackgroundThread)
-class MatchResolvedEvent(val match: Match, val winner: Int) : FXEvent(BackgroundThread)
+class RoundResolvedEvent(val match: Match) : FXEvent(BackgroundThread)
+class MatchResolvedEvent(val match: Match) : FXEvent(BackgroundThread)
 class MatchConcludedEvent(val match: Match) : FXEvent(BackgroundThread)
 
 class ViewerJoinedEvent(val viewer:Viewer) : FXEvent(BackgroundThread)

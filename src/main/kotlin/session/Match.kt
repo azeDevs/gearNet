@@ -22,7 +22,7 @@ class Match (
     private var winner = -1
 
     fun getId() = matchId
-    fun getViewerBets(): List<ViewerBet> = viewerBets
+    fun getBets(): List<ViewerBet> = viewerBets
     fun getWinner() = winner
     fun getWinningFighter() = getFighter(getWinner())
     fun getLosingFighter() = getFighter(abs(getWinner() - 1))
@@ -49,4 +49,5 @@ class Match (
         winner = matchWinner
         log("matchSnaps", snaps.size)
     }
+
 }
