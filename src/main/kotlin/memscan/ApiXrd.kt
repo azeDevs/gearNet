@@ -40,13 +40,6 @@ data class FighterData(
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
 ) {
-    fun equals(other: FighterData) = other.displayName.equals(displayName) &&
-            other.characterId == characterId &&
-            other.cabinetId == cabinetId &&
-            other.seatingId == seatingId &&
-            other.matchesWon == matchesWon &&
-            other.matchesSum == matchesSum &&
-            other.loadingPct == loadingPct
     fun isValid() = steamId > 0
 }
 
@@ -59,7 +52,7 @@ data class MatchSnap(
     val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
     val guardGauge: Pair<Int, Int> = Pair(-1, -1)
 ) {
-    fun equals(other: MatchSnap) = timer == other.timer &&
+    fun isSameAs(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
@@ -73,4 +66,10 @@ data class MatchSnap(
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
     fun isValid() = timer > 0
+    fun health(seat: Int) = if (seat == 0) health.first else if (seat == 1) health.second else MatchSnap().health.second
+    fun rounds(seat: Int) = if (seat == 0) rounds.first else if (seat == 1) rounds.second else MatchSnap().rounds.second
+    fun tension(seat: Int) = if (seat == 0) tension.first else if (seat == 1) tension.second else MatchSnap().tension.second
+    fun canBurst(seat: Int) = if (seat == 0) canBurst.first else if (seat == 1) canBurst.second else MatchSnap().canBurst.second
+    fun strikeStun(seat: Int) = if (seat == 0) strikeStun.first else if (seat == 1) strikeStun.second else MatchSnap().strikeStun.second
+    fun guardGauge(seat: Int) = if (seat == 0) guardGauge.first else if (seat == 1) guardGauge.second else MatchSnap().guardGauge.second
 }

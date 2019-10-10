@@ -17,7 +17,7 @@ typealias L = LogText
 
 class Session : Controller() {
 
-    val state = SessionState()
+    private val state = SessionState()
     private val xrd = XrdHandler(this)
     private val bot = BotHandler(this)
 
@@ -117,8 +117,18 @@ class Session : Controller() {
         state.update(Mode.LOBBY)
     }
 
+    fun state() = state
 
-    fun logUpdateToGUI() {
+    enum class Mode {
+        NULL,
+        LOBBY,
+        LOADING,
+        MATCH,
+        SLASH,
+        VICTORY
+    }
+
+    private fun logUpdateToGUI() {
 //        log("---- SESSION ----", "--------")
 //        log("Session Mode", state.getMode().name)
 //        log("Total Fighters","${state.getFighters().size}")
@@ -146,15 +156,6 @@ class Session : Controller() {
 //        log("B Guard", "${state.getMatch().getGuardGauge(1)}")
 //        log("B Stunned", "${state.getMatch().getStrikeStun(1)}")
 //        log("B Burst", "${state.getMatch().getCanBurst(1)}")
-    }
-
-    enum class Mode {
-        NULL,
-        LOBBY,
-        LOADING,
-        MATCH,
-        SLASH,
-        VICTORY
     }
 
 }

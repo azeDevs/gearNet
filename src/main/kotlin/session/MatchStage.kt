@@ -19,12 +19,13 @@ class MatchStage {
     private val archivedMatches: HashMap<Long, Match> = HashMap()
     private var match: Match = Match()
 
-    fun getMatches(): List<Match> = archivedMatches.values.filter { it.isValid() }
-    fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
+    private fun getMatches(): List<Match> = archivedMatches.values.filter { it.isValid() }
+    private fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
+    // FIXME: These all get called by SessionState 🢇
     fun getMatch() = match
     fun addSnap(ms: MatchSnap):Boolean = getMatch().update(ms)
     fun addBet(vb: ViewerBet):Boolean = getMatch().addViewerBet(vb)
-    fun getBets() = match.getViewerBets()
+    private fun getBets() = match.getViewerBets()
 
     /**
      *  [FINALIZING]
@@ -33,7 +34,7 @@ class MatchStage {
      */
     fun finalizeMatch(state: SessionState) {
         if (!isInRange(match.getWinner(), 0, 1)) {
-            if (getBets().size > 0) log("Match invalidated ${getBets().size} ${plural("bet", getBets().size)}")
+            if (getBets().isNotEmpty()) log("Match invalidated ${getBets().size} ${plural("bet", getBets().size)}")
         } else {
             match.getViewerBets().forEach {
                 it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
@@ -64,7 +65,7 @@ class MatchStage {
         if (archivedMatches.containsKey(match.getId())) {
             log(L("Match ${match.getId()} has failed to archive due to duplicate IDs", RED))
         } else {
-            archivedMatches.put(match.getId(), match)
+            archivedMatches[match.getId()] = match
             log(L("Match ${match.getId()} has been archived.", RED))
         }
     }
@@ -74,8 +75,8 @@ class MatchStage {
      *  If the new Match will NOT have the same Fighters as current Seat 0 and 1
      *  With the Seated Winner and Seat 2, create a new Match.
      */
-    private fun stageMatch(state:SessionState, newId:Boolean = true) {
-        var stageId = getLastMatch().getId() + 1
+    private fun stageMatch(state:SessionState) {
+        val stageId = getLastMatch().getId() + 1
 //        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
 
         var prospect = state.getFighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()

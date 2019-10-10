@@ -28,7 +28,6 @@ class BotHandler(private val s: Session) : BotApi {
         .build()
 
     init {
-
         twitchClient.chat.eventManager.onEvent(CME::class.java).subscribe {
             viewerDatas.add(ViewerData(it.user.id, it.user.name, it.message))
         }
@@ -53,8 +52,8 @@ class BotHandler(private val s: Session) : BotApi {
     fun generateViewerEvents() {
         getViewerData().forEach {
             var viewer = Viewer(it)
-            if (!s.state.contains(viewer)) s.fire(ViewerJoinedEvent(viewer))
-            else viewer = Viewer(s.state.getViewer(it.twitchId).getData(), it)
+            if (!s.state().contains(viewer)) s.fire(ViewerJoinedEvent(viewer))
+            else viewer = Viewer(s.state().getViewer(it.twitchId).getData(), it)
             s.fire(ViewerMessageEvent(viewer, it.text))
             if (ViewerBet(viewer).isValid()) s.fire(CommandBetEvent(viewer, ViewerBet(viewer)))
         }

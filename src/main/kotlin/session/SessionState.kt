@@ -16,7 +16,6 @@ class SessionState {
     private val fighters: HashMap<Long, Fighter> = HashMap()
     private val viewers: HashMap<Long, Viewer> = HashMap()
 
-    fun getMode() = sessionMode.get()
     fun isMode(vararg mode:Mode) = this.sessionMode.isMode(*mode)
     fun update(mode:Mode) = this.sessionMode.update(mode)
 
@@ -24,20 +23,19 @@ class SessionState {
     fun getFighter(fighterData:FighterData) = fighters.getOrDefault(fighterData.steamId, Fighter(fighterData))
     fun update(fd:FighterData):Boolean {
         val fighter = getFighter(fd)
-        var flag = contains(fighter)
+        val flag = contains(fighter)
         if (flag) fighter.update(fd)
-        else fighters.put(fighter.getId(), fighter)
+        else fighters[fighter.getId()] = fighter
         return flag
     }
 
-    fun getViewers(): List<Viewer> = viewers.values.filter { it.isValid() }
     fun getViewer(id:Long) = viewers.getOrDefault(id, Viewer())
-    fun putViewer(v:Viewer) = if (v.isValid()) { viewers.put(v.getId(), v); true } else false
+    fun putViewer(v:Viewer) = if (v.isValid()) { viewers[v.getId()] = v; true } else false
     fun update(vd:ViewerData):Boolean {
-        val viewer = getViewers().firstOrNull { it.getId() == vd.twitchId } ?: Viewer()
-        var flag = viewer.isValid()
+        val viewer = viewers.values.filter { it.isValid() }.firstOrNull { it.getId() == vd.twitchId } ?: Viewer()
+        val flag = viewer.isValid()
         viewer.update(vd)
-        viewers.put(viewer.getId(), viewer)
+        viewers[viewer.getId()] = viewer
         return flag
     }
 
