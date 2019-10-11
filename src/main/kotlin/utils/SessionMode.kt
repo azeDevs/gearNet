@@ -1,8 +1,7 @@
 package utils
 
 import application.LogText
-import application.LogText.Effect.LOW
-import application.LogText.Effect.YLW
+import application.LogText.Effect.*
 import application.log
 
 typealias L = LogText
@@ -25,7 +24,8 @@ class SessionMode(private var mode: Mode = Mode.NULL) {
                 else -> updated = false
             }
             if (updated) {
-                log(L("Session changed to "), L(updatedMode.name,YLW), L(" (formerly ${mode.name})",LOW))
+                log(L("Session Mode changed to "), L(updatedMode.name, ORN),
+                    L(" (formerly ", LOW), L(mode.name, MED), L(")", LOW))
                 mode = updatedMode
             }
         }

@@ -30,12 +30,12 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
     fun getCabinet() = getData().cabinetId
 
     fun getCabinetString(cabId:Int = getCabinet()): String {
-        when(cabId) {
-            0 -> return "Cabinet A"
-            1 -> return "Cabinet B"
-            2 -> return "Cabinet C"
-            3 -> return "Cabinet D"
-            else -> return ""
+        return when(cabId) {
+            0 -> "Cabinet A"
+            1 -> "Cabinet B"
+            2 -> "Cabinet C"
+            3 -> "Cabinet D"
+            else -> ""
         }
     }
 

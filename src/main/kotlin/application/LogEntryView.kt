@@ -64,7 +64,7 @@ class LogLine(val logTexts: List<LogText>) {
 }
 
 class LogText(private val text: String = "", private val effect: Effect = NONE) {
-    enum class Effect { NONE, LOW, MED, YLW, RED, GRN, BLU, SCALE, BREAK }
+    enum class Effect { NONE, LOW, MED, PUR, RED, ORN, YLW, GRN, BLU, SCALE, BREAK }
 
     fun get() = text
     fun getEffect() = effect
@@ -72,10 +72,12 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
         when (effect) {
             NONE -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#dcddde") } } } }
             LOW -> { flow.apply { text(get()) { AppStyle.fontFiraLight?.let { font = it; fill = c("#666666") } } } }
-            MED -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#999999") } } } }
-            YLW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } } //c("#33aaee") } } } }
-            RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } } //c("#33aaee") } } } }
-            GRN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#40b581") } } } } //c("#33aaee") } } } }
+            MED -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#888888") } } } }
+            PUR -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#09F9F9") } } } }
+            RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } }
+            ORN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#ff5500") } } } }
+            YLW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
+            GRN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#40b581") } } } }
             BLU -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#33aaee") } } } }
             SCALE -> {
                 flow.apply {

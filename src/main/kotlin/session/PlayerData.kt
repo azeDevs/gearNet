@@ -12,7 +12,7 @@ abstract class PlayerData<T>(
     init { this.data = Pair(oldData, newData) }
 
     fun getId() = id
-    fun getName(quotes:Boolean = true) = if (quotes) "“$name”" else name
+    fun getName() = name
     fun isValid() = id > 0
     fun oldData() = this.data.first
     fun getData() = this.data.second

@@ -26,7 +26,7 @@ interface XrdApi {
     /**
      * @return data from current match
      */
-    fun getMatchData(): MatchSnap
+    fun getMatchSnap(): MatchSnap
 
 }
 

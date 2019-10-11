@@ -18,9 +18,17 @@ class XrdHandler(private val s: Session) {
     private var connected = false
 
     fun generateFighterEvents() {
+        // 002: Fire an event if Xrd is running and the process is hooked
         if (fireConnectionEvent(xrdApi.isConnected())) {
-            xrdApi.getFighterData().map { if (it.isValid() && s.update(it)) s.fire(FighterJoinedEvent(s.getFighter(it.steamId))) }
-            s.update(xrdApi.getMatchData())
+            xrdApi.getFighterData().map {
+                // 003: Verify the incoming data is valid
+                if (it.isValid() && !s.updateFighter(it)) {
+                    // 004: If it wasn't an update to an existing Fighter, fire a FighterJoinedEvent
+                    s.fire(FighterJoinedEvent(s.getFighter(it.steamId)))
+                }
+            }
+            s.updateMatch(xrdApi.getMatchSnap())
+            // 005: When the first Fighter appears in memory, a Lobby has been created/joined
             if (s.fighters().isNotEmpty() && s.isMode(NULL)) s.update(LOBBY)
             getEventsFighterMoved()
             getEventsMatchLoading()
@@ -41,19 +49,19 @@ class XrdHandler(private val s: Session) {
     }
 
     private fun getEventsFighterMoved() {
-        s.getFighters().filter { !(it.oldData().seatingId == it.getData().seatingId && it.oldData().cabinetId == it.getData().cabinetId)
+        s.fighters().filter { !(it.oldData().seatingId == it.getData().seatingId && it.oldData().cabinetId == it.getData().cabinetId)
         }.forEach { movedFighter -> s.fire(FighterMovedEvent(movedFighter)) }
     }
 
     private fun getEventsMatchLoading() {
-        val fighters = s.getFighters().filter { it.isLoading() }
+        val fighters = s.fighters().filter { it.isLoading() }
         if (fighters.size == 2) s.fire(MatchLoadingEvent(s.stage().match()))
     }
 
     private fun getEventsMatchResolved() {
         var fighter0 = Fighter()
         var fighter1 = Fighter()
-        s.getFighters().forEach {
+        s.fighters().forEach {
             if (it.isSeated(0) && it.justPlayed()) fighter0 = it
             if (it.isSeated(1) && it.justPlayed()) fighter1 = it
         }

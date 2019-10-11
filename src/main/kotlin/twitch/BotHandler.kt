@@ -1,7 +1,6 @@
 package twitch
 
 import MyApp.Companion.SILENCE_BOT
-import application.log
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
@@ -32,12 +31,12 @@ class BotHandler(private val s: Session) : BotApi {
             viewerDatas.add(ViewerData(it.user.id, it.user.name, it.message))
         }
         twitchClient.chat.joinChannel("azeDevs")
-        sendMessage("\uD83D\uDC4B Hello World! \uD83E\uDD16")
+        sendMessage("Hello World!")
     }
 
     override fun sendMessage(message: String) {
         if (!SILENCE_BOT) twitchClient.chat.sendMessage("azeDevs", message)
-        else log("“roboaze” said “${message}”")
+        else s.fire(ViewerMessageEvent(Viewer(ViewerData(1,"roboaze")), message))
     }
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
     override fun getViewerData(): List<ViewerData> {

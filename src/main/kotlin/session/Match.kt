@@ -36,7 +36,7 @@ class Match (
         if (!isResolved() && !matchSnap.isSameAs(getSnap())) {
             snaps.add(matchSnap)
             if (getRounds(0) == 2) prepareMatchForArchive(0)
-            if (getRounds(1) == 2) prepareMatchForArchive(1)
+            else if (getRounds(1) == 2) prepareMatchForArchive(1)
             return true
         }
         return false
@@ -47,7 +47,7 @@ class Match (
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
     private fun prepareMatchForArchive(matchWinner:Int) {
         winner = matchWinner
-        log("matchSnaps", snaps.size)
+        log("Match Snaps: ", snaps.size)
     }
 
 }

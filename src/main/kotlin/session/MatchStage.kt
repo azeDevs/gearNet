@@ -6,7 +6,6 @@ import application.LogText.Effect.YLW
 import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
-import utils.SessionMode
 import utils.SessionMode.Mode.VICTORY
 import utils.addCommas
 import utils.isInRange
@@ -90,7 +89,10 @@ class MatchStage(private val s: Session) {
         when (getLastMatch().getWinner()) {
             0 -> match = Match(stageId, Pair(getLastMatch().getWinningFighter(), prospect))
             1 -> match = Match(stageId, Pair(prospect, getLastMatch().getWinningFighter()))
-            else -> log(L("Match stage attempted", YLW))
+            else -> {
+                // NOTE: YOU WERE GONNA DATA DUMP MATCH STAGE ATTEMPTS TO FIND OUT WHY THEY'RE BROKEN
+                log(L("Match stage attempted", YLW))
+            }
         }
     }
 
@@ -98,7 +100,7 @@ class MatchStage(private val s: Session) {
      *  [EVENT_CONDITIONS]
      *  ...
      */
-    fun isMatchConcluded() = match.getTimer() == -1 && s.isMode(SessionMode.Mode.VICTORY)
+    fun isMatchConcluded() = match.getTimer() == -1 && s.isMode(VICTORY)
 
 
 }

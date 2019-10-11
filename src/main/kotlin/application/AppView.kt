@@ -26,6 +26,7 @@ class AppView : View() {
 
     private fun cycleGameLoop() {
         GlobalScope.launch {
+            // 000: Beginning of GameLoop
             session.generateEvents()
             delay(4); cycleGameLoop()
         }
@@ -58,23 +59,6 @@ class AppView : View() {
         }
 
         log(L("Starting "), L("$ARTIFACT_NAME ", GRN), L(BUILD_VERSION, LOW))
-//        for(i in 0..3) {
-//            log(
-//                L("STANDARD TEXT IS DANDY WHEN YOU LOREM IPSUM AS WELL AS I CAN"),
-//    //            L("000000000000000000000000000000000000000000000000000000000000", RED),
-//                L("Green is what we had need for this scene", GRN),
-//    //            L("0000000000000000000000000000000000000000", YLW),
-//                L("All I can say is that this line is gray", LOW)
-//            )
-//            log(
-//    //            L("STANDARD TEXT IS DANDY WHEN YOU LOREM IPSUM AS WELL AS I CAN"),
-//                L("000000000000000000000000000000000000000000000000000000000000", RED),
-//    //            L("Green is what we had need for this scene", GRN),
-//                L("0000000000000000000000000000000000000000", YLW),
-//                L("All I can say is that this line is blue", BLU)
-//            )
-//        }
-
         cycleGameLoop()
         cycleUILoop()
     }
