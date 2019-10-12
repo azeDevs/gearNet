@@ -1,14 +1,14 @@
 package session
 
 import MyApp.Companion.WD
-import application.LogText.Effect.RED
-import application.LogText.Effect.YLW
+import application.LogText.Effect.*
 import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
+import utils.SessionMode.Mode.LOBBY
 import utils.SessionMode.Mode.VICTORY
 import utils.addCommas
-import utils.isInRange
+import utils.getIdStr
 import utils.plural
 import kotlin.math.abs
 
@@ -35,18 +35,25 @@ class MatchStage(private val s: Session) {
      *  and to archive it with a winner defined.
      */
     fun finalizeMatch() {
-        if (!isInRange(match.getWinner(), 0, 1)) {
-            if (match.getBets().isNotEmpty())
-                log("Match invalidated ${match.getBets().size} ${plural("bet", match.getBets().size)}")
-        } else {
+        if (match.getWinningFighter().isValid()) {
+            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("Finalizing Match"))
+            // Do stuff if there is a winner
             match.getBets().forEach {
                 it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
                 logViewerBetResolution(it)
             }
-            log(L("Match finalized", RED))
+            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("FINALIZED", GRN))
             archiveMatch()
+            s.update(VICTORY)
+        } else {
+            // Invalidate stuff if there wasn't a winner
+            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("INVALIDATED", RED))
+            if (match.getBets().isNotEmpty()) log(L("Match ${getIdStr(match.getId())}: ", YLW),
+                    L("${match.getBets().size} ${plural("bet", match.getBets().size)} INVALIDATED", RED))
+            match = Match()
+            s.update(LOBBY)
         }
-        s.update(VICTORY)
+
         stageMatch()
     }
 
@@ -67,11 +74,12 @@ class MatchStage(private val s: Session) {
      */
     private fun archiveMatch() {
         if (archivedMatches.containsKey(match.getId())) {
-            log(L("Match ${match.getId()} has failed to archive due to duplicate IDs", RED))
+            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("Failed to archive due to duplicate IDs", RED))
         } else {
             archivedMatches[match.getId()] = match
-            log(L("Match ${match.getId()} has been archived.", RED))
+            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("Successfully Archived", GRN))
         }
+        stageMatch()
     }
 
     /**
@@ -79,21 +87,60 @@ class MatchStage(private val s: Session) {
      *  If the new Match will NOT have the same Fighters as current Seat 0 and 1
      *  With the Seated Winner and Seat 2, create a new Match.
      */
-    private fun stageMatch() {
-        val stageId = getLastMatch().getId() + 1
-//        if (getMatches().isNotEmpty()) stageId = if (newId) { getLastMatch().getId() + 1 } else { match.getId() }
+    fun stageMatch() {
+        var matchId = -1L
+        // If the last Match is valid, then new matchID is +1
+        if (getLastMatch().isValid()) {
+            matchId = getLastMatch().getId() + 1
+        } else matchId = 0
 
-        var prospect = s.fighters().firstOrNull { it.getSeat() == 2 } ?: Fighter()
-        val twoFighters = !prospect.isValid()
-        if (twoFighters) prospect = getLastMatch().getLosingFighter()
-        when (getLastMatch().getWinner()) {
-            0 -> match = Match(stageId, Pair(getLastMatch().getWinningFighter(), prospect))
-            1 -> match = Match(stageId, Pair(prospect, getLastMatch().getWinningFighter()))
-            else -> {
-                // NOTE: YOU WERE GONNA DATA DUMP MATCH STAGE ATTEMPTS TO FIND OUT WHY THEY'RE BROKEN
-                log(L("Match stage attempted", YLW))
+        // Is there more than 1 fighter on the cabinet?
+        if (isFighterSeatedAt(0) && isFighterSeatedAt(1)) {
+            log(L("Match ${getIdStr(matchId)}: ", YLW), L("Staging..."))
+            if (!isFighterSeatedAt(2)) {
+                log(L("Match ${getIdStr(matchId)}: ", YLW), L("There are 2 Fighters on the cabinet"))
+
+                /*
+                 DO STUFF THAT WORKS WITH 2 FIGHTERS
+                 WHEN THE LOBBY LOADS, THE SEATS WILL NOT CHANGE
+                 TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED IS IDENTICAL TO THE CURRENT MATCH
+                */
+                val redFighter = s.fighters().firstOrNull { it.getSeat() == 0 } ?: Fighter()
+                val bluFighter = s.fighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
+                match = Match(matchId, Pair(redFighter, bluFighter))
+            } else {
+                log(L("Match ${getIdStr(matchId)}: ", YLW), L("There are 3+ Fighters on the cabinet"))
+
+                /*
+                 DO STUFF THAT WORKS WITH 3+ FIGHTERS
+                 WHEN THE LOBBY LOADS, THE SEATS WILL CHANGE AFTER THE MATCH HAS ALREADY BEEN STAGED
+                 TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED ISN'T IDENTICAL TO THE CURRENT MATCH
+                */
+
+                val prospect = s.fighters().firstOrNull() { it.isSeated(2) } ?: Fighter()
+                if (prospect.isValid()) {
+                    when (getLastMatch().getWinner()) {
+                        0 -> match = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
+                        1 -> match = Match(matchId, Pair(prospect, getLastMatch().getWinningFighter()))
+                        else -> {
+                            log(L("Match ${getIdStr(matchId)}: ", YLW), L("Stage FAILED, Last Match had no winner", RED))
+                        }
+                    }
+                }
             }
+
+            // Log the resulting Staged Match, failed or not
+            log(L("Match ${getIdStr(matchId)}: ", YLW), L("Staged Fighters "),
+                L(" ${match.getFighter(0).getName()}", RED), L(" vs "),
+                L(" ${match.getFighter(1).getName()}", BLU))
         }
+
+    }
+
+    private fun isFighterSeatedAt(seatId: Int): Boolean {
+        val seatCheck = s.fighters().firstOrNull { it.getSeat() == seatId } ?: Fighter()
+        if (seatCheck.getCabinet() != 0) return false
+        return seatCheck.isValid()
     }
 
     /**

@@ -7,7 +7,6 @@ import utils.keepInRange
 
     // TODO: Have Match handle MatchData snaps instead of SessionState handling Match snaps.
     - remember how MatchData snaps propogate
-    // NOTE: YOU WERE GOING TO SET UP BOTH XRD CLIENTS AND TEST SNAPS AGAINST THEM
 
     // TODO: Give every Match a unique ID, and store alongside Fighter and Viewer maps.
     - find out wtf Fighter names don't display in console

@@ -12,6 +12,7 @@ import twitch.*
 import utils.SessionMode
 import utils.SessionMode.Mode.*
 import utils.addCommas
+import utils.getSeatLog
 
 typealias L = LogText
 
@@ -92,14 +93,14 @@ class Session : Controller() {
 
     private fun runViewerMessage(e: ViewerMessageEvent) {
         update(e.viewer.getData())
-        log(L(e.viewer.getName(), PUR),
+        log(L(e.viewer.getName(), CYA),
             L(" said: ", LOW),
             L("“${e.text}”"))
     }
 
     private fun runViewerJoined(e: ViewerJoinedEvent) {
         addViewer(e.viewer)
-        log(L(e.viewer.getName(), PUR),
+        log(L(e.viewer.getName(), CYA),
             L(" added to viewers map"))
     }
 
@@ -124,17 +125,19 @@ class Session : Controller() {
     }
 
     private fun runFighterMoved(e: FighterMovedEvent) {
-        // TODO: Make this use GRN for generic moves, YLW for seat 2, and RED/BLU for seats 0 and 1
-        log(L(e.fighter.getName(), YLW),
-            L(" moved "),
-            L(if (e.fighter.getCabinet() > 3) "off cabinet" else "to ${e.fighter.getSeatString()}, "),
-            L(e.fighter.getCabinetString(), YLW))
-        if (e.fighter.oldData().seatingId == 0 || e.fighter.oldData().seatingId == 1) stage.finalizeMatch()
+        // FIXME: DOES NOT TRIGGER WHEN MOVING FROM SPECTATOR
+        val destination = if (e.fighter.getCabinet() > 3) L( "off cabinet") else getSeatLog(e.fighter.getSeat())
+        log(L(e.fighter.getName(), YLW), L(" moved to ", MED), destination)
+
+
+
+        if (stage.isMatchValid() && e.fighter.justExitedStage()) stage.finalizeMatch()
+        else if (!stage.isMatchValid()) stage.stageMatch()
     }
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
         if (mode.get() != LOADING) {
-            log(L("Match loading ...   "), L(e.match.getFighter(0).getName(), RED),
+            log(L("Match loading ... "), L(e.match.getFighter(0).getName(), RED),
                 L(" vs "), L(e.match.getFighter(1).getName(), BLU))
         }
         update(LOADING)
@@ -142,29 +145,33 @@ class Session : Controller() {
 
     private fun runRoundStarted(e: RoundStartedEvent) {
         update(MATCH)
-        log(L("Round started ...   "), L(e.match.getFighter(0).getName(), RED),
+        log(L("Round started ... "), L(e.match.getFighter(0).getName(), RED),
             L(" vs "), L(e.match.getFighter(1).getName(), BLU))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
         update(SLASH)
         var winner = Fighter()
-        if (e.match.getFighter(0).getDelta() == 0) winner = e.match.getFighter(1)
-        if (e.match.getFighter(1).getDelta() == 0) winner = e.match.getFighter(0)
-        when {
-            winner.getSeat() == 0 -> log(L("Round resolved, "), L(e.match.getFighter(0).getName(), RED), L(" wins"))
-            winner.getSeat() == 1 -> log(L("Round resolved, "), L(e.match.getFighter(1).getName(), BLU), L(" wins"))
-            else -> log(L("Round resolved as a "), L("DRAW", YLW))
+        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) {
+            log(L("Round resolved as a "), L("DRAW", YLW))
+        } else {
+            if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
+            if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
+            when {
+                winner.getSeat() == 0 -> log(L("Round resolved, "), L(e.match.getFighter(0).getName(), RED), L(" wins"))
+                winner.getSeat() == 1 -> log(L("Round resolved, "), L(e.match.getFighter(1).getName(), BLU), L(" wins"))
+                else -> log(L("Round resolved with an "), L("ERROR", RED))
+            }
         }
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
         if (isMode(LOADING)) update(LOBBY)
         else stage.finalizeMatch()
-        var winner = Fighter()
+        val winner = e.match.getWinningFighter()
         var betBanner: Pair<String, String> = Pair("","")
-        if (e.match.getFighter(0).getDelta() == 1) { winner = e.match.getFighter(0); betBanner = Pair("Red", RED_CHIP) }
-        if (e.match.getFighter(1).getDelta() == 1) { winner = e.match.getFighter(1); betBanner = Pair("Blue", BLU_CHIP) }
+        if (winner.isSeated(0)) betBanner = Pair("Red", RED_CHIP)
+        if (winner.isSeated(1)) betBanner = Pair("Blue", BLU_CHIP)
         bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
         log("Match resolved, ${betBanner.second} Fighter ${winner.getName()} is the winner.")
     }

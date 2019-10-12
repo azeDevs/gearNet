@@ -3,7 +3,6 @@ package session
 import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
-import kotlin.math.abs
 
 /**
  *
@@ -25,7 +24,6 @@ class Match (
     fun getBets(): List<ViewerBet> = viewerBets
     fun getWinner() = winner
     fun getWinningFighter() = getFighter(getWinner())
-    fun getLosingFighter() = getFighter(abs(getWinner() - 1))
     fun getTimer() = getSnap().timer
     fun getHealth(seatId: Int) = getSnap().health(seatId)
     fun getFighter(seatId: Int) = if (seatId == 0) fighters.first else if (seatId == 1) fighters.second else Fighter()
@@ -42,11 +40,15 @@ class Match (
         return false
     }
 
+    fun tookTheRound(seatId: Int): Boolean {
+        if (snaps.size > 1) return getSnap().rounds(seatId) > snaps[snaps.lastIndex-1].rounds(seatId)
+        else return false
+    }
     private fun getRounds(seatId: Int) = getSnap().rounds(seatId)
     private fun isResolved() = winner > -1
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
-    private fun prepareMatchForArchive(matchWinner:Int) {
-        winner = matchWinner
+    private fun prepareMatchForArchive(winner:Int) {
+        this.winner = winner
         log("Match Snaps: ", snaps.size)
     }
 
