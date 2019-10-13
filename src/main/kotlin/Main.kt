@@ -1,32 +1,31 @@
-import application.MainStyle
-import application.MainView
-import application.match.MatchStyle
-import application.player.PlayerStyle
-import application.stream.BountyStyle
-import application.stream.StreamStyle
+import application.AppStyle
+import application.AppView
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 
-const val SIMULATE_MODE = false
-const val TRACE_BORDERS = false
-const val GHOST_OPACITY = 0.64
+fun main(args: Array<String>) = launch<MyApp>(args)
+class MyApp : App(AppView::class, AppStyle::class) {
 
-fun main(args: Array<String>) { launch<MyApp>(args) }
-
-class MyApp : App(MainView::class, MainStyle::class, MatchStyle::class, PlayerStyle::class, BountyStyle::class, StreamStyle::class) {
-
-    override fun onBeforeShow(view: UIComponent) {
-        super.onBeforeShow(view)
-        view.title = "ＧｅａｒＮｅｔ  //  0.5.15"
+    companion object {
+        const val ARTIFACT_NAME = "GearNet // Bounty Bets"
+        const val BUILD_VERSION = "0.7.2"
+        const val WD = "\uD835\uDE86\$"
+        const val SILENCE_BOT = true
     }
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        stage.width  = 1296.0 // 1280
-        stage.height = 759.0  // 720
-        stage.isResizable = false
+    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
+    override fun start(stage: Stage) { super.start(stage); stage.toBack(); stage.isResizable = false
+        stage.width  = 1600.0 + 16
+        stage.height = 900.0 + 39
     }
 
 }
+
+/*
+     f1 - 7 chain  [ VS ]  chain 1 - f2
+               bet 64% payout  |  p2chain*4 percent payout reduction
+                                  p1chain*8 percent payout bonus
+     p1bet = 100             p2bet = 1000
+*/
