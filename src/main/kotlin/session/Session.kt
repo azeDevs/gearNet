@@ -12,6 +12,7 @@ import twitch.*
 import utils.SessionMode
 import utils.SessionMode.Mode.*
 import utils.addCommas
+import utils.getIdStr
 import utils.getSeatLog
 
 typealias L = LogText
@@ -28,13 +29,16 @@ class Session : Controller() {
     private val fighters: HashMap<Long, Fighter> = HashMap()
 
 
+    fun getStagedFighters(): Pair<Fighter, Fighter> = Pair(stage.match().getFighter(0), stage.match().getFighter(1))
+
+
     // MATCH STUFF
     fun stage() = stage
     fun updateMatch(matchSnap: MatchSnap) = stage.addSnap(matchSnap)
 
     // MODE STUFF
     fun isMode(vararg mode: SessionMode.Mode) = this.mode.isMode(*mode)
-    fun update(mode: SessionMode.Mode) = this.mode.update(mode)
+    fun updateMode(mode: SessionMode.Mode) = this.mode.update(mode)
 
     // FIGHTER STUFF
     private fun addFighter(fighter: Fighter) { fighters[fighter.getId()] = fighter }
@@ -89,6 +93,7 @@ class Session : Controller() {
         xrd.generateFighterEvents()
         // ???: PROCESS ViewerEvents
         bot.generateViewerEvents()
+        stage.stageMatch()
     }
 
     private fun runViewerMessage(e: ViewerMessageEvent) {
@@ -128,11 +133,7 @@ class Session : Controller() {
         // FIXME: DOES NOT TRIGGER WHEN MOVING FROM SPECTATOR
         val destination = if (e.fighter.getCabinet() > 3) L( "off cabinet") else getSeatLog(e.fighter.getSeat())
         log(L(e.fighter.getName(), YLW), L(" moved to ", MED), destination)
-
-
-
         if (stage.isMatchValid() && e.fighter.justExitedStage()) stage.finalizeMatch()
-        else if (!stage.isMatchValid()) stage.stageMatch()
     }
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
@@ -140,23 +141,22 @@ class Session : Controller() {
             log(L("Match loading ... "), L(e.match.getFighter(0).getName(), RED),
                 L(" vs "), L(e.match.getFighter(1).getName(), BLU))
         }
-        update(LOADING)
+        updateMode(LOADING)
     }
 
     private fun runRoundStarted(e: RoundStartedEvent) {
-        update(MATCH)
+        updateMode(MATCH)
         log(L("Round started ... "), L(e.match.getFighter(0).getName(), RED),
             L(" vs "), L(e.match.getFighter(1).getName(), BLU))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
-        update(SLASH)
+        updateMode(SLASH)
         var winner = Fighter()
-        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) {
-            log(L("Round resolved as a "), L("DRAW", YLW))
-        } else {
+        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L("Round resolved as a "), L("DRAW", YLW))
+        else {
             if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
-            if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
+            else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
             when {
                 winner.getSeat() == 0 -> log(L("Round resolved, "), L(e.match.getFighter(0).getName(), RED), L(" wins"))
                 winner.getSeat() == 1 -> log(L("Round resolved, "), L(e.match.getFighter(1).getName(), BLU), L(" wins"))
@@ -166,19 +166,17 @@ class Session : Controller() {
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
-        if (isMode(LOADING)) update(LOBBY)
+        if (isMode(LOADING)) updateMode(LOBBY)
         else stage.finalizeMatch()
         val winner = e.match.getWinningFighter()
         var betBanner: Pair<String, String> = Pair("","")
         if (winner.isSeated(0)) betBanner = Pair("Red", RED_CHIP)
         if (winner.isSeated(1)) betBanner = Pair("Blue", BLU_CHIP)
         bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
-        log("Match resolved, ${betBanner.second} Fighter ${winner.getName()} is the winner.")
+        log(L("Match ${getIdStr(e.match.getId())} FINALIZED: ", YLW), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
     }
 
-    private fun runMatchConcluded(e: MatchConcludedEvent) {
-        update(LOBBY)
-    }
+    private fun runMatchConcluded(e: MatchConcludedEvent) = updateMode(LOBBY)
 
 }
 

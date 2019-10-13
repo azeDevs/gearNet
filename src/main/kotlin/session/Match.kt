@@ -1,6 +1,5 @@
 package session
 
-import application.log
 import memscan.MatchSnap
 import twitch.ViewerBet
 
@@ -33,23 +32,19 @@ class Match (
     fun update(matchSnap: MatchSnap): Boolean {
         if (!isResolved() && !matchSnap.isSameAs(getSnap())) {
             snaps.add(matchSnap)
-            if (getRounds(0) == 2) prepareMatchForArchive(0)
-            else if (getRounds(1) == 2) prepareMatchForArchive(1)
+            if (getRounds(0) == 2) this.winner = 0
+            else if (getRounds(1) == 2) this.winner = 1
             return true
         }
         return false
     }
-
+    fun getSnapCount() = snaps.size
     fun tookTheRound(seatId: Int): Boolean {
-        if (snaps.size > 1) return getSnap().rounds(seatId) > snaps[snaps.lastIndex-1].rounds(seatId)
+        if (snaps.size > 2) return getSnap().rounds(seatId) > snaps[snaps.lastIndex-2].rounds(seatId)
         else return false
     }
     private fun getRounds(seatId: Int) = getSnap().rounds(seatId)
     private fun isResolved() = winner > -1
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
-    private fun prepareMatchForArchive(winner:Int) {
-        this.winner = winner
-        log("Match Snaps: ", snaps.size)
-    }
 
 }

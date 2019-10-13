@@ -2,7 +2,6 @@ package events
 
 import memscan.MemHandler
 import memscan.XrdApi
-import session.Fighter
 import session.Session
 import utils.SessionMode.Mode.*
 
@@ -29,7 +28,7 @@ class XrdHandler(private val s: Session) {
             }
             s.updateMatch(xrdApi.getMatchSnap())
             // 005: When the first Fighter appears in memory, a Lobby has been created/joined
-            if (s.fighters().isNotEmpty() && s.isMode(NULL)) s.update(LOBBY)
+            if (s.fighters().isNotEmpty() && s.isMode(NULL)) s.updateMode(LOBBY)
             getEventsFighterMoved()
             getEventsMatchLoading()
             getEventsMatchResolved()
@@ -59,13 +58,7 @@ class XrdHandler(private val s: Session) {
     }
 
     private fun getEventsMatchResolved() {
-        var fighter0 = Fighter()
-        var fighter1 = Fighter()
-        s.fighters().forEach {
-            if (it.isSeated(0) && it.justPlayed()) fighter0 = it
-            if (it.isSeated(1) && it.justPlayed()) fighter1 = it
-        }
-        if (fighter0.isValid() && fighter1.isValid()) s.fire(MatchResolvedEvent(s.stage().match()))
+        if (s.stage().match().getWinningFighter().isValid()) s.fire(MatchResolvedEvent(s.stage().match()))
     }
 
     private fun getEventsRoundStarted() {
@@ -78,6 +71,7 @@ class XrdHandler(private val s: Session) {
         if (s.isMode(MATCH)) {
             val m = s.stage().match()
             if (m.getHealth(1) == 0 || m.getHealth(0) == 0) s.fire(RoundResolvedEvent(m))
+            if (m.getTimer() == 0 && s.isMode(MATCH)) s.fire(RoundResolvedEvent(m))
         }
     }
 
