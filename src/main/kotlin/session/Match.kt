@@ -26,6 +26,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
     private var matchTimer = matchData.timer
     private var tension = Duo(matchData.tension.first, matchData.tension.second)
     private var canBurst = Duo(matchData.canBurst.first, matchData.canBurst.second)
+    private var stunProgress = Duo(matchData.stunProgress.first, matchData.stunProgress.second)
+    private var maxStun = Duo(matchData.maxStun.first, matchData.maxStun.second)
     private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
@@ -39,6 +41,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
             matchTimer = updatedData.timer
 
             health.p1 = keepInRange(getData().health.first)//, 0, 420)
+            stunProgress.p1 = keepInRange(getData().stunProgress.first)//, 0, 8000)
+            maxStun.p1 = keepInRange(getData().maxStun.first)//, 0, 8000)
             tension.p1 = keepInRange(getData().tension.first)//, 0, 10000)
             guardGauge.p1 = keepInRange(getData().guardGauge.first)//, 0, 12800)
             rounds.p1 = updatedData.rounds.first
@@ -46,6 +50,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
             strikeStun.p1 = getData().strikeStun.first
 
             health.p2 = keepInRange(getData().health.second)//, 0, 420)
+            stunProgress.p2 = keepInRange(getData().stunProgress.second)//, 0, 8000)
+            maxStun.p2 = keepInRange(getData().maxStun.second)//, 0, 8000)
             tension.p2 = keepInRange(getData().tension.second)//, 0, 10000)
             guardGauge.p2 = keepInRange(getData().guardGauge.second)//, 0, 12800)
             rounds.p2 = updatedData.rounds.second
@@ -96,6 +102,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
     fun getTimer():Int = matchTimer
     fun getRounds(side:Int):Int = rounds.p(side)
     fun getHealth(side:Int):Int = health.p(side)
+    fun getStunProgress(side:Int):Int = stunProgress.p(side)
+    fun getMaxStun(side:Int):Int = maxStun.p(side)
     fun getCharacter(side:Int):Int = character.p(side)
     fun getTension(side:Int):Int = tension.p(side)
     fun getRisc(side:Int):Int = guardGauge.p(side)
@@ -104,6 +112,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
 
     fun getHandleString(side:Int):String = handle.p(side)
     fun getHealthString(side:Int):String = "HP: ${getHealth(side)} / 420"
+    fun getStunString(side:Int):String = "Stun: ${getStunProgress(side)} / ${getMaxStun(side)}"
     fun getRoundsString(side:Int):String = "Rounds: ${getRounds(side)} / ${lobbyData.roundWins}"
     fun getTensionString(side:Int):String = "Tension: ${getTension(side)} / 10000"
     fun getRiscString(side:Int):String = "   RISC: ${getRisc(side)} / 12800"
