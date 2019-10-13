@@ -1,9 +1,10 @@
 package memscan
 
+
 /**
  * memscan.XrdApi
- * provides [PlayerData]
- * provides [MatchData]
+ * provides [FighterData]
+ * provides [MatchSnap]
  */
 interface XrdApi {
 
@@ -20,57 +21,38 @@ interface XrdApi {
     /**
      * @return a List of the Xrd lobby's active players and their data
      */
-    fun getPlayerData(): List<PlayerData>
+    fun getFighterData(): List<FighterData>
 
     /**
      * @return data from current match
      */
-    fun getMatchData(): MatchData
-
-    /**
-     * @return data from current lobby
-     */
-    fun getLobbyData(): LobbyData
+    fun getMatchSnap(): MatchSnap
 
 }
 
-data class PlayerData(
-    //val miniHealth: Pair<Int, Int>,
-    //val miniRounds: Pair<Int, Int>,
-    //val readiedUp: Pair<Boolean, Boolean>,
-    val steamUserId: Long = -1L,
+data class FighterData(
+    val steamId: Long = -1L,
     val displayName: String = "",
-    val characterId: Byte = -0x1,
-    val cabinetLoc: Byte = -0x1,
-    val playerSide: Byte = -0x1,
+    val characterId: Int = -1,
+    val cabinetId: Int = -1,
+    val seatingId: Int = -1,
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
-) { fun equals(other: PlayerData) = other.displayName.equals(displayName) &&
-                other.characterId == characterId &&
-                other.cabinetLoc == cabinetLoc &&
-                other.playerSide == playerSide &&
-                other.matchesWon == matchesWon &&
-                other.matchesSum == matchesSum &&
-                other.loadingPct == loadingPct
+) {
+    fun isValid() = steamId > 0
 }
 
-data class MatchData(
-    //val frameDelay: Int = -1,
-    //val comboBeats: Pair<Int, Int>,
-    //val comboDamage: Pair<Int, Int>,
-    //val tensionPulse: Pair<Float, Float>,
-    //val stunProgress: Pair<Int, Int>,
-    //val inputMotions: Pair<?, ?>,
-    //val inputButtons: Pair<?, ?>,
+data class MatchSnap(
     val timer: Int = -1,
-    val health: Pair<Int, Int> = Pair(-1,-1),
-    val rounds: Pair<Int, Int> = Pair(-1,-1),
-    val tension: Pair<Int, Int> = Pair(-1,-1),
-    val canBurst: Pair<Boolean, Boolean> = Pair(false,false),
-    val strikeStun: Pair<Boolean, Boolean> = Pair(false,false),
-    val guardGauge: Pair<Int, Int> = Pair(-1,-1)
-) { fun equals(other: MatchData) = timer == other.timer &&
+    val health: Pair<Int, Int> = Pair(-1, -1),
+    val rounds: Pair<Int, Int> = Pair(-1, -1),
+    val tension: Pair<Int, Int> = Pair(-1, -1),
+    val canBurst: Pair<Boolean, Boolean> = Pair(false, false),
+    val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
+    val guardGauge: Pair<Int, Int> = Pair(-1, -1)
+) {
+    fun isSameAs(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
@@ -83,31 +65,11 @@ data class MatchData(
             canBurst.second == other.canBurst.second &&
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
-
+    fun isValid() = timer > 0
+    fun health(seat: Int) = if (seat == 0) health.first else if (seat == 1) health.second else MatchSnap().health.second
+    fun rounds(seat: Int) = if (seat == 0) rounds.first else if (seat == 1) rounds.second else MatchSnap().rounds.second
+    fun tension(seat: Int) = if (seat == 0) tension.first else if (seat == 1) tension.second else MatchSnap().tension.second
+    fun canBurst(seat: Int) = if (seat == 0) canBurst.first else if (seat == 1) canBurst.second else MatchSnap().canBurst.second
+    fun strikeStun(seat: Int) = if (seat == 0) strikeStun.first else if (seat == 1) strikeStun.second else MatchSnap().strikeStun.second
+    fun guardGauge(seat: Int) = if (seat == 0) guardGauge.first else if (seat == 1) guardGauge.second else MatchSnap().guardGauge.second
 }
-
-//class LobbyMessage(
-//    val userId: Long = -1L,
-//    val text: String = ""
-//)
-
-data class LobbyData(
-    //val matchTime: Int = -1
-    //val restriction: Int = -1     // Connection restriction
-    //val matchType: Int = -1       // Serious, Casual, Training
-    //val matchRule: Int = -1       // Winner stays, Loser, etc
-    //val passworded: Boolean = false
-    //val chatText: List<LobbyMessage> = arrayListOf()
-    val lobbyName: String = "",
-    val roundWins: Int = 2,
-    val openCabinets: Int = 4
-)
-
-data class CabinetData(
-    val readiedUp: Pair<Boolean, Boolean> = Pair(false,false),
-    val miniHealth: Pair<Int, Int> = Pair(-1,-1),
-    val miniRounds: Pair<Int, Int> = Pair(-1,-1)
-)
-
-
-

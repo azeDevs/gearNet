@@ -7,12 +7,12 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 //Soon to be Deprecated in favor of Web API
-class DatabaseHandler(host: String = "", password: String = "", username: String = "arcNet", port: Int = 5432) : SqlApi {
+class DatabaseApi(host: String = "", password: String = "", username: String = "arcNet", port: Int = 5432) : SqlApi {
     private val connector: Jdbi
     private val daoClass = SqlApiDao::class.java
 
     init {
-        // DatabaseHandler's init first executes on line 14 in Session.kt
+        // DatabaseApi's init first executes on line 14 in Session.kt
         //Init credentials
         val credentials = Properties()
         credentials["user"] = username
@@ -27,7 +27,7 @@ class DatabaseHandler(host: String = "", password: String = "", username: String
                 //CREATES fightData TABLE IF DOESNT EXIST
                 it.execute("create table if not exists fightdata (winnerid bigint, winnerchar smallint, fallenid bigint, fallenchar smallint, occurences int, unique(winnerid, winnerchar, fallenid, fallenchar))")
                 //CREATES userData TABLE IF DOESNT EXIST
-                it.execute("create table if not exists userdata(id bigint unique, displayname text, matcheswon int, matchessum int, bountywon int, bountysum int)")
+                it.execute("create table if not exists userdata(twitchId bigint unique, displayname text, matcheswon int, matchessum int, bountywon int, bountysum int)")
             }
         }
     }

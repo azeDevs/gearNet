@@ -1,8 +1,8 @@
-package session
+package utils
 
 import javafx.geometry.Rectangle2D
 
-object Character {
+object XrdChar {
 
     const val NULL: Byte = -0x1
     const val SO: Byte = 0x00 // 0
