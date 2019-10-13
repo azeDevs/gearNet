@@ -76,8 +76,8 @@ class MemHandler : XrdApi {
 
     override fun getMatchSnap(): MatchSnap {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64, 0x7AF4, 0x7AF8)
-        val p1offs = longArrayOf(0x1B18C78L,0L)
-        val p2offs = longArrayOf(0x1B18C78L,0L)
+        val p1offs = longArrayOf(0x1B18C78L, 0L)
+        val p2offs = longArrayOf(0x1B18C78L, 0L)
         p2offs[0] += 4L
         val p1roundoffset = longArrayOf(0x1A3BA38L)
         val p2roundoffset = longArrayOf(0x1A3BA3CL)
