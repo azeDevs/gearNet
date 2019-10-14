@@ -64,7 +64,7 @@ class LogLine(val logTexts: List<LogText>) {
 }
 
 class LogText(private val text: String = "", private val effect: Effect = NONE) {
-    enum class Effect { NONE, LOW, MED, CYA, RED, ORN, YLW, GRN, BLU, SCALE, BREAK }
+    enum class Effect { NONE, LOW, MED, CYA, RED, TOX, YLW, GRN, BLU, ORN_MODE, PUR_SNAP, SCALE, BREAK }
 
     fun get() = text
     fun getEffect() = effect
@@ -75,10 +75,12 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
             MED -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#888888") } } } }
             CYA -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#09F9F9") } } } }
             RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } }
-            ORN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#50AAEE") } } } }
+            TOX -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
             YLW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
             GRN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#40b581") } } } }
             BLU -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#33aaee") } } } }
+            ORN_MODE -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#FF8F40") } } } }
+            PUR_SNAP -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#8080FF") } } } }
             SCALE -> {
                 flow.apply {
                     if (strToInt(text) == 0) text(get()) {

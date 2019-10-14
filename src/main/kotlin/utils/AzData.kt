@@ -7,6 +7,7 @@ class Queue<T>(max:Int = -1, private val default:T) {
     fun put(item:T) {
         items.add(item)
         if (size == max) pop()
+
         prLn("ASDF :::: $size / $max :::: ASDF")
     }
     fun pop():T = if (!isEmpty()) items.removeAt(0) else default

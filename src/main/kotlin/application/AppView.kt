@@ -5,6 +5,7 @@ import MyApp.Companion.BUILD_VERSION
 import application.LogText.Effect.GRN
 import application.LogText.Effect.LOW
 import javafx.application.Platform
+import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextFlow
@@ -23,6 +24,8 @@ class AppView : View() {
     private lateinit var console: TextFlow
     private lateinit var redFighter: Label
     private lateinit var bluFighter: Label
+    private lateinit var xrdMode: Label
+    private lateinit var xrdTime: Label
 
     private fun cycleGameLoop() {
         GlobalScope.launch {
@@ -43,6 +46,8 @@ class AppView : View() {
     private fun updateConsole() = Platform.runLater {
         redFighter.text = session.getStagedFighters().first.getName()
         bluFighter.text = session.getStagedFighters().second.getName()
+        xrdMode.text = "${session.getMode()} MODE"
+        xrdTime.text = "TIMER: ${session.stage().match().getTimer()}"
         updateLogs(console)
     }
 
@@ -50,21 +55,19 @@ class AppView : View() {
 
     init {
         with(root) {
-            debugBox = vbox {
-                addClass(AppStyle.debugContainer)
-                translateY -= 220
-                translateX += 240
-                console = textflow {
-                    addClass(AppStyle.debugConsole)
-                    translateY += 16
+            vbox { alignment = Pos.TOP_CENTER
+                debugBox = vbox { addClass(AppStyle.debugContainer)
+                    console = textflow { addClass(AppStyle.debugConsole)
+                        translateY += 16
+                    }
                 }
-            }
-            hbox {
-                addClass(AppStyle.stageContainer)
-                redFighter = label("RedName") { addClass(AppStyle.stageConsole); textFill = c("#FF0000") }
-                bluFighter = label("BluName") { addClass(AppStyle.stageConsole); textFill = c("#3030FF") }
-                translateY -= 220
-                translateX += 240
+                hbox { addClass(AppStyle.stageContainer)
+                    translateY += 16
+                    redFighter = label("RedName") { addClass(AppStyle.stageConsole); textFill = c("#FF0000") }
+                    bluFighter = label("BluName") { addClass(AppStyle.stageConsole); textFill = c("#40AFFF") }
+                    xrdMode = label("nullMode") { addClass(AppStyle.stageConsole); textFill = c("#FF8F40"); translateX += 120 }
+                    xrdTime = label("nullTime") { addClass(AppStyle.stageConsole); textFill = c("#8080FF"); translateX += 120 }
+                }
             }
         }
 

@@ -14,7 +14,7 @@ import memscan.FighterData
  * contains Fighter bounty and chains data
  *
  */
-class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldData) : PlayerData<FighterData>(oldData, newData, newData.displayName, newData.steamId) {
+class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldData) : PlayerData<FighterData>(oldData, newData, newData.displayName(), newData.steamId()) {
 
     private var bounty = 0
     private var delta = 0
@@ -23,28 +23,28 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
 
     fun getDelta() = delta
 
-    private fun getMatchesWon() = getData().matchesWon
+    private fun getMatchesWon() = getData().matchesWon()
 
-    private fun getMatchesPlayed() = getData().matchesSum
+    private fun getMatchesPlayed() = getData().matchesSum()
 
-    fun getCabinet() = getData().cabinetId
+    fun getCabinet() = getData().cabinetId()
 
-    fun isSeated(seatId:Int) = getData().seatingId == seatId
+    fun isSeated(seatId:Int) = getData().seatingId() == seatId
 
-    fun getSeat() = getData().seatingId
+    fun getSeat() = getData().seatingId()
 
-    fun isLoading() = getData().loadingPct in 1..99
+    fun isLoading() = getData().loadingPct() in 1..99
 
-    fun justPlayed() = getMatchesPlayed() > oldData().matchesSum
+    fun justPlayed() = getMatchesPlayed() > oldData().matchesSum()
 
-    fun justLost() = getMatchesWon() == oldData().matchesWon && justPlayed()
+    fun justLost() = getMatchesWon() == oldData().matchesWon() && justPlayed()
 
-    fun justWon() = getMatchesWon() > oldData().matchesWon && justPlayed()
+    fun justWon() = getMatchesWon() > oldData().matchesWon() && justPlayed()
 
-    fun justExitedStage() = ((oldData().seatingId == 0 || oldData().seatingId == 1)
-            && (getData().seatingId != 0 || getData().seatingId != 1))
-            || (oldData().seatingId == 0 && getData().seatingId == 1)
-            || (oldData().seatingId == 1 && getData().seatingId == 0)
+    fun justExitedStage() = ((oldData().seatingId() == 0 || oldData().seatingId() == 1)
+            && (getData().seatingId() != 0 || getData().seatingId() != 1))
+            || (oldData().seatingId() == 0 && getData().seatingId() == 1)
+            || (oldData().seatingId() == 1 && getData().seatingId() == 0)
 
 }
 

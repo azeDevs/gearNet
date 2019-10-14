@@ -23,12 +23,13 @@ class AppStyle : Stylesheet() {
     init {
         appContainer {
             backgroundColor += c("#FF00FFff")
-            alignment = Pos.BOTTOM_CENTER
+            backgroundColor += c("#000")
+            alignment = Pos.TOP_CENTER
         }
 
         debugContainer {
             padding = box(0.px, 6.px)
-            backgroundColor += c("#111111")
+            backgroundColor += c("#080808")
             borderColor += box(c("#444"),c("#333"))
             borderWidth += box(2.px,6.px,2.px,6.px)
             minWidth = entryWidth+22
@@ -43,10 +44,10 @@ class AppStyle : Stylesheet() {
             backgroundColor += c("#111111")
             borderColor += box(c("#444"),c("#333"))
             borderWidth += box(2.px,6.px,2.px,6.px)
-            minWidth = entryWidth
-            maxWidth = entryWidth
-            minHeight = 40.px
-            maxHeight = 40.px
+            minWidth = entryWidth+22
+            maxWidth = entryWidth+22
+            minHeight = 32.px
+            maxHeight = 32.px
             alignment = Pos.BOTTOM_LEFT
         }
 
@@ -59,8 +60,8 @@ class AppStyle : Stylesheet() {
         }
 
         stageConsole {
-            minWidth = 128.px
-            maxWidth = 128.px
+            minWidth = 200.px
+            maxWidth = 200.px
             fillHeight = false
             maxHeight = 32.px
             fontFiraBold?.let { font = it }

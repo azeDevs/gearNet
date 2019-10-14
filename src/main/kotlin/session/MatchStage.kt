@@ -22,6 +22,7 @@ class MatchStage(private val s: Session) {
 
     private fun getMatches(): List<Match> = archivedMatches.values.filter { it.isValid() }
     private fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
+    fun clearStage() { match = Match() }
     fun isMatchValid() = match.isValid()
     fun match() = match
 
@@ -37,19 +38,18 @@ class MatchStage(private val s: Session) {
         if (match.getWinningFighter().isValid() && s.isMode(MATCH)) {
             s.updateMode(VICTORY)
             // Do stuff if there is a winner
-            match.getBets().forEach { it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
+            match.getBets().forEach {
+                it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
                 logViewerBetResolution(it) }
             archiveMatch()
-        } else if (!s.isMode(VICTORY)) {
+        } else if (!match.getWinningFighter().isValid() && !s.isMode(VICTORY)) {
             if (!s.isMode(LOBBY)) s.updateMode(LOBBY)
             // Invalidate stuff if there wasn't a winner
             log(L("Match ${getIdStr(match.getId())}: ", YLW), L("INVALIDATED", RED))
             if (match.getBets().isNotEmpty()) log(L("Match ${getIdStr(match.getId())}: ", YLW),
                     L("${match.getBets().size} ${plural("bet", match.getBets().size)} INVALIDATED", RED))
-            match = Match()
+            clearStage()
         }
-
-        stageMatch()
     }
 
     private fun logViewerBetResolution(it: ViewerBet) {
@@ -73,6 +73,7 @@ class MatchStage(private val s: Session) {
         } else {
             archivedMatches[match.getId()] = match
             log(L("Match ${getIdStr(match.getId())}: ", YLW), L("ARCHIVED SUCCESSFULLY", GRN))
+            clearStage()
         }
     }
 
@@ -83,6 +84,7 @@ class MatchStage(private val s: Session) {
      */
     fun stageMatch() {
         // If the last Match is valid, then new matchID is +1
+        // NOTE: DEBUG THIS LINE
         val matchId: Long = if (getLastMatch().isValid()) getLastMatch().getId()+1 else 0
 
         // Is there more than 1 fighter on the cabinet?
@@ -133,12 +135,5 @@ class MatchStage(private val s: Session) {
         if (seatCheck.getCabinet() != 0) return false
         return seatCheck.isValid()
     }
-
-    /**
-     *  [EVENT_CONDITIONS]
-     *  ...
-     */
-    fun isMatchConcluded() = match.getTimer() == -1 && s.isMode(VICTORY)
-
 
 }
