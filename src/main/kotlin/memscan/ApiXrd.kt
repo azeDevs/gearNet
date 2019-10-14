@@ -31,51 +31,63 @@ interface XrdApi {
 }
 
 data class FighterData(
-    val steamId: Long = -1L,
-    val displayName: String = "",
-    val characterId: Int = -1,
-    val cabinetId: Int = -1,
-    val seatingId: Int = -1,
-    val matchesWon: Int = -1,
-    val matchesSum: Int = -1,
-    val loadingPct: Int = -1
+    private val steamId: Long = -1L,
+    private val displayName: String = "",
+    private val characterId: Int = -1,
+    private val matchesWon: Int = -1,
+    private val matchesSum: Int = -1,
+    private val loadingPct: Int = -1,
+    private val cabinetId: Int = -1,
+    private val seatingId: Int = -1
 ) {
     fun isValid() = steamId > 0
+    fun steamId() = steamId
+    fun displayName() = displayName
+    fun characterId() = characterId
+    fun matchesWon() = matchesWon
+    fun matchesSum() = matchesSum
+    fun loadingPct() = loadingPct
+    fun cabinetId() = cabinetId
+    fun seatingId() = seatingId
 }
 
 data class MatchSnap(
-    val timer: Int = -1,
-    val health: Pair<Int, Int> = Pair(-1, -1),
-    val rounds: Pair<Int, Int> = Pair(-1, -1),
-    val tension: Pair<Int, Int> = Pair(-1, -1),
-    val stunProgress: Pair<Int, Int> = Pair(-1,-1),
-    val maxStun: Pair<Int, Int> = Pair(-1,-1),
-    val canBurst: Pair<Boolean, Boolean> = Pair(false, false),
-    val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
-    val guardGauge: Pair<Int, Int> = Pair(-1, -1)
+    private val timer: Int = -1,
+    private val health: Pair<Int, Int> = Pair(-1, -1),
+    private val rounds: Pair<Int, Int> = Pair(-1, -1),
+    private val tension: Pair<Int, Int> = Pair(-1, -1),
+    private val canBurst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
+    private val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
+    private val guardGauge: Pair<Int, Int> = Pair(-1, -1),
+    private val stunMaximum: Pair<Int, Int> = Pair(-1,-1),
+    private val stunProgress: Pair<Int, Int> = Pair(-1,-1)
 ) {
     fun isSameAs(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&
-            stunProgress.first == other.stunProgress.first &&
-            maxStun.first == other.maxStun.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
             canBurst.first == other.canBurst.first &&
             strikeStun.first == other.strikeStun.first &&
             guardGauge.first == other.guardGauge.first &&
+            stunMaximum.first == other.stunMaximum.first &&
+            stunProgress.first == other.stunProgress.first &&
             health.second == other.health.second &&
-            stunProgress.second == other.stunProgress.second &&
-            maxStun.second == other.maxStun.second &&
             rounds.second == other.rounds.second &&
             tension.second == other.tension.second &&
             canBurst.second == other.canBurst.second &&
             strikeStun.second == other.strikeStun.second &&
-            guardGauge.second == other.guardGauge.second
+            guardGauge.second == other.guardGauge.second &&
+            stunMaximum.second == other.stunMaximum.second &&
+            stunProgress.second == other.stunProgress.second
+
     fun isValid() = timer > 0
+    fun timer() = timer
     fun health(seat: Int) = if (seat == 0) health.first else if (seat == 1) health.second else MatchSnap().health.second
     fun rounds(seat: Int) = if (seat == 0) rounds.first else if (seat == 1) rounds.second else MatchSnap().rounds.second
     fun tension(seat: Int) = if (seat == 0) tension.first else if (seat == 1) tension.second else MatchSnap().tension.second
     fun canBurst(seat: Int) = if (seat == 0) canBurst.first else if (seat == 1) canBurst.second else MatchSnap().canBurst.second
     fun strikeStun(seat: Int) = if (seat == 0) strikeStun.first else if (seat == 1) strikeStun.second else MatchSnap().strikeStun.second
     fun guardGauge(seat: Int) = if (seat == 0) guardGauge.first else if (seat == 1) guardGauge.second else MatchSnap().guardGauge.second
+    fun stunMaximum(seat: Int) = if (seat == 0) stunMaximum.first else if (seat == 1) stunMaximum.second else MatchSnap().guardGauge.second
+    fun stunProgress(seat: Int) = if (seat == 0) stunProgress.first else if (seat == 1) stunProgress.second else MatchSnap().guardGauge.second
 }

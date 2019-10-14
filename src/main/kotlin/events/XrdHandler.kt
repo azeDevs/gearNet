@@ -23,7 +23,7 @@ class XrdHandler(private val s: Session) {
                 // 003: Verify the incoming data is valid
                 if (it.isValid() && !s.updateFighter(it)) {
                     // 004: If it wasn't an update to an existing Fighter, fire a FighterJoinedEvent
-                    s.fire(FighterJoinedEvent(s.getFighter(it.steamId)))
+                    s.fire(FighterJoinedEvent(s.getFighter(it.steamId())))
                 }
             }
             s.updateMatch(xrdApi.getMatchSnap())
@@ -44,11 +44,12 @@ class XrdHandler(private val s: Session) {
     }
 
     private fun getEventsMatchConcluded() {
-        if (s.stage().isMatchConcluded()) s.fire(MatchConcludedEvent(s.stage().match()))
+        if (s.stage().match().getTimer() == -1 && (s.isMode(VICTORY) || s.isMode(SLASH) || s.isMode(MATCH)))
+            s.fire(MatchConcludedEvent(s.stage().match()))
     }
 
     private fun getEventsFighterMoved() {
-        s.fighters().filter { !(it.oldData().seatingId == it.getData().seatingId && it.oldData().cabinetId == it.getData().cabinetId)
+        s.fighters().filter { !(it.oldData().seatingId() == it.getData().seatingId() && it.oldData().cabinetId() == it.getData().cabinetId())
         }.forEach { movedFighter -> s.fire(FighterMovedEvent(movedFighter)) }
     }
 

@@ -24,7 +24,7 @@ class SessionMode(private var mode: Mode = Mode.NULL) {
                 else -> updated = false
             }
             if (updated) {
-                log(L("Session Mode changed to "), L(updatedMode.name, ORN),
+                log(L("Session Mode changed to "), L(updatedMode.name, ORN_MODE),
                     L(" (formerly ", LOW), L(mode.name, MED), L(")", LOW))
                 mode = updatedMode
             }
@@ -32,6 +32,8 @@ class SessionMode(private var mode: Mode = Mode.NULL) {
         return updated
     }
 
+
+    override fun toString(): String = mode.name
 
     enum class Mode {
         NULL,

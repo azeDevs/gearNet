@@ -10,7 +10,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
 
     companion object {
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
-        const val BUILD_VERSION = "0.7.2"
+        const val BUILD_VERSION = "0.8.0"
         const val WD = "\uD835\uDE86\$"
         const val SILENCE_BOT = false
     }

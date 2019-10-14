@@ -37,6 +37,7 @@ class Session : Controller() {
     fun updateMatch(matchSnap: MatchSnap) = stage.addSnap(matchSnap)
 
     // MODE STUFF
+    fun getMode(): SessionMode = mode
     fun isMode(vararg mode: SessionMode.Mode) = this.mode.isMode(*mode)
     fun updateMode(mode: SessionMode.Mode) = this.mode.update(mode)
 
@@ -46,7 +47,7 @@ class Session : Controller() {
     fun getFighter(id: Long) = fighters().firstOrNull{ it.getId() == id } ?: Fighter()
     fun updateFighter(fd: FighterData):Boolean {
         // Check if Fighter already exists, if not, create a new Fighter
-        val fighter = fighters().firstOrNull{ it.getId() == fd.steamId } ?: Fighter(fd)
+        val fighter = fighters().firstOrNull{ it.getId() == fd.steamId() } ?: Fighter(fd)
         // Does the Fighter Map already contain the Fighter
         val flag = fighters.containsKey(fighter.getId())
         // If the Fighter did exist, then update them with the new FighterData
@@ -84,28 +85,26 @@ class Session : Controller() {
     }
 
     private fun runXrdConnection(e: XrdConnectionEvent) {
-        if (e.connected) log(L("Xrd", ORN), L(" has ", LOW), L("CONNECTED", GRN))
-        else log(L("Xrd", ORN), L(" has ", LOW), L("DISCONNECTED", RED))
+        if (e.connected) log(L("Xrd", GRN), L(" has ", LOW), L("CONNECTED", GRN))
+        else log(L("Xrd", GRN), L(" has ", LOW), L("DISCONNECTED", RED))
     }
 
     fun generateEvents() {
-        // 001: Process FighterEvents
         xrd.generateFighterEvents()
-        // ???: PROCESS ViewerEvents
         bot.generateViewerEvents()
         stage.stageMatch()
     }
 
     private fun runViewerMessage(e: ViewerMessageEvent) {
         update(e.viewer.getData())
-        log(L(e.viewer.getName(), CYA),
+        log(L(e.viewer.getName(), PUR_SNAP),
             L(" said: ", LOW),
             L("“${e.text}”"))
     }
 
     private fun runViewerJoined(e: ViewerJoinedEvent) {
         addViewer(e.viewer)
-        log(L(e.viewer.getName(), CYA),
+        log(L(e.viewer.getName(), PUR_SNAP),
             L(" added to viewers map"))
     }
 
@@ -138,42 +137,44 @@ class Session : Controller() {
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
         if (mode.get() != LOADING) {
-            log(L("Match loading ... "), L(e.match.getFighter(0).getName(), RED),
-                L(" vs "), L(e.match.getFighter(1).getName(), BLU))
+            log(L("Match ${getIdStr(e.match.getId())}", TOX), L(" loading ... "), L(e.match.getFighter(0).getName(), RED),
+                L(" vs ", MED), L(e.match.getFighter(1).getName(), BLU))
         }
         updateMode(LOADING)
     }
 
     private fun runRoundStarted(e: RoundStartedEvent) {
         updateMode(MATCH)
-        log(L("Round started ... "), L(e.match.getFighter(0).getName(), RED),
-            L(" vs "), L(e.match.getFighter(1).getName(), BLU))
+        log(L("Match ${getIdStr(e.match.getId())}", TOX), L("Round started ... ", CYA))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
         updateMode(SLASH)
         var winner = Fighter()
-        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L("Round resolved as a "), L("DRAW", YLW))
+        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L("Round N", TOX), L(" goes to "), L("DRAW", YLW))
         else {
             if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
             else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
             when {
-                winner.getSeat() == 0 -> log(L("Round resolved, "), L(e.match.getFighter(0).getName(), RED), L(" wins"))
-                winner.getSeat() == 1 -> log(L("Round resolved, "), L(e.match.getFighter(1).getName(), BLU), L(" wins"))
-                else -> log(L("Round resolved with an "), L("ERROR", RED))
+                winner.getSeat() == 0 -> log(L("Round N", TOX), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
+                winner.getSeat() == 1 -> log(L("Round N", TOX), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
+                else -> log(L("Round N", TOX), L(" goes to "), L("ERROR", RED))
             }
         }
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
         if (isMode(LOADING)) updateMode(LOBBY)
-        else stage.finalizeMatch()
-        val winner = e.match.getWinningFighter()
-        var betBanner: Pair<String, String> = Pair("","")
-        if (winner.isSeated(0)) betBanner = Pair("Red", RED_CHIP)
-        if (winner.isSeated(1)) betBanner = Pair("Blue", BLU_CHIP)
-        bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
-        log(L("Match ${getIdStr(e.match.getId())} FINALIZED: ", YLW), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
+        else if (!isMode(VICTORY)) {
+            stage.finalizeMatch()
+            val winner = e.match.getWinningFighter()
+            var betBanner: Pair<String, String> = Pair("","")
+            if (winner.isSeated(0)) betBanner = Pair("Red", RED_CHIP)
+            if (winner.isSeated(1)) betBanner = Pair("Blue", BLU_CHIP)
+            bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
+            log(L("Match ${getIdStr(e.match.getId())} FINALIZED: ", YLW), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
+            updateMode(LOBBY)
+        }
     }
 
     private fun runMatchConcluded(e: MatchConcludedEvent) = updateMode(LOBBY)

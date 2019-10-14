@@ -23,7 +23,7 @@ class Match (
     fun getBets(): List<ViewerBet> = viewerBets
     fun getWinner() = winner
     fun getWinningFighter() = getFighter(getWinner())
-    fun getTimer() = getSnap().timer
+    fun getTimer() = getSnap().timer()
     fun getHealth(seatId: Int) = getSnap().health(seatId)
     fun getFighter(seatId: Int) = if (seatId == 0) fighters.first else if (seatId == 1) fighters.second else Fighter()
 
