@@ -48,18 +48,24 @@ data class MatchSnap(
     val health: Pair<Int, Int> = Pair(-1, -1),
     val rounds: Pair<Int, Int> = Pair(-1, -1),
     val tension: Pair<Int, Int> = Pair(-1, -1),
+    val stunProgress: Pair<Int, Int> = Pair(-1,-1),
+    val maxStun: Pair<Int, Int> = Pair(-1,-1),
     val canBurst: Pair<Boolean, Boolean> = Pair(false, false),
     val strikeStun: Pair<Boolean, Boolean> = Pair(false, false),
     val guardGauge: Pair<Int, Int> = Pair(-1, -1)
 ) {
     fun isSameAs(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&
+            stunProgress.first == other.stunProgress.first &&
+            maxStun.first == other.maxStun.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
             canBurst.first == other.canBurst.first &&
             strikeStun.first == other.strikeStun.first &&
             guardGauge.first == other.guardGauge.first &&
             health.second == other.health.second &&
+            stunProgress.second == other.stunProgress.second &&
+            maxStun.second == other.maxStun.second &&
             rounds.second == other.rounds.second &&
             tension.second == other.tension.second &&
             canBurst.second == other.canBurst.second &&
