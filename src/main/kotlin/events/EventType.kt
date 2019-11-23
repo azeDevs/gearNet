@@ -10,6 +10,7 @@ import twitch.ViewerBet
 class XrdConnectionEvent(val connected: Boolean) : FXEvent(BackgroundThread)
 class FighterJoinedEvent(val fighter: Fighter) : FXEvent(BackgroundThread)
 class FighterMovedEvent(val fighter: Fighter) : FXEvent(BackgroundThread)
+//class FighterMessageEvent(val fighter:Fighter, val text:String) : FXEvent(BackgroundThread)
 
 class MatchLoadingEvent(val match: Match) : FXEvent(BackgroundThread)
 class RoundStartedEvent(val match: Match) : FXEvent(BackgroundThread)

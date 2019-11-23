@@ -30,6 +30,23 @@ interface XrdApi {
 
 }
 
+
+/* data class LobbyData(
+    Lobby name? String = ""
+    Search ID? String = ""
+    Connection Restriction? Int = -1
+    Casual Match? Boolean = False
+    Rotation? Winner, Loser, Both, Retry
+    Rounds to win? Int = -1
+    Open Cabinets? Int = -1
+    Cabinet HP? Pair<Int, Int>
+    Cabinet Rounds? Pair<Int, Int>
+    About to close? Boolean = False
+    New Chat Messages? List<FighterMessageEvent(Fighter, String)>
+ //) {}
+*/
+
+
 data class FighterData(
     private val steamId: Long = -1L,
     private val displayName: String = "",
@@ -39,6 +56,10 @@ data class FighterData(
     private val loadingPct: Int = -1,
     private val cabinetId: Int = -1,
     private val seatingId: Int = -1
+    // Color Pallete ID? Int = -1
+    // Selected Stage ID? Int = -1
+    // Lobby Avatar Head? Int = -1
+    // Lobby Avatar Color? Int = -1
 ) {
     fun isValid() = steamId > 0
     fun steamId() = steamId
@@ -51,6 +72,7 @@ data class FighterData(
     fun seatingId() = seatingId
 }
 
+
 data class MatchSnap(
     private val timer: Int = -1,
     private val health: Pair<Int, Int> = Pair(-1, -1),
@@ -61,6 +83,13 @@ data class MatchSnap(
     private val guardGauge: Pair<Int, Int> = Pair(-1, -1),
     private val stunMaximum: Pair<Int, Int> = Pair(-1,-1),
     private val stunProgress: Pair<Int, Int> = Pair(-1,-1)
+    // Tension Pulse? Pair<Int, Int>
+    // Untech Time Remaining? Pair<Int, Int>
+    // Burst Gauge Value? Pair<Int, Int>
+    // Is being Thrown? Pair<Boolean, Boolean>
+    // Is being IKed? Pair<Boolean, Boolean>
+    // Is in RC/Super flash? Pair<Boolean, Boolean>  (if False when 25 meter is spent, a Blitz occured)
+    // Beat Counter? Pair<Int, Int>
 ) {
     fun isSameAs(other: MatchSnap) = timer == other.timer &&
             health.first == other.health.first &&

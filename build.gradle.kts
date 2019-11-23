@@ -24,6 +24,8 @@ val lwjglNatives = "natives-windows"
 dependencies {
     // Core
     implementation(kotlin("stdlib-jdk8"))
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.mockito:mockito-core:2.23.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 

@@ -21,6 +21,9 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
     private var chain = 0
     private var idle = 1
 
+    fun setBounty(bounty: Int) { this.bounty = bounty }
+    fun setDelta(delta: Int) { this.delta = delta }
+    fun getBounty() = bounty
     fun getDelta() = delta
 
     private fun getMatchesWon() = getData().matchesWon()

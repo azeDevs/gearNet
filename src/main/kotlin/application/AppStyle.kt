@@ -1,6 +1,11 @@
 package application
 
 import javafx.geometry.Pos
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.paint.Color
+import javafx.scene.shape.StrokeLineCap
+import javafx.scene.shape.StrokeLineJoin
+import javafx.scene.shape.StrokeType
 import tornadofx.*
 
 class AppStyle : Stylesheet() {
@@ -12,8 +17,11 @@ class AppStyle : Stylesheet() {
         val fontFiraLight = loadFont("/fonts/FiraCode-Light.ttf", fontSize)
         val fontFiraRegular = loadFont("/fonts/FiraCode-Regular.ttf", fontSize)
         val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf", fontSize)
-        val appContainer by cssclass()
 
+        val wireText by cssclass()
+        val wirePane by cssclass()
+        val wireFrame by cssclass()
+        val appContainer by cssclass()
         val debugContainer by cssclass()
         val stageContainer by cssclass()
         val debugConsole by cssclass()
@@ -21,10 +29,35 @@ class AppStyle : Stylesheet() {
     }
 
     init {
-        appContainer {
-            backgroundColor += c("#FF00FFff")
-            backgroundColor += c("#000")
+        wireText {
+            backgroundColor += c("#fbfdfc16")
+            fontFiraBold?.let { font = it }
+            textFill = c("#fbfdfc32")
+            padding = box(3.px, 6.px)
+            fontSize = 12.px
+        }
+
+        wireFrame {
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
+            borderColor += box(c("#fbfdfc24"))
+            borderWidth += box(1.px)
+            padding = box(-1.px)
+        }
+
+        wirePane {
             alignment = Pos.TOP_CENTER
+            backgroundColor += c("#fbfdfc16")
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
+            borderColor += box(c("#fbfdfc10"))
+            borderWidth += box(1.px)
+            fontFiraBold?.let { font = it }
+            textFill = c("#fbfdfc32")
+            padding = box(8.px)
+            fontSize = 16.px
+        }
+
+        appContainer {
+            backgroundColor += Color.TRANSPARENT
         }
 
         debugContainer {
@@ -34,8 +67,8 @@ class AppStyle : Stylesheet() {
             borderWidth += box(2.px,6.px,2.px,6.px)
             minWidth = entryWidth+22
             maxWidth = entryWidth+22
-            minHeight = 660.px
-            maxHeight = 660.px
+            minHeight = 600.px
+            maxHeight = 600.px
             alignment = Pos.BOTTOM_LEFT
         }
 
