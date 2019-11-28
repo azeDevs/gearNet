@@ -17,6 +17,13 @@ import kotlin.math.abs
  *  It also stores state for ViewerBets so that bets are tied to Match lifecycle
  */
 class MatchStage(private val s: Session) {
+
+    /*
+        FIXME: ACCOUNT FOR MOVING INTO STAGED SEATING FROM SPECTATOR
+        FIXME: ACCOUNT FOR DRAWS, THE WHOLE SYSTEMJ SHITS ITSELF, FIX THAT TOO
+
+    */
+
     private val archivedMatches: HashMap<Long, Match> = HashMap()
     private var match: Match = Match()
 
@@ -36,20 +43,32 @@ class MatchStage(private val s: Session) {
      */
     fun finalizeMatch() {
         if (match.getWinningFighter().isValid() && s.isMode(MATCH)) {
-            s.updateMode(VICTORY)
             // Do stuff if there is a winner
-            match.getBets().forEach {
-                it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
-                logViewerBetResolution(it) }
+            s.updateMode(VICTORY)
+            finalizePayouts()
             archiveMatch()
         } else if (!match.getWinningFighter().isValid() && !s.isMode(VICTORY)) {
+            log(L("ERR: ---------------------", RED))
+            log(L("ERR: finalizeMatch()", RED))
+            log(L("ERR: !match.getWinningFighter().isValid() = ${!match.getWinningFighter().isValid()}", RED))
+            log(L("ERR:                   !s.isMode(VICTORY) = ${!s.isMode(VICTORY)}", RED))
+            log(L("ERR: ---------------------", RED))
+            // Do stuff if there wasn't a winner
             if (!s.isMode(LOBBY)) s.updateMode(LOBBY)
-            // Invalidate stuff if there wasn't a winner
-            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("INVALIDATED", RED))
-            if (match.getBets().isNotEmpty()) log(L("Match ${getIdStr(match.getId())}: ", YLW),
-                    L("${match.getBets().size} ${plural("bet", match.getBets().size)} INVALIDATED", RED))
-            clearStage()
+            log(getIdLog(), L("INVALIDATED", RED))
+            // Invalidate any Bets
+            if (match.getBets().isNotEmpty())
+                log(getIdLog(), L("${match.betCount()} ${plural("bet", match.betCount())} INVALIDATED", RED))
         }
+        clearStage()
+    }
+
+    private fun getIdLog() = L("Match${getIdStr(match.getId())}: ", TOX)
+
+    private fun finalizePayouts() {
+        match.getBets().forEach {
+            it.getViewer().changeScore(it.getWager(match.getWinner()), it.getWager(abs(match.getWinner()-1)))
+            logViewerBetResolution(it) }
     }
 
     private fun logViewerBetResolution(it: ViewerBet) {
@@ -69,11 +88,10 @@ class MatchStage(private val s: Session) {
      */
     private fun archiveMatch() {
         if (archivedMatches.containsKey(match.getId())) {
-            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("Archive FAILED due to duplicate IDs", RED))
+            log(getIdLog(), L("Archive FAILED due to duplicate IDs", RED))
         } else {
             archivedMatches[match.getId()] = match
-            log(L("Match ${getIdStr(match.getId())}: ", YLW), L("ARCHIVED SUCCESSFULLY", GRN))
-            clearStage()
+            log(getIdLog(), L("ARCHIVED SUCCESSFULLY", GRN))
         }
     }
 
@@ -83,14 +101,15 @@ class MatchStage(private val s: Session) {
      *  With the Seated Winner and Seat 2, create a new Match.
      */
     fun stageMatch() {
-        // If the last Match is valid, then new matchID is +1
-        // NOTE: DEBUG THIS LINE
-        val matchId: Long = if (getLastMatch().isValid()) getLastMatch().getId()+1 else 0
+        val matchId = if (getMatches().isNotEmpty()) {
+            if (getLastMatch().isValid()) getLastMatch().getId()+1 else -1
+        } else 0
+
 
         // Is there more than 1 fighter on the cabinet?
         if (isFighterSeatedAt(0) && isFighterSeatedAt(1) && !match.isValid()) {
             if (!isFighterSeatedAt(2)) {
-                log(L("STAGING Match ${getIdStr(matchId)}: ", YLW), L("(2 Fighters on Cabinet)", LOW))
+                log(L("STAGING ", YLW), getIdLog(), L("(2 Fighters on Cabinet)", LOW))
 
                 /*
                  DO STUFF THAT WORKS WITH 2 FIGHTERS
@@ -101,7 +120,7 @@ class MatchStage(private val s: Session) {
                 val bluFighter = s.fighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
                 match = Match(matchId, Pair(redFighter, bluFighter))
             } else {
-                log(L("STAGING Match ${getIdStr(matchId)}: ", YLW), L("(3+ Fighters on Cabinet)", LOW))
+                log(L("STAGING ", YLW), getIdLog(), L(" (3+ Fighters on Cabinet)", LOW))
 
                 /*
                  DO STUFF THAT WORKS WITH 3+ FIGHTERS
@@ -115,7 +134,7 @@ class MatchStage(private val s: Session) {
                         0 -> match = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
                         1 -> match = Match(matchId, Pair(prospect, getLastMatch().getWinningFighter()))
                         else -> {
-                            log(L("Match ${getIdStr(matchId)}: ", YLW), L("Stage FAILED, Last Match had no winner", RED))
+                            log(getIdLog(), L("Stage FAILED, Last Match had no winner", RED))
                         }
                     }
                 }
@@ -123,9 +142,9 @@ class MatchStage(private val s: Session) {
 
 
             // Log the resulting Staged Match, failed or not
-            log(L("Match ${getIdStr(matchId)}: ", YLW), L("Staged Fighters "),
-                L(" ${match.getFighter(0).getName()}", RED), L(" vs "),
-                L(" ${match.getFighter(1).getName()}", BLU))
+            log(getIdLog(), L("Staged Fighters "),
+                L(match.getFighter(0).getName(), RED), L(" vs "),
+                L(match.getFighter(1).getName(), BLU))
         }
 
     }

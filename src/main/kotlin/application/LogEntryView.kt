@@ -70,9 +70,9 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
     fun getEffect() = effect
     fun appendTo(flow: TextFlow) {
         when (effect) {
-            NONE -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#dcddde") } } } }
-            LOW -> { flow.apply { text(get()) { AppStyle.fontFiraLight?.let { font = it; fill = c("#666666") } } } }
-            MED -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#888888") } } } }
+            NONE -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#dcddde") } } } }
+            LOW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#666666") } } } }
+            MED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#888888") } } } }
             CYA -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#09F9F9") } } } }
             RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } }
             TOX -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
@@ -100,7 +100,7 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
                     }
                 }
             }
-            BREAK -> { flow.apply { text("\n") { AppStyle.fontFiraLight?.let { font = it; fill = c("#faa61a") } } } }
+            BREAK -> { flow.apply { text("\n") { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
         }
     }
 }

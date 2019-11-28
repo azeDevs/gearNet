@@ -1,5 +1,6 @@
 import application.AppStyle
 import application.AppView
+import application.DebugStyle
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import tornadofx.App
@@ -15,7 +16,7 @@ fun main(args: Array<String>) = launch<MyApp>(args)
  * @author  aze
  * @since   0.0.1
  */
-class MyApp : App(AppView::class, AppStyle::class) {
+class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class) {
     companion object {
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
         const val BUILD_VERSION = "0.8.0"
@@ -23,12 +24,10 @@ class MyApp : App(AppView::class, AppStyle::class) {
         const val SILENCE_BOT = true
     }
     override fun createPrimaryScene(view: UIComponent) = super.createPrimaryScene(view).apply {
-//        fill = Color.TRANSPARENT
-        fill = Color.LIME
+        fill = Color.MAGENTA
     }
     override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
     override fun start(stage: Stage) {
-//        stage.initStyle(StageStyle.TRANSPARENT)
         stage.width  = 1904.0 + 16 // 1600.0 + 16
         stage.height = 1041.0 + 39 // 900.0 + 39
         stage.isResizable = false
@@ -36,13 +35,10 @@ class MyApp : App(AppView::class, AppStyle::class) {
         super.start(stage)
         stage.toBack()
     }
-
 }
 
 
 /*
-
-
 
 
     TODO -------------------------- ORDER OF OPERATIONS --------------------------
@@ -53,10 +49,11 @@ class MyApp : App(AppView::class, AppStyle::class) {
 
 
 
+
     NOTE ------------------------------ MODELS & API ------------------------------
 
 
-    MODELS:
+    ⚙️ MODELS:
 
     • FighterData
     • MatchData
@@ -64,7 +61,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
     • ViewerData (Twitch user profile and betting wallet)
 
 
-    Debug VIEWS:
+    ⚙️ Debug VIEWS:
 
     • DebugLabelView:
       stroke and fill enablable via boolean arguments. Can have an additional boolean passed in
@@ -77,7 +74,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
       Turns red when breaking maximums, and ghost-dark-blue when -1 or unknown, otherwise default tiel.
 
 
-    TornadoFX VIEWS:
+    ⚙️ TornadoFX VIEWS:
 
     • ViewFighterHandle (text always right aligned, so is a Fighter's Bounty text)
     • ViewFighterBounty (auto-animates changes and fades the difference)
@@ -95,30 +92,30 @@ class MyApp : App(AppView::class, AppStyle::class) {
     NOTE ------------------------------ MODE TRANSITIONS ------------------------------
 
 
-    MODE Transitional GATE LOGIC:
+    ⚙️ MODE Transitional GATE LOGIC:
 
     • "Mode Gates", or multi-tiered verification that we are, in fact, spectating a Match
     • If a Mode Gate halts a transition, all Mode Gates that returned positive log to console
 
 
-    LOADING_MODE:
+    ⚙️ LOADING_MODE:
 
     • animIntro (animated world map, fighter profiles, and mutual loading progress)
     • animOutro (transit complete, world map zoom, and animate vault curtain opening)
 
 
-    MATCH_MODE & SLASH_MODE:
+    ⚙️ MATCH_MODE & SLASH_MODE:
 
     • These don't need anything fancy yet
 
 
-    VICTORY_MODE:
+    ⚙️ VICTORY_MODE:
 
     • animIntro (animate payouts and leaderboard changes)
     • animOutro (anime vault curtain closing)
 
 
-    LOBBY_MODE:
+    ⚙️ LOBBY_MODE:
 
     • animIntro (low ranking additional leaderboard scores)
     • animOutro (elevator motor start sound and visual effect)
@@ -129,21 +126,33 @@ class MyApp : App(AppView::class, AppStyle::class) {
     NOTE ------------------------------ BOUNTIES ------------------------------
 
 
-    BOUNTY INFLATE:
-
-    After every fight, increase every player's Bounty by (matchesWon + matchesSum) * (bountyInflate)%.
-
-
-    BOUNTY REWARD:
+    ⚙️ BOUNTY REWARD:
 
     The reward in W$ Bounty points that the victor takes from their fallen opponent.
 
+    ❓ For What Purpose: You should be higher on the scoreboard if you win and lower if you lose.
 
-    SHADOW WARMING: (Total Matches Played Bonus)
+
+    ⚙️ BOUNTY INFLATE:
+
+    After every fight, increase every player's Bounty by (matchesWon + matchesSum) * (bountyInflate)%.
+    Every match, win or loss, will reward a Fighter with a BI bonus. The longer a Fighter has been
+    participating in the lobby, the higher their base value is increased before BI bonus is applied.
+
+    ❓ For What Purpose: Since a dominant Fighter will eventually reduce most other Fighters' Bounty
+    to almost nothing, their reward comes in the form of scaled up passive bounty gains.
+    Since the base BI is based on 1 W$ per match, and 1 additional W$ per win, it rewards
+    Fighters who have been participating in the lobby for longer, but not by much.
+
+
+    ⚙️ SHADOW BONUS: (Total Matches Played Bonus)
 
     Bounty Bets should be played as a full 80 game set.
     The rules automatically change slightly every 10 games.
     Mostly in a way that escalates rewards near end-game.
+
+    ❓ For What Purpose: As the game progresses, scores inflate, and leaderboards become more defined,
+    the Shadow Bonus increases every 10 matches to add a bit more volatility to the late game.
 
     Match Number  = Title   (Effect)
     ------------    -----   ------------------------------
@@ -157,11 +166,14 @@ class MyApp : App(AppView::class, AppStyle::class) {
     71-80         = Last 10 (+800 global betOnPayout % and bountyInflate %)
 
 
-    BOUNTY CAPTURE & ASSAULT SCOUTING: (Straight Win Bonus & Round 3 Effects)
+    ⚙️ CAPTURE & SCOUTING: (Straight Win Bonus & Round 3 Effects)
 
-    After defeating an opponent, 32% of their Bounty is taken by default.
-    The SWB makes top-heavy Bounties fall harder and grant bigger reward,
-    given the player resolves a match within 2 Rounds, as the bonus implies.
+    By default, after defeating an opponent, 32% of their Bounty is taken.
+    A Straight Win Bonus makes top-heavy Bounties fall harder and grant bigger rewards.
+    That is, given the player resolves a match within 2 Rounds, as the bonus implies.
+    This outcome can be bet on using the Black and White betting chips.
+
+    ❓ For What Purpose: C&S is meant to add a bit more dynamic to how Bounty payouts work.
 
     Rating Diff  = Title        (Effect)
     -----------    ------       ------------------------------
@@ -205,10 +217,17 @@ class MyApp : App(AppView::class, AppStyle::class) {
     NOTE ------------------------------ BETTING ------------------------------
 
 
-    RISK RATING: (Hot Metal Text)
+    ⚙️ RISK RATING: (Wicked Hot Metal Text)
 
-    This replaces Chain Bonus win streaks. Lose 2 RR when defeated.
-    Gain 1 RR when victorious.
+    RR represents a Fighter's win streak, kind of. A Fighter loses -2 RR when defeated,
+    and gains +1 RR when victorious. So the "streak" doesn't reset, so much as it is
+    damaged from a loss. RR grants several small bonuses and detriments as it ranks up.
+
+    ❓ For What Purpose: Risk Rating reward consistent wins with an exponentially increasing
+    bonus to bountyInflate. Since a dominant Fighter will eventually reduce most other
+    Fighters' Bounty to almost nothing, their reward comes in the form a massively scaled
+    up passive bounty gains. It's a completely different story on the betting side of things,
+    as a high Risk Rating will reduce payouts on a Fighter, since the odds are much higher.
 
     Risk Rating  = Title        (Effect)
     -----------   --------      ------------------------------
@@ -223,11 +242,18 @@ class MyApp : App(AppView::class, AppStyle::class) {
     +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
 
 
-    GRUDGE RATING: (Spooky Blue Spirit Orbs)
+    ⚙️ GRUDGE RATING: (Spooky Blue Spirit Orbs)
 
     Every point of GR adds to a Fighter's finalBonusPayout %.
     GR can -NOT- start gaining until RR is depleted. Every time a Fighter loses to someone,
     they stack GR , maxing at 8. Once a Fighter defeats an opponent, global GR values reset to 0.
+
+    ❓ For What Purpose: GR is meant to raise the stakes when a particularly dominant Fighter joins.
+    The upper end of GR's betting betOnPayout is quite high due to the fact that reaching max GR
+    will be somewhat rare. Since GR is applied individually and reset globally, it only takes a
+    single win to relieve everyone of their GR. The bountyInflate bonus that comes with it is
+    meant to reward (albeit small) persistent attempts against a strong opponent, despite the loss.
+    GR resets after the payout relevant to the reset.
 
     Grudge Rating  = Title              (Effect)
     -------------   ----------------   ------------------------------
@@ -242,7 +268,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
     -8 NADIR       = VENGEFUL SPIRIT    (+512 bountyInflate %, +5120 betOnPayout %, -16 betOffPayout %)
 
 
-    EMOJI BETTING CHIPS:
+    ⚙️ BETTING CHIPS:
 
     • Viewers can bet a maximum of 10 Chips on any given match
     • They do so by pasting 1 Chip emoji per 10% of their wallet they'd like to wager
@@ -252,8 +278,10 @@ class MyApp : App(AppView::class, AppStyle::class) {
     • Any wallet below 100 W$ after payout will be reset to the 100 W$ wallet minimum
     • Only Gambler scores over 1000 W$ will appear on the Leaderboard
 
+    ❓ For What Purpose:
 
-    MAIN CHIPS:
+
+    MAIN CHIPS: (These are definitely in the game)
 
     🔴 Red Chip: Wager 10% that Red will win, ±N betOnPayout % (N = TOTAL Red Chips)
     🔵 Blu Chip: Wager 10% that Blu will win, ±N betOnPayout % (N = TOTAL Blu Chips)
@@ -261,13 +289,13 @@ class MyApp : App(AppView::class, AppStyle::class) {
     ⚫ Black Chip: Wager 10%, and 10 to finalBonusPayout %, Match will be 3 rounds
 
 
-    BONUS CHIPS:
+    BONUS CHIPS: (These might be added later if the capability is there)
 
-    🟣Stolen Purple Chip: Pays 100% for each, wager 10% that a Burst gets thrown
-    🟠Killer Orange Chip: Pays 80% for each, wager 10% that an IK will occur
-    🟡Superb Yellow Chip: Pays 60% for each, wager 10% that a Perfect will occur
-    🟢Speedy Forest Chip: Pays 40% for each, wager 10% that a Round resolves under 20 seconds
-    🟤Modest Copper Chip: Pays 20% for each, wager 10% that Rakusyo occurs
+    🟣 Stolen Purple Chip: Pays 100% for each, wager 10% that a Burst gets thrown
+    🟠 Killer Orange Chip: Pays 80% for each, wager 10% that an IK will occur
+    🟡 Superb Yellow Chip: Pays 60% for each, wager 10% that a Perfect will occur
+    🟢 Speedy Forest Chip: Pays 40% for each, wager 10% that a Round resolves under 20 seconds
+    🟤 Modest Copper Chip: Pays 20% for each, wager 10% that Rakusyo occurs
 
 
 
@@ -275,7 +303,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
     NOTE ------------------------------ REPLAY AND UNDO ------------------------------
 
 
-    EVENT STACK:
+    ⚙️ EVENT STACK:
 
     • Every event should be stored in the eventHistory stack, discarded given duplicate timestamps
     • The eventHistory stack should often write to plain-text, sessionID appended to its filename
@@ -283,6 +311,7 @@ class MyApp : App(AppView::class, AppStyle::class) {
     • Load a replay on startup to test a simulation, or restore after a crash
     • Undo an Event if issues come up from unexpected behavior in-game
 
+    ❓ For What Purpose:
 
 
 

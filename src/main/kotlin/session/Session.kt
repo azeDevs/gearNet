@@ -8,7 +8,10 @@ import events.*
 import memscan.FighterData
 import memscan.MatchSnap
 import tornadofx.Controller
-import twitch.*
+import twitch.BotHandler
+import twitch.Viewer
+import twitch.ViewerBet
+import twitch.ViewerData
 import utils.SessionMode
 import utils.SessionMode.Mode.*
 import utils.addCommas
@@ -26,6 +29,7 @@ class Session : Controller() {
     private val mode: SessionMode = SessionMode()
     private val stage: MatchStage = MatchStage(this)
     private val viewers: HashMap<Long, Viewer> = HashMap()
+//    private val fighters: ObservableMap<Long, Fighter> = FXCollections.emptyObservableMap()
     private val fighters: HashMap<Long, Fighter> = HashMap()
 
 
@@ -62,7 +66,7 @@ class Session : Controller() {
     private fun addViewer(viewer: Viewer) { viewers[viewer.getId()] = viewer }
     fun viewers() = viewers.values.filter { it.isValid() }
     fun getViewer(id:Long) = viewers().firstOrNull{ it.getId() == id } ?: Viewer()
-    fun update(vd: ViewerData):Boolean {
+    private fun update(vd: ViewerData):Boolean {
         val viewer = viewers().firstOrNull { it.getId() == vd.twitchId } ?: Viewer(vd)
         val flag = fighters.containsKey(viewer.getId())
         if (flag) viewer.update(vd)
@@ -145,34 +149,33 @@ class Session : Controller() {
 
     private fun runRoundStarted(e: RoundStartedEvent) {
         updateMode(MATCH)
-        log(L("Match ${getIdStr(e.match.getId())}", TOX), L("Round started ... ", CYA))
+        val round = "Round ${e.match.getRoundNumber()}"
+        log(L("Match ${getIdStr(e.match.getId())} ", TOX), L(round, YLW), L(" started ... ", CYA))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
         updateMode(SLASH)
         var winner = Fighter()
-        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L("Round N", TOX), L(" goes to "), L("DRAW", YLW))
+        val round = "Round ${e.match.getRoundNumber()}"
+        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L(round, YLW), L(" goes to "), L("DRAW", YLW))
         else {
             if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
             else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
             when {
-                winner.getSeat() == 0 -> log(L("Round N", TOX), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
-                winner.getSeat() == 1 -> log(L("Round N", TOX), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
-                else -> log(L("Round N", TOX), L(" goes to "), L("ERROR", RED))
+                winner.getSeat() == 0 -> log(L(round, YLW), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
+                winner.getSeat() == 1 -> log(L(round, YLW), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
+                else -> log(L(round, YLW), L(" goes to "), L("ERROR", RED))
             }
         }
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
         if (isMode(LOADING)) updateMode(LOBBY)
-        else if (!isMode(VICTORY)) {
+        else if (!isMode(VICTORY) && e.match.isResolved()) {
             stage.finalizeMatch()
             val winner = e.match.getWinningFighter()
-            var betBanner: Pair<String, String> = Pair("","")
-            if (winner.isSeated(0)) betBanner = Pair("Red", RED_CHIP)
-            if (winner.isSeated(1)) betBanner = Pair("Blue", BLU_CHIP)
-            bot.sendMessage("${betBanner.first} ${winner.getName()} WINS!")
-            log(L("Match ${getIdStr(e.match.getId())} FINALIZED: ", YLW), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
+            bot.sendMessage("${winner.getName()} WINS!")
+            log(L(" FINALIZED: ", GRN), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
             updateMode(LOBBY)
         }
     }

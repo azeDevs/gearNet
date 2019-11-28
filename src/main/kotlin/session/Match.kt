@@ -14,13 +14,13 @@ class Match (
     private val fighters: Pair<Fighter, Fighter> = Pair(Fighter(), Fighter()),
     matchSnap: MatchSnap = MatchSnap()
 ) {
-
     private val snaps: MutableList<MatchSnap> = arrayListOf(matchSnap)
     private val viewerBets: MutableList<ViewerBet> = arrayListOf()
     private var winner = -1
 
     fun getId() = matchId
     fun getBets(): List<ViewerBet> = viewerBets
+    fun betCount() = getBets().size
     fun getWinner() = winner
     fun getWinningFighter() = getFighter(getWinner())
     fun getTimer() = getSnap().timer()
@@ -38,13 +38,15 @@ class Match (
         }
         return false
     }
+    fun isResolved() = winner > -1
+    fun getRoundNumber() = getSnap().rounds(0) + getSnap().rounds(1) + 1
     fun getSnapCount() = snaps.size
     fun tookTheRound(seatId: Int): Boolean {
         if (snaps.size > 2) return getSnap().rounds(seatId) > snaps[snaps.lastIndex-2].rounds(seatId)
         else return false
     }
+
     private fun getRounds(seatId: Int) = getSnap().rounds(seatId)
-    private fun isResolved() = winner > -1
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
 
 }
