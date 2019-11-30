@@ -48,11 +48,6 @@ class MatchStage(private val s: Session) {
             finalizePayouts()
             archiveMatch()
         } else if (!match.getWinningFighter().isValid() && !s.isMode(VICTORY)) {
-            log(L("ERR: ---------------------", RED))
-            log(L("ERR: finalizeMatch()", RED))
-            log(L("ERR: !match.getWinningFighter().isValid() = ${!match.getWinningFighter().isValid()}", RED))
-            log(L("ERR:                   !s.isMode(VICTORY) = ${!s.isMode(VICTORY)}", RED))
-            log(L("ERR: ---------------------", RED))
             // Do stuff if there wasn't a winner
             if (!s.isMode(LOBBY)) s.updateMode(LOBBY)
             log(getIdLog(), L("INVALIDATED", RED))

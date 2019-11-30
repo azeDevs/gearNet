@@ -2,6 +2,7 @@ package utils
 
 class The {
     private val value: String
+    constructor(value: Boolean) { this.value = if (value) "1" else "0" }
     constructor(value: String) { this.value = value }
     constructor(value: Long) { this.value = value.toString() }
     constructor(value: Int) { this.value = value.toString() }
@@ -11,6 +12,10 @@ class The {
      * @return Boolean */
     fun filtersTo(regex: String, comparison: String): Boolean = value.replace(regex.toRegex(), "").equals(comparison, ignoreCase = true)
     override fun toString(): String = value
+
+    /** The value [toInt]
+     * @return Int */
+    fun toBool(defaultTo:Boolean = false): Boolean { for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo; return Integer.valueOf(value) > 0 }
 
     /** The value [toInt]
      * @return Int */

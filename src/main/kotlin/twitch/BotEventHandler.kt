@@ -5,7 +5,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import events.CommandBetEvent
+import events.ViewerBetEvent
 import events.ViewerJoinedEvent
 import events.ViewerMessageEvent
 import session.Session
@@ -15,7 +15,7 @@ typealias CME = ChannelMessageEvent
 typealias OA2C = OAuth2Credential
 typealias TCB = TwitchClientBuilder
 
-class BotHandler(private val s: Session) : BotApi {
+class BotEventHandler(private val s: Session) : BotApi {
 
     private val viewerDatas: MutableList<ViewerData> = mutableListOf()
     private val twitchClient: TwitchClient = TCB.builder()
@@ -54,7 +54,7 @@ class BotHandler(private val s: Session) : BotApi {
             if (!s.getViewer(viewer.getId()).isValid()) s.fire(ViewerJoinedEvent(viewer))
             else viewer = Viewer(s.getViewer(it.twitchId).getData(), it)
             s.fire(ViewerMessageEvent(viewer, it.text))
-            if (ViewerBet(viewer).isValid()) s.fire(CommandBetEvent(viewer, ViewerBet(viewer)))
+            if (ViewerBet(viewer).isValid()) s.fire(ViewerBetEvent(viewer, ViewerBet(viewer)))
         }
     }
 

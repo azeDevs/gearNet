@@ -46,10 +46,12 @@ class AppStyle : Stylesheet() {
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
             borderColor += box(c("#FFAA00"))
             borderWidth += box(4.px)
-            fontFiraBold?.let { font = it }
-            textFill = c("#FFAA00")
-            padding = box(8.px)
-            fontSize = 20.px
+            label {
+                fontFiraBold?.let { font = it }
+                textFill = c("#FFAA00")
+                padding = box(8.px)
+                fontSize = 20.px
+            }
         }
         fighterView {
             label {
@@ -65,34 +67,40 @@ class AppStyle : Stylesheet() {
             }
         }
         viewerZone {
-            alignment = Pos.CENTER
+            alignment = Pos.TOP_CENTER
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
             borderColor += box(c("#AACCFF"))
             borderWidth += box(4.px)
-            fontFiraBold?.let { font = it }
-            textFill = c("#AACCFF")
-            padding = box(8.px)
-            fontSize = 20.px
+            label {
+                fontFiraBold?.let { font = it }
+                textFill = c("#AACCFF")
+                padding = box(8.px)
+                fontSize = 20.px
+            }
         }
         redPane {
-            alignment = Pos.CENTER
+            alignment = Pos.TOP_CENTER
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
             borderColor += box(c("#ff2222"))
             borderWidth += box(4.px)
-            fontFiraBold?.let { font = it }
-            textFill = c("#ff2222")
-            padding = box(8.px)
-            fontSize = 30.px
+            label {
+                fontFiraBold?.let { font = it }
+                textFill = c("#ff2222")
+                padding = box(8.px)
+                fontSize = 30.px
+            }
         }
         bluPane {
-            alignment = Pos.CENTER
+            alignment = Pos.TOP_CENTER
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
             borderColor += box(c("#2299ff"))
             borderWidth += box(4.px)
-            fontFiraBold?.let { font = it }
-            textFill = c("#2299ff")
-            padding = box(8.px)
-            fontSize = 30.px
+            label {
+                fontFiraBold?.let { font = it }
+                textFill = c("#2299ff")
+                padding = box(8.px)
+                fontSize = 30.px
+            }
         }
         stageContainer {
             minWidth = BATTLE_STAGE_WIDTH.px

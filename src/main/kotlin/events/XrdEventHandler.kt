@@ -7,11 +7,11 @@ import utils.SessionMode.Mode.*
 
 /**
  *
- * [XrdHandler]
+ * [XrdEventHandler]
  * updates and archives Lobby data
  *
  */
-class XrdHandler(private val s: Session) {
+class XrdEventHandler(private val s: Session) {
 
     private val xrdApi: XrdApi = MemHandler()
     private var connected = false

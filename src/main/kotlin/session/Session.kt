@@ -8,7 +8,7 @@ import events.*
 import memscan.FighterData
 import memscan.MatchSnap
 import tornadofx.Controller
-import twitch.BotHandler
+import twitch.BotEventHandler
 import twitch.Viewer
 import twitch.ViewerBet
 import twitch.ViewerData
@@ -23,8 +23,9 @@ typealias L = LogText
 
 class Session : Controller() {
 
-    private val xrd = XrdHandler(this)
-    private val bot = BotHandler(this)
+    private val xrd = XrdEventHandler(this)
+    private val bot = BotEventHandler(this)
+    private val state = StateHandler()
 
     private val mode: SessionMode = SessionMode()
     private val stage: MatchStage = MatchStage(this)
@@ -78,7 +79,7 @@ class Session : Controller() {
         subscribe<XrdConnectionEvent> { runXrdConnection(it) }
         subscribe<ViewerMessageEvent> { runViewerMessage(it) }
         subscribe<ViewerJoinedEvent> { runViewerJoined(it) }
-        subscribe<CommandBetEvent> { runCommandBet(it) }
+        subscribe<ViewerBetEvent> { runCommandBet(it) }
         subscribe<FighterJoinedEvent> { runFighterJoined(it) }
         subscribe<FighterMovedEvent> { runFighterMoved(it) }
         subscribe<MatchLoadingEvent> { runMatchLoading(it) }
@@ -112,7 +113,7 @@ class Session : Controller() {
             L(" added to viewers map"))
     }
 
-    private fun runCommandBet(e: CommandBetEvent) {
+    private fun runCommandBet(e: ViewerBetEvent) {
         if (stage.isMatchValid()) {
             val bet = ViewerBet(e.viewer)
             val sb = StringBuilder("Viewer ${e.viewer.getName()} bet ")
@@ -140,6 +141,7 @@ class Session : Controller() {
     }
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
+        // TODO: MATCH SHOULD NOT LOAD IF CURRENTLY STAGED MATCH IS INVALID
         if (mode.get() != LOADING) {
             log(L("Match ${getIdStr(e.match.getId())}", TOX), L(" loading ... "), L(e.match.getFighter(0).getName(), RED),
                 L(" vs ", MED), L(e.match.getFighter(1).getName(), BLU))

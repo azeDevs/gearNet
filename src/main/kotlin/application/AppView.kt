@@ -4,7 +4,6 @@ import MyApp.Companion.ARTIFACT_NAME
 import MyApp.Companion.BUILD_VERSION
 import application.LogText.Effect.GRN
 import application.LogText.Effect.LOW
-import application.views.fighters.DebugFighterView
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -21,7 +20,7 @@ typealias L = LogText
 class AppView : View() {
 
     private val session: Session by inject()
-    private var fighterView: DebugFighterView by singleAssign()
+//    private var fighterView: DebugFighterView by singleAssign()
     private var debugBox: VBox by singleAssign()
     private var console: TextFlow by singleAssign()
     private var redFighter: Label by singleAssign()
@@ -56,9 +55,7 @@ class AppView : View() {
     override val root = vbox { addClass(AppStyle.appContainer) }
 
     init {
-
         with(root) {
-
             vbox { addClass(DebugStyle.wireFrame)
                 alignment = Pos.TOP_CENTER
                 label("$ARTIFACT_NAME $BUILD_VERSION / OBS Fullscreen Overlay") {
@@ -76,13 +73,13 @@ class AppView : View() {
                     vbox { addClass(AppStyle.fighterZone)
                         minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
                         minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                        label("FIGHTER QUEUE") { addClass(AppStyle.fighterZone) }
-                        fighterView = DebugFighterView(this)
+                        label("FIGHTER QUEUE")
+//                        fighterView = DebugFighterView(this)
                     }
-                    label("VIEWER CHAT") { addClass(AppStyle.viewerZone)
-                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
-                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                    }
+//                    label("VIEWER CHAT") { addClass(AppStyle.viewerZone)
+//                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
+//                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+//                    }
                 }
 
                 // BATTLE THEATRE
@@ -101,7 +98,6 @@ class AppView : View() {
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
                     }
-
                 }
 
                 // SHADE WING
@@ -165,7 +161,6 @@ class AppView : View() {
                 hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(DebugStyle.wireFrame) }
             }
 
-
             vbox { addClass(DebugStyle.wireFrame); alignment = Pos.CENTER
                 minHeight = AppStyle.TICKER_HEIGHT
                 label("NEWS TICKER") { addClass(DebugStyle.wireText) }
@@ -180,10 +175,8 @@ class AppView : View() {
                     xrdTime = label("nullTime") { addClass(DebugStyle.debugConsole); textFill = c("#8080FF"); translateX += 120 }
                 }
                 debugBox = vbox { addClass(DebugStyle.debugContainer); console = textflow { addClass(DebugStyle.debugText); translateY += 16 } }
-
                 translateY -= 810.0
             }
-
         }
 
         log(L("Starting "), L("$ARTIFACT_NAME ", GRN), L(BUILD_VERSION, LOW))

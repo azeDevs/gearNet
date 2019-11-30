@@ -36,7 +36,7 @@ class SessionMode(private var mode: Mode = Mode.NULL) {
     override fun toString(): String = mode.name
 
     enum class Mode {
-        NULL,
+        NULL, // TODO: SET NULL MODE WHENEVER A MATCH IS INVALIDATED TO ALLOW FOR A CLEAN RESET
         LOBBY,
         LOADING,
         MATCH,
