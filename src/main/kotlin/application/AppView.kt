@@ -86,17 +86,19 @@ class AppView : View() {
                 vbox { addClass(DebugStyle.wireFrame)
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
-                    label("RED FIGHTER") { addClass(AppStyle.redPane)
+                    vbox { addClass(AppStyle.redPane)
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
+                        label("RED FIGHTER")
                     }
                 }
                 vbox { addClass(DebugStyle.wireFrame)
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
-                    label("BLU FIGHTER") { addClass(AppStyle.bluPane)
+                    vbox { addClass(AppStyle.bluPane)
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
+                        label("BLU FIGHTER")
                     }
                 }
 
@@ -104,13 +106,15 @@ class AppView : View() {
                 vbox { addClass(DebugStyle.wireFrame)
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                    label("FIGHTER RANKINGS") { addClass(AppStyle.fighterZone)
+                    vbox { addClass(AppStyle.fighterZone)
                         minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
                         minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+                        label("FIGHTER RANKINGS")
                     }
-                    label("VIEWER RANKINGS") { addClass(AppStyle.viewerZone)
+                    vbox { addClass(AppStyle.viewerZone)
                         minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
                         minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+                        label("VIEWER RANKINGS")
                     }
                 }
             }
@@ -124,37 +128,42 @@ class AppView : View() {
                     vbox {
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                         minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
-                        label("RED TENSION") { addClass(AppStyle.redPane)
+                        vbox { addClass(AppStyle.redPane)
                             minHeight = AppStyle.TENSION_PULSE_HEIGHT; maxHeight = AppStyle.TENSION_PULSE_HEIGHT
                             minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
+                            label("RED TENSION")
                         }
-                        label("TOTAL AMOUNT WAGERED (RED)") { addClass(AppStyle.viewerZone)
+                        vbox { addClass(AppStyle.viewerZone)
                             minHeight = AppStyle.BET_TABLE_HEIGHT; maxHeight = AppStyle.BET_TABLE_HEIGHT
                             minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
+                            label("TOTAL AMOUNT WAGERED (RED)")
                         }
                     }
-
-                    label("PAYOUT SCALE") { addClass(AppStyle.viewerZone)
+                    vbox { addClass(AppStyle.viewerZone)
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                         minWidth = AppStyle.BET_SCALE_WIDTH; maxWidth = AppStyle.BET_SCALE_WIDTH
+                        label("PAYOUT SCALE")
                     }
                 }
                 hbox { minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2; addClass(DebugStyle.wireFrame)
                     alignment = Pos.BOTTOM_RIGHT
-                    label("PAYOUT SCALE") { addClass(AppStyle.viewerZone)
+                    vbox { addClass(AppStyle.viewerZone)
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                         minWidth = AppStyle.BET_SCALE_WIDTH; maxWidth = AppStyle.BET_SCALE_WIDTH
+                        label("PAYOUT SCALE")
                     }
                     vbox {
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                         minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
-                        label("BLU TENSION") { addClass(AppStyle.bluPane)
+                        vbox { addClass(AppStyle.bluPane)
                             minHeight = AppStyle.TENSION_PULSE_HEIGHT; maxHeight = AppStyle.TENSION_PULSE_HEIGHT
                             minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
+                            label("BLU TENSION")
                         }
-                        label("TOTAL AMOUNT WAGERED (BLU)") { addClass(AppStyle.viewerZone)
+                        vbox { addClass(AppStyle.viewerZone)
                             minHeight = AppStyle.BET_TABLE_HEIGHT; maxHeight = AppStyle.BET_TABLE_HEIGHT
                             minWidth = AppStyle.BET_TABLE_WIDTH; maxWidth = AppStyle.BET_TABLE_WIDTH
+                            label("TOTAL AMOUNT WAGERED (BLU)")
                         }
                     }
                 }
