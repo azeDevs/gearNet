@@ -25,6 +25,8 @@ class AppView : View() {
     private var console: TextFlow by singleAssign()
     private var redFighter: Label by singleAssign()
     private var bluFighter: Label by singleAssign()
+//    private var redHP: Label by singleAssign()
+//    private var bluHP: Label by singleAssign()
     private var xrdMode: Label by singleAssign()
     private var xrdTime: Label by singleAssign()
 
@@ -40,15 +42,20 @@ class AppView : View() {
     private fun cycleUILoop() {
         GlobalScope.launch {
             updateConsole()
-            delay(32); cycleUILoop()
+            delay(16); cycleUILoop()
         }
     }
 
     private fun updateConsole() = Platform.runLater {
-        redFighter.text = session.getStagedFighters().first.getName()
-        bluFighter.text = session.getStagedFighters().second.getName()
+
+        if (session.getStagedFighters().first.getName().isNotEmpty()) redFighter.text = "${session.getStagedFighters().first.getName()}: ${session.stage().match().getHealth(0)} HP"
+        else redFighter.text = "RED FIGHTER: ${session.stage().match().getHealth(0)} HP"
+
+        if (session.getStagedFighters().second.getName().isNotEmpty()) bluFighter.text = "${session.getStagedFighters().second.getName()}: ${session.stage().match().getHealth(1)} HP"
+        else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
+
         xrdMode.text = "${session.getMode()} MODE"
-        xrdTime.text = "TIMER: ${session.stage().match().getTimer()}"
+        xrdTime.text = "TIMER ${session.stage().match().getTimer()}"
         updateLogs(console)
     }
 
@@ -62,6 +69,8 @@ class AppView : View() {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
+                xrdTime = label("nullTime") { addClass(DebugStyle.statusText); textFill = c("#8080FF"); translateY += 320 }
+                xrdMode = label("nullMode") { addClass(DebugStyle.statusText); textFill = c("#FF8F40"); translateY += 320 }
                 minHeight = AppStyle.TOP_GOALS_HEIGHT
             }
 
@@ -89,7 +98,8 @@ class AppView : View() {
                     vbox { addClass(AppStyle.redPane)
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
-                        label("RED FIGHTER")
+                        redFighter = label("RED FIGHTER")
+//                        redHP = label("-redHP")
                     }
                 }
                 vbox { addClass(DebugStyle.wireFrame)
@@ -98,7 +108,8 @@ class AppView : View() {
                     vbox { addClass(AppStyle.bluPane)
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
-                        label("BLU FIGHTER")
+                        bluFighter = label("BLU FIGHTER")
+//                        bluHP = label("-bluHP")
                     }
                 }
 
@@ -177,13 +188,9 @@ class AppView : View() {
 
             // DEBUG CONSOLE STUFF
             vbox { alignment = Pos.TOP_CENTER
-                hbox { addClass(AppStyle.stageContainer); translateY += 16
-                    redFighter = label("RedName") { addClass(DebugStyle.debugConsole); textFill = c("#FF0000") }
-                    bluFighter = label("BluName") { addClass(DebugStyle.debugConsole); textFill = c("#40AFFF") }
-                    xrdMode = label("nullMode") { addClass(DebugStyle.debugConsole); textFill = c("#FF8F40"); translateX += 120 }
-                    xrdTime = label("nullTime") { addClass(DebugStyle.debugConsole); textFill = c("#8080FF"); translateX += 120 }
+                debugBox = vbox { addClass(DebugStyle.debugContainer)
+                    console = textflow { addClass(DebugStyle.debugText); translateY += 16 }
                 }
-                debugBox = vbox { addClass(DebugStyle.debugContainer); console = textflow { addClass(DebugStyle.debugText); translateY += 16 } }
                 translateY -= 810.0
             }
         }

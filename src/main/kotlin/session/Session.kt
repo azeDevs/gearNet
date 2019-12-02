@@ -7,15 +7,13 @@ import application.log
 import events.*
 import memscan.FighterData
 import memscan.MatchSnap
+import session.SessionMode.Mode.*
 import tornadofx.Controller
 import twitch.BotEventHandler
 import twitch.Viewer
 import twitch.ViewerBet
 import twitch.ViewerData
-import utils.SessionMode
-import utils.SessionMode.Mode.*
 import utils.addCommas
-import utils.getIdStr
 import utils.getSeatLog
 
 typealias L = LogText
@@ -85,6 +83,7 @@ class Session : Controller() {
         subscribe<MatchLoadingEvent> { runMatchLoading(it) }
         subscribe<RoundStartedEvent> { runRoundStarted(it) }
         subscribe<RoundResolvedEvent> { runRoundResolved(it) }
+        subscribe<RoundDrawEvent> { runRoundDraw(it) }
         subscribe<MatchResolvedEvent> { runMatchResolved(it) }
         subscribe<MatchConcludedEvent> { runMatchConcluded(it) }
     }
@@ -143,7 +142,7 @@ class Session : Controller() {
     private fun runMatchLoading(e: MatchLoadingEvent) {
         // TODO: MATCH SHOULD NOT LOAD IF CURRENTLY STAGED MATCH IS INVALID
         if (mode.get() != LOADING) {
-            log(L("Match ${getIdStr(e.match.getId())}", TOX), L(" loading ... "), L(e.match.getFighter(0).getName(), RED),
+            log(e.match.getIdLog(), L(" loading ... "), L(e.match.getFighter(0).getName(), RED),
                 L(" vs ", MED), L(e.match.getFighter(1).getName(), BLU))
         }
         updateMode(LOADING)
@@ -152,37 +151,42 @@ class Session : Controller() {
     private fun runRoundStarted(e: RoundStartedEvent) {
         updateMode(MATCH)
         val round = "Round ${e.match.getRoundNumber()}"
-        log(L("Match ${getIdStr(e.match.getId())} ", TOX), L(round, YLW), L(" started ... ", CYA))
+        log(e.match.getIdLog(), L(round, YLW), L(" started ... ", CYA))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
         updateMode(SLASH)
         var winner = Fighter()
-        val round = "Round ${e.match.getRoundNumber()}"
-        if (e.match.getHealth(0) == 0 && e.match.getHealth(1) == 0) log(L(round, YLW), L(" goes to "), L("DRAW", YLW))
-        else {
-            if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
-            else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
-            when {
-                winner.getSeat() == 0 -> log(L(round, YLW), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
-                winner.getSeat() == 1 -> log(L(round, YLW), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
-                else -> log(L(round, YLW), L(" goes to "), L("ERROR", RED))
-            }
+        val round = "Round ${e.match.getRoundNumber()-1}"
+        if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
+        else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
+        when {
+            winner.getSeat() == 0 -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
+            winner.getSeat() == 1 -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
+            else -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L("ERROR", RED))
         }
+    }
+
+    private fun runRoundDraw(e: RoundDrawEvent) {
+        updateMode(SLASH)
+        val round = "Round ${e.match.getRoundNumber()-1}"
+        log(L(round, YLW), L(" resolved as a "), L("DRAW", YLW))
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
         if (isMode(LOADING)) updateMode(LOBBY)
-        else if (!isMode(VICTORY) && e.match.isResolved()) {
+        else if (!isMode(LOBBY) && !isMode(VICTORY) && e.match.isResolved() && e.match.getTimer() > -1) {
             stage.finalizeMatch()
             val winner = e.match.getWinningFighter()
             bot.sendMessage("${winner.getName()} WINS!")
-            log(L(" FINALIZED: ", GRN), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
-            updateMode(LOBBY)
+            log(e.match.getIdLog(), L(" FINALIZED: ", GRN), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
         }
     }
 
-    private fun runMatchConcluded(e: MatchConcludedEvent) = updateMode(LOBBY)
+    private fun runMatchConcluded(e: MatchConcludedEvent) {
+        log(L("CONCLUDED ", YLW), e.match.getIdLog(false))
+        updateMode(LOBBY)
+    }
 
 }
 

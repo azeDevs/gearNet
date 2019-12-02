@@ -1,17 +1,16 @@
-package utils
+package session
 
-import application.LogText
 import application.LogText.Effect.*
 import application.log
 
-typealias L = LogText
-
 class SessionMode(private var mode: Mode = Mode.NULL) {
 
-    fun get() = mode
-    fun isMode(vararg mode:Mode) = mode.any { it == this.mode }
+    // TODO: MAKE EACH Mode HAVE ITS OWN SERIES OF FUNCTIONS BEFORE MOVING TO A NEW Mode
 
-    fun update(updatedMode:Mode): Boolean {
+    fun get() = mode
+    fun isMode(vararg mode: Mode) = mode.any { it == this.mode }
+
+    fun update(updatedMode: Mode): Boolean {
         var updated = false
         if (updatedMode != mode) {
             if (isMode(Mode.NULL)) updated = true
@@ -24,8 +23,13 @@ class SessionMode(private var mode: Mode = Mode.NULL) {
                 else -> updated = false
             }
             if (updated) {
-                log(L("Session Mode changed to "), L(updatedMode.name, ORN_MODE),
-                    L(" (formerly ", LOW), L(mode.name, MED), L(")", LOW))
+                log(
+                    L("Session Mode changed to "),
+                    L(updatedMode.name, ORN_MODE),
+                    L(" (formerly ", LOW),
+                    L(mode.name, MED),
+                    L(")", LOW)
+                )
                 mode = updatedMode
             }
         }

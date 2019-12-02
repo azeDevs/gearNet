@@ -1,7 +1,9 @@
 package session
 
+import application.LogText
 import memscan.MatchSnap
 import twitch.ViewerBet
+import utils.getIdStr
 
 /**
  *
@@ -48,5 +50,8 @@ class Match (
 
     private fun getRounds(seatId: Int) = getSnap().rounds(seatId)
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
+
+    fun getIdLog(colon:Boolean = true, matchId:Long = getId())
+            = L("Match${getIdStr(matchId)}${if (colon) ": " else ""}", LogText.Effect.TOX)
 
 }

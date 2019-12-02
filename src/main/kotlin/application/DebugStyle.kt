@@ -12,21 +12,28 @@ class DebugStyle : Stylesheet() {
     companion object {
         private const val DEBUG_FONTSIZE = 20.0
         val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf", DEBUG_FONTSIZE)
+        val statusText by cssclass()
         val debugText by cssclass()
         val wireText by cssclass()
         val wirePane by cssclass()
         val wireFrame by cssclass()
-        val debugConsole by cssclass()
         val debugContainer by cssclass()
     }
 
     init {
 
+        statusText {
+            AppStyle.fontFiraBold?.let { font = it }
+            textFill = c("#AACCFF")
+            padding = box(8.px)
+            fontSize = 32.px
+        }
+
         debugText {
             AppStyle.fontFiraBold?.let { font = it }
             textFill = c("#AACCFF")
             padding = box(8.px)
-            fontSize = 20.px
+            fontSize = 24.px
         }
 
         wireText {
@@ -62,14 +69,6 @@ class DebugStyle : Stylesheet() {
             minHeight = 540.px
             maxHeight = 540.px
             alignment = Pos.BOTTOM_LEFT
-        }
-
-        debugConsole {
-            textFill = c("#faa61a")
-            minWidth = AppStyle.BATTLE_STAGE_WIDTH.px-160
-            maxWidth = AppStyle.BATTLE_STAGE_WIDTH.px-160
-            fillHeight = false
-            maxHeight = 540.px
         }
 
     }

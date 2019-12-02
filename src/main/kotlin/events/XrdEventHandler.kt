@@ -3,7 +3,7 @@ package events
 import memscan.MemHandler
 import memscan.XrdApi
 import session.Session
-import utils.SessionMode.Mode.*
+import session.SessionMode.Mode.*
 
 /**
  *
@@ -45,7 +45,7 @@ class XrdEventHandler(private val s: Session) {
 
     private fun getEventsMatchConcluded() {
         if (s.stage().match().getTimer() == -1 && (s.isMode(VICTORY) || s.isMode(SLASH) || s.isMode(MATCH)))
-            s.fire(MatchConcludedEvent(s.stage().match()))
+            s.fire(MatchConcludedEvent(s.stage().getLastMatch()))
     }
 
     private fun getEventsFighterMoved() {
@@ -71,8 +71,10 @@ class XrdEventHandler(private val s: Session) {
     private fun getEventsRoundResolved() {
         if (s.isMode(MATCH)) {
             val m = s.stage().match()
+            if (m.getHealth(1) == 0 && m.getHealth(0) == 0) s.fire(RoundDrawEvent(m))
+            if (m.getTimer() == 0 && m.getHealth(1) == m.getHealth(0)) s.fire(RoundDrawEvent(m))
             if (m.getHealth(1) == 0 || m.getHealth(0) == 0) s.fire(RoundResolvedEvent(m))
-            if (m.getTimer() == 0 && s.isMode(MATCH)) s.fire(RoundResolvedEvent(m))
+            if (m.getTimer() == 0) s.fire(RoundResolvedEvent(m))
         }
     }
 

@@ -2,6 +2,7 @@ package utils
 
 import application.LogText
 import application.LogText.Effect.*
+import session.L
 
 
 fun getIdStr(id: Long): String {
