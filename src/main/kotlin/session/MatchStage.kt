@@ -4,7 +4,9 @@ import MyApp.Companion.WD
 import application.LogText.Effect.*
 import application.log
 import memscan.MatchSnap
-import session.SessionMode.Mode.*
+import session.modes.ModeLobby
+import session.modes.ModeMatch
+import session.modes.ModeVictory
 import twitch.ViewerBet
 import utils.addCommas
 import utils.plural
@@ -40,14 +42,14 @@ class MatchStage(private val s: Session) {
      *  and to archive it with a winner defined.
      */
     fun finalizeMatch() {
-        if (match.getWinningFighter().isValid() && s.isMode(MATCH)) {
+        if (match.getWinningFighter().isValid() && s.isMode(ModeMatch())) {
             // Do stuff if there is a winner
-            s.updateMode(VICTORY)
+            s.updateMode(ModeVictory())
             finalizePayouts()
             archiveMatch()
-        } else if (!match.getWinningFighter().isValid() && !s.isMode(VICTORY)) {
+        } else if (!match.getWinningFighter().isValid() && !s.isMode(ModeVictory())) {
             // Do stuff if there wasn't a winner
-            if (!s.isMode(LOBBY)) s.updateMode(LOBBY)
+            if (!s.isMode(ModeLobby())) s.updateMode(ModeLobby())
             log(match.getIdLog(), L("INVALIDATED", RED))
             // Invalidate any Bets
             if (match.getBets().isNotEmpty())

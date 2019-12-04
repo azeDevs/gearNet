@@ -7,7 +7,7 @@ import application.log
 import events.*
 import memscan.FighterData
 import memscan.MatchSnap
-import session.SessionMode.Mode.*
+import session.modes.*
 import tornadofx.Controller
 import twitch.BotEventHandler
 import twitch.Viewer
@@ -41,8 +41,8 @@ class Session : Controller() {
 
     // MODE STUFF
     fun getMode(): SessionMode = mode
-    fun isMode(vararg mode: SessionMode.Mode) = this.mode.isMode(*mode)
-    fun updateMode(mode: SessionMode.Mode) = this.mode.update(mode)
+    fun isMode(vararg mode: Mode) = this.mode.isMode(*mode)
+    fun updateMode(mode: Mode) = this.mode.update(mode)
 
     // FIGHTER STUFF
     private fun addFighter(fighter: Fighter) { fighters[fighter.getId()] = fighter }
@@ -141,21 +141,21 @@ class Session : Controller() {
 
     private fun runMatchLoading(e: MatchLoadingEvent) {
         // TODO: MATCH SHOULD NOT LOAD IF CURRENTLY STAGED MATCH IS INVALID
-        if (mode.get() != LOADING) {
+        if (mode.get() != ModeLoading()) {
             log(e.match.getIdLog(), L(" loading ... "), L(e.match.getFighter(0).getName(), RED),
                 L(" vs ", MED), L(e.match.getFighter(1).getName(), BLU))
         }
-        updateMode(LOADING)
+        updateMode(ModeLoading())
     }
 
     private fun runRoundStarted(e: RoundStartedEvent) {
-        updateMode(MATCH)
+        updateMode(ModeMatch())
         val round = "Round ${e.match.getRoundNumber()}"
         log(e.match.getIdLog(), L(round, YLW), L(" started ... ", CYA))
     }
 
     private fun runRoundResolved(e: RoundResolvedEvent) {
-        updateMode(SLASH)
+        updateMode(ModeSlash())
         var winner = Fighter()
         val round = "Round ${e.match.getRoundNumber()-1}"
         if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
@@ -168,14 +168,14 @@ class Session : Controller() {
     }
 
     private fun runRoundDraw(e: RoundDrawEvent) {
-        updateMode(SLASH)
+        updateMode(ModeSlash())
         val round = "Round ${e.match.getRoundNumber()-1}"
         log(L(round, YLW), L(" resolved as a "), L("DRAW", YLW))
     }
 
     private fun runMatchResolved(e: MatchResolvedEvent) {
-        if (isMode(LOADING)) updateMode(LOBBY)
-        else if (!isMode(LOBBY) && !isMode(VICTORY) && e.match.isResolved() && e.match.getTimer() > -1) {
+        if (isMode(ModeLoading())) updateMode(ModeLobby())
+        else if (!isMode(ModeLobby()) && !isMode(ModeVictory()) && e.match.isResolved() && e.match.getTimer() > -1) {
             stage.finalizeMatch()
             val winner = e.match.getWinningFighter()
             bot.sendMessage("${winner.getName()} WINS!")
@@ -185,7 +185,7 @@ class Session : Controller() {
 
     private fun runMatchConcluded(e: MatchConcludedEvent) {
         log(L("CONCLUDED ", YLW), e.match.getIdLog(false))
-        updateMode(LOBBY)
+        updateMode(ModeLobby())
     }
 
 }

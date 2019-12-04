@@ -79,12 +79,12 @@ class AppView : View() {
                 vbox { addClass(DebugStyle.wireFrame); alignment = Pos.TOP_RIGHT
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                    vbox { addClass(AppStyle.fighterZone)
-                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
-                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                        label("FIGHTER QUEUE")
+//                    vbox { addClass(AppStyle.fighterZone)
+//                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
+//                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+//                        label("FIGHTER QUEUE")
 //                        fighterView = DebugFighterView(this)
-                    }
+//                    }
 //                    label("VIEWER CHAT") { addClass(AppStyle.viewerZone)
 //                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
 //                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
