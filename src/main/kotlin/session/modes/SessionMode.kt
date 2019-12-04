@@ -3,8 +3,9 @@ package session.modes
 import application.LogText.Effect.*
 import application.log
 import session.L
+import session.Session
 
-class SessionMode(private var mode: Mode = ModeNull()) {
+class SessionMode(val s: Session, private var mode: Mode = ModeNull(s)) {
 
     // TODO: SET NULL MODE WHENEVER A MATCH IS INVALIDATED TO ALLOW FOR A CLEAN RESET
     // TODO: MAKE EACH Mode HAVE ITS OWN SERIES OF FUNCTIONS BEFORE MOVING TO A NEW Mode
@@ -15,13 +16,13 @@ class SessionMode(private var mode: Mode = ModeNull()) {
     fun update(updatedMode: Mode): Boolean {
         var updated = false
         if (updatedMode != mode) {
-            if (isMode(ModeNull())) updated = true
+            if (isMode(ModeNull(s))) updated = true
             when (updatedMode) {
-                ModeLobby() -> if (isMode(ModeVictory(), ModeMatch())) updated = true
-                ModeLoading() -> if (isMode(ModeLobby())) updated = true
-                ModeMatch() -> if (isMode(ModeLoading(), ModeSlash())) updated = true
-                ModeSlash() -> if (isMode(ModeMatch())) updated = true
-                ModeVictory() -> if (isMode(ModeSlash(), ModeMatch())) updated = true
+                ModeLobby(s) -> if (isMode(ModeVictory(s), ModeMatch(s))) updated = true
+                ModeLoading(s) -> if (isMode(ModeLobby(s))) updated = true
+                ModeMatch(s) -> if (isMode(ModeLoading(s), ModeSlash(s))) updated = true
+                ModeSlash(s) -> if (isMode(ModeMatch(s))) updated = true
+                ModeVictory(s) -> if (isMode(ModeSlash(s), ModeMatch(s))) updated = true
                 else -> updated = false
             }
             if (updated) {

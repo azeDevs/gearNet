@@ -28,7 +28,7 @@ class XrdEventHandler(private val s: Session) {
             }
             s.updateMatch(xrdApi.getMatchSnap())
             // 005: When the first Fighter appears in memory, a Lobby has been created/joined
-            if (s.fighters().isNotEmpty() && s.isMode(ModeNull())) s.updateMode(ModeLobby())
+            if (s.getFighters().isNotEmpty() && s.isMode(ModeNull(s))) s.updateMode(ModeLobby(s))
             getEventsFighterMoved()
             getEventsMatchLoading()
             getEventsMatchResolved()
@@ -44,17 +44,17 @@ class XrdEventHandler(private val s: Session) {
     }
 
     private fun getEventsMatchConcluded() {
-        if (s.stage().match().getTimer() == -1 && (s.isMode(ModeVictory()) || s.isMode(ModeSlash()) || s.isMode(ModeMatch())))
+        if (s.stage().match().getTimer() == -1 && (s.isMode(ModeVictory(s)) || s.isMode(ModeSlash(s)) || s.isMode(ModeMatch(s))))
             s.fire(MatchConcludedEvent(s.stage().getLastMatch()))
     }
 
     private fun getEventsFighterMoved() {
-        s.fighters().filter { !(it.oldData().seatingId() == it.getData().seatingId() && it.oldData().cabinetId() == it.getData().cabinetId())
+        s.getFighters().filter { !(it.oldData().seatingId() == it.getData().seatingId() && it.oldData().cabinetId() == it.getData().cabinetId())
         }.forEach { movedFighter -> s.fire(FighterMovedEvent(movedFighter)) }
     }
 
     private fun getEventsMatchLoading() {
-        val fighters = s.fighters().filter { it.isLoading() }
+        val fighters = s.getFighters().filter { it.isLoading() }
         if (fighters.size == 2) s.fire(MatchLoadingEvent(s.stage().match()))
     }
 
@@ -63,13 +63,13 @@ class XrdEventHandler(private val s: Session) {
     }
 
     private fun getEventsRoundStarted() {
-        if(s.stage().match().getHealth(0) == 420 && s.stage().match().getHealth(1) == 420 && s.isMode(ModeLoading(), ModeSlash())) {
-            if(!s.isMode(ModeMatch(), ModeVictory())) s.fire(RoundStartedEvent(s.stage().match()))
+        if(s.stage().match().getHealth(0) == 420 && s.stage().match().getHealth(1) == 420 && s.isMode(ModeLoading(s), ModeSlash(s))) {
+            if(!s.isMode(ModeMatch(s), ModeVictory(s))) s.fire(RoundStartedEvent(s.stage().match()))
         }
     }
 
     private fun getEventsRoundResolved() {
-        if (s.isMode(ModeMatch())) {
+        if (s.isMode(ModeMatch(s))) {
             val m = s.stage().match()
             if (m.getHealth(1) == 0 && m.getHealth(0) == 0) s.fire(RoundDrawEvent(m))
             if (m.getTimer() == 0 && m.getHealth(1) == m.getHealth(0)) s.fire(RoundDrawEvent(m))

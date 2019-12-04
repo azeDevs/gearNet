@@ -1,56 +1,46 @@
 package session.modes
 
+import application.LogText
+import application.log
 import events.*
+import session.L
+import session.Session
 
-class ModeSlash : Mode() {
+class ModeSlash(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}SLASH"
 
-    override fun runMatchConcluded(event: MatchConcludedEvent) {
-        TODO("not implemented")
+    override fun runMatchConcluded(e: MatchConcludedEvent) {
+        logMode(this, "MatchConcludedEvent")
+        log(L("CONCLUDED ", LogText.Effect.YLW), e.match.getIdLog(false))
+        s.updateMode(ModeLobby(s))
     }
 
-    override fun runMatchResolved(event: MatchResolvedEvent) {
-        TODO("not implemented")
+    override fun runMatchResolved(e: MatchResolvedEvent) {
+        logMode(this, "MatchResolvedEvent")
     }
 
-    override fun runRoundDraw(event: RoundDrawEvent) {
-        TODO("not implemented")
+    override fun runRoundDraw(e: RoundDrawEvent) {
+        logMode(this, "RoundDrawEvent")
     }
 
-    override fun runRoundResolved(event: RoundResolvedEvent) {
-        TODO("not implemented")
+    override fun runRoundResolved(e: RoundResolvedEvent) {
+        logMode(this, "RoundResolvedEvent")
     }
 
-    override fun runRoundStarted(event: RoundStartedEvent) {
-        TODO("not implemented")
+    override fun runRoundStarted(e: RoundStartedEvent) {
+        logMode(this, "RoundStartedEvent")
+        s.updateMode(ModeMatch(s))
+        val round = "Round ${e.match.getRoundNumber()}"
+        log(e.match.getIdLog(), L(round, LogText.Effect.YLW), L(" started ... ", LogText.Effect.CYA))
     }
 
-    override fun runMatchLoading(event: MatchLoadingEvent) {
-        TODO("not implemented")
+    override fun runMatchLoading(e: MatchLoadingEvent) {
+        logMode(this, "MatchLoadingEvent")
     }
 
-    override fun runFighterMoved(event: FighterMovedEvent) {
-        TODO("not implemented")
+    override fun runCommandBet(e: ViewerBetEvent) {
+        logMode(this, "ViewerBetEvent")
     }
 
-    override fun runFighterJoined(event: FighterJoinedEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runCommandBet(event: ViewerBetEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runViewerJoined(event: ViewerJoinedEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runViewerMessage(event: ViewerMessageEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runXrdConnection(event: XrdConnectionEvent) {
-        TODO("not implemented")
-    }
 }

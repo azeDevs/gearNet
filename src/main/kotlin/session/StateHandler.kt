@@ -1,5 +1,0 @@
-package session
-
-class StateHandler {
-
-}

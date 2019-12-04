@@ -1,57 +1,54 @@
 package session.modes
 
+import MyApp.Companion.WD
+import application.log
 import events.*
+import session.Session
+import twitch.ViewerBet
+import utils.addCommas
 
-class ModeLoading : Mode() {
+class ModeLoading(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}LOADING"
 
-    override fun runMatchConcluded(event: MatchConcludedEvent) {
-        TODO("not implemented")
+    override fun runMatchConcluded(e: MatchConcludedEvent) {
+        logMode(this, "MatchConcludedEvent")
     }
 
-    override fun runMatchResolved(event: MatchResolvedEvent) {
-        TODO("not implemented")
+    override fun runMatchResolved(e: MatchResolvedEvent) {
+        logMode(this, "MatchResolvedEvent")
+        s.updateMode(ModeLobby(s))
     }
 
-    override fun runRoundDraw(event: RoundDrawEvent) {
-        TODO("not implemented")
+    override fun runRoundDraw(e: RoundDrawEvent) {
+        logMode(this, "RoundDrawEvent")
     }
 
-    override fun runRoundResolved(event: RoundResolvedEvent) {
-        TODO("not implemented")
+    override fun runRoundResolved(e: RoundResolvedEvent) {
+        logMode(this, "RoundResolvedEvent")
     }
 
-    override fun runRoundStarted(event: RoundStartedEvent) {
-        TODO("not implemented")
+    override fun runRoundStarted(e: RoundStartedEvent) {
+        logMode(this, "RoundStartedEvent")
     }
 
-    override fun runMatchLoading(event: MatchLoadingEvent) {
-        TODO("not implemented")
+    override fun runMatchLoading(e: MatchLoadingEvent) {
+        logMode(this, "MatchLoadingEvent")
     }
 
-    override fun runFighterMoved(event: FighterMovedEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runFighterJoined(event: FighterJoinedEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runCommandBet(event: ViewerBetEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runViewerJoined(event: ViewerJoinedEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runViewerMessage(event: ViewerMessageEvent) {
-        TODO("not implemented")
-    }
-
-    override fun runXrdConnection(event: XrdConnectionEvent) {
-        TODO("not implemented")
+    override fun runCommandBet(e: ViewerBetEvent) {
+        logMode(this, "ViewerBetEvent")
+        if (s.stage().isMatchValid()) {
+            val bet = ViewerBet(e.viewer)
+            val sb = StringBuilder("Viewer ${e.viewer.getName()} bet ")
+            if (bet.isValid()) {
+                if (bet.getChips(0)>0) sb.append("${bet.getChips(0)}0% (${addCommas(bet.getWager(0))} $WD) on Red")
+                if (bet.getChips(0)>0 && bet.getChips(1)>0) sb.append(" & ")
+                if (bet.getChips(1)>0) sb.append("${bet.getChips(1)}0% (${addCommas(bet.getWager(1))} $WD) on Blue")
+                log(sb.toString())
+                s.stage().addBet(bet)
+            }
+        } else log("Viewer ${e.viewer.getName()} bet fizzled, betting is locked")
     }
 
 }

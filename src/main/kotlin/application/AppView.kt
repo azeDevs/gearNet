@@ -54,7 +54,7 @@ class AppView : View() {
         if (session.getStagedFighters().second.getName().isNotEmpty()) bluFighter.text = "${session.getStagedFighters().second.getName()}: ${session.stage().match().getHealth(1)} HP"
         else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
 
-        xrdMode.text = "${session.getMode()} MODE"
+        xrdMode.text = session.getMode().toString()
         xrdTime.text = "TIMER ${session.stage().match().getTimer()}"
         updateLogs(console)
     }

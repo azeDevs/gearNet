@@ -42,14 +42,14 @@ class MatchStage(private val s: Session) {
      *  and to archive it with a winner defined.
      */
     fun finalizeMatch() {
-        if (match.getWinningFighter().isValid() && s.isMode(ModeMatch())) {
+        if (match.getWinningFighter().isValid() && s.isMode(ModeMatch(s))) {
             // Do stuff if there is a winner
-            s.updateMode(ModeVictory())
+            s.updateMode(ModeVictory(s))
             finalizePayouts()
             archiveMatch()
-        } else if (!match.getWinningFighter().isValid() && !s.isMode(ModeVictory())) {
+        } else if (!match.getWinningFighter().isValid() && !s.isMode(ModeVictory(s))) {
             // Do stuff if there wasn't a winner
-            if (!s.isMode(ModeLobby())) s.updateMode(ModeLobby())
+            if (!s.isMode(ModeLobby(s))) s.updateMode(ModeLobby(s))
             log(match.getIdLog(), L("INVALIDATED", RED))
             // Invalidate any Bets
             if (match.getBets().isNotEmpty())
@@ -110,8 +110,8 @@ class MatchStage(private val s: Session) {
                  WHEN THE LOBBY LOADS, THE SEATS WILL NOT CHANGE
                  TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED IS IDENTICAL TO THE CURRENT MATCH
                 */
-                val redFighter = s.fighters().firstOrNull { it.getSeat() == 0 } ?: Fighter()
-                val bluFighter = s.fighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
+                val redFighter = s.getFighters().firstOrNull { it.getSeat() == 0 } ?: Fighter()
+                val bluFighter = s.getFighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
                 match = Match(matchId, Pair(redFighter, bluFighter))
 
             } else {
@@ -123,7 +123,7 @@ class MatchStage(private val s: Session) {
                  TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED ISN'T IDENTICAL TO THE CURRENT MATCH
                 */
 
-                val prospect = s.fighters().firstOrNull { it.isSeated(2) } ?: Fighter()
+                val prospect = s.getFighters().firstOrNull { it.isSeated(2) } ?: Fighter()
                 if (prospect.isValid()) {
                     when (getLastMatch().getWinner()) {
                         0 -> match = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
@@ -144,7 +144,7 @@ class MatchStage(private val s: Session) {
     }
 
     private fun isFighterSeatedAt(seatId: Int): Boolean {
-        val seatCheck = s.fighters().firstOrNull { it.getSeat() == seatId } ?: Fighter()
+        val seatCheck = s.getFighters().firstOrNull { it.getSeat() == seatId } ?: Fighter()
         if (seatCheck.getCabinet() != 0) return false
         return seatCheck.isValid()
     }
