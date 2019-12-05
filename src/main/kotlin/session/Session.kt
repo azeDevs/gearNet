@@ -50,12 +50,11 @@ class Session : Controller() {
     // MATCH STUFF
     fun stage() = stage
     fun updateMatch(matchSnap: MatchSnap) = stage.addSnap(matchSnap)
-    fun getStagedFighters(): Pair<Fighter, Fighter> = Pair(stage.match().getFighter(0), stage.match().getFighter(1))
+    fun getStagedFighters(): Pair<Fighter, Fighter> = Pair(stage.match().fighter(0), stage.match().fighter(1))
 
     // MODE STUFF
-    fun getMode(): SessionMode = mode
+    fun mode(): SessionMode = mode
     fun isMode(vararg mode: Mode) = this.mode.isMode(*mode)
-    fun updateMode(mode: Mode) = this.mode.update(mode)
 
     // FIGHTER STUFF
     fun addFighter(fighter: Fighter) { fighters[fighter.getId()] = fighter }

@@ -30,10 +30,16 @@ abstract class Mode(open val s: Session) : Controller() {
     abstract fun runViewerMessage(e: ViewerMessageEvent)
     abstract fun runFighterMoved(e: FighterMovedEvent)
 
-    fun runMatchConcludedCommons(e: MatchConcludedEvent) { log(L("CONCLUDED ", YLW), e.match.getIdLog(false)) }
+    fun runRoundStartedCommons(e: RoundStartedEvent) {
+        val round = "Round ${e.match.getRoundNumber()}"
+        log(e.match.getIdLog(), L(" "), L(round, YLW_FIGHT), L(" started ...", CYA), e.match.getMatchLog())
+        s.mode().update(ModeMatch(s))
+    }
+
+    fun runMatchConcludedCommons(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     fun runFighterJoinedCommons(e: FighterJoinedEvent) {
-        log(L(e.fighter.getName(), YLW),
+        log(L(e.fighter.getName(), YLW_FIGHT),
             L(" added to Fighter map"),
             L(" ${e.fighter.getIdString()}", LOW))
     }
@@ -54,7 +60,7 @@ abstract class Mode(open val s: Session) : Controller() {
     fun runFighterMovedCommons(e: FighterMovedEvent) {
         // FIXME: DOES NOT TRIGGER WHEN MOVING FROM SPECTATOR
         val destination = if (e.fighter.getCabinet() > 3) L( "off cabinet") else getSeatLog(e.fighter.getSeat())
-        log(L(e.fighter.getName(), YLW), L(" moved to ", MED), destination)
+        log(L(e.fighter.getName(), YLW_FIGHT), L(" moved to ", MED), destination)
         if (s.stage().isMatchValid() && e.fighter.justExitedStage()) s.stage().finalizeMatch()
     }
 

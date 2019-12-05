@@ -49,12 +49,18 @@ class AppView : View() {
     private fun updateConsole() = Platform.runLater {
 
         if (session.getStagedFighters().first.getName().isNotEmpty()) redFighter.text = "${session.getStagedFighters().first.getName()}: ${session.stage().match().getHealth(0)} HP"
-        else redFighter.text = "RED FIGHTER: ${session.stage().match().getHealth(0)} HP"
+        else {
+            if (session.stage().match().isInHellFire(0)) redFighter.text = "RED FIGHTER: ${session.stage().match().getHealth(0)} HP!"
+            else redFighter.text = "RED FIGHTER: ${session.stage().match().getHealth(0)} HP"
+        }
 
         if (session.getStagedFighters().second.getName().isNotEmpty()) bluFighter.text = "${session.getStagedFighters().second.getName()}: ${session.stage().match().getHealth(1)} HP"
-        else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
+        else {
+            if (session.stage().match().isInHellFire(1)) bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP!"
+            else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
+        }
 
-        xrdMode.text = session.getMode().toString()
+        xrdMode.text = session.mode().toString()
         xrdTime.text = "TIMER ${session.stage().match().getTimer()}"
         updateLogs(console)
     }

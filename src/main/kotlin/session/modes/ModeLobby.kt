@@ -1,11 +1,8 @@
 package session.modes
 
 import MyApp.Companion.WD
-import application.LogText.Effect.CYA
-import application.LogText.Effect.YLW
 import application.log
 import events.*
-import session.L
 import session.Session
 import twitch.ViewerBet
 import utils.addCommas
@@ -18,15 +15,10 @@ class ModeLobby(override val s: Session) : Mode(s) {
     override fun runMatchResolved(e: MatchResolvedEvent) { }
     override fun runRoundDraw(e: RoundDrawEvent) { }
     override fun runRoundResolved(e: RoundResolvedEvent) { }
-
-    override fun runRoundStarted(e: RoundStartedEvent) { logMode(this, "RoundStartedEvent")
-        s.updateMode(ModeMatch(s))
-        val round = "Round ${e.match.getRoundNumber()}"
-        log(e.match.getIdLog(), L(round, YLW), L(" started ... ", CYA))
-    }
+    override fun runRoundStarted(e: RoundStartedEvent) { runRoundStartedCommons(e) }
 
     override fun runMatchLoading(e: MatchLoadingEvent) {
-        if (s.stage().isMatchValid()) s.updateMode(ModeLoading(s))
+        if (s.stage().isMatchValid()) s.mode().update(ModeLoading(s))
     }
 
     override fun runCommandBet(e: ViewerBetEvent) { logMode(this, "ViewerBetEvent")

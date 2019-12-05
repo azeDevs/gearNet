@@ -1,6 +1,7 @@
 package session
 
-import application.LogText.Effect.*
+import application.LogText.Effect.TOX_MATCH
+import application.LogText.Effect.YLW_FIGHT
 import memscan.MatchSnap
 import twitch.ViewerBet
 import utils.getIdStr
@@ -31,12 +32,13 @@ class Match (
     fun getBets(): List<ViewerBet> = viewerBets
     fun betCount() = getBets().size
     fun getWinner() = winner
-    fun getWinningFighter() = getFighter(getWinner())
+    fun getWinningFighter() = fighter(getWinner())
     fun getTimer() = getSnap().timer()
     fun getHealth(seatId: Int) = getSnap().health(seatId)
-    fun getFighter(seatId: Int) = if (seatId == 0) fighters.first else if (seatId == 1) fighters.second else Fighter()
+    fun isInHellFire(seatId: Int) = getSnap().health(seatId) < 85
+    fun fighter(seatId: Int) = if (seatId == 0) fighters.first else if (seatId == 1) fighters.second else Fighter()
 
-    fun isValid() = matchId > -1 && getFighter(0).isValid() && getFighter(1).isValid()
+    fun isValid() = matchId > -1 && fighter(0).isValid() && fighter(1).isValid()
     fun addViewerBet(bet: ViewerBet) = viewerBets.add(bet)
     fun update(matchSnap: MatchSnap): Boolean {
         if (!isResolved() && !matchSnap.isSameAs(getSnap())) {
@@ -58,15 +60,12 @@ class Match (
         return -1
     }
 
+
     private fun getRounds(seatId: Int) = getSnap().rounds(seatId)
     private fun getSnap(): MatchSnap = if (snaps.isNotEmpty()) snaps[snaps.lastIndex] else MatchSnap()
 
-    fun getIdLog(colon:Boolean = true, matchId:Long = getId()) = L("Match${getIdStr(matchId)}${if (colon) ": " else ""}", TOX)
-    fun getRoundLog(colon:Boolean = false, change:Int = 0) = L("Round ${getRoundNumber()+change}${if (colon) ": " else ""}", YLW)
-    fun getFighterLog(seatId: Int) = when (seatId) {
-        0 -> L(getFighter(0).getName(), RED)
-        1 -> L(getFighter(1).getName(), BLU)
-        else -> L("null", LOW)
-    }
+    fun getIdLog(colon:Boolean = true, matchId:Long = getId()) = L("Match${getIdStr(matchId)}${if (colon) ":" else ""}", TOX_MATCH)
+    fun getRoundLog(colon:Boolean = false, change:Int = 0) = L("Round ${getRoundNumber()+change}${if (colon) ":" else ""}", YLW_FIGHT)
+    fun getMatchLog() = L(" / Round ${getRoundNumber()} / ${fighter(0).getName()} ($roundsRed/${getRounds(0)}) vs ${fighter(1).getName()} ($roundsBlu/${getRounds(1)})${if(roundsDraw>0) " / $roundsDraw /" else " /"}")
 
 }

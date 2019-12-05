@@ -26,7 +26,7 @@ class AppStyle : Stylesheet() {
 
         val TICKER_HEIGHT = 50.0
 
-        private const val fontSize = 20.0
+        private const val fontSize = 22.0
 
 //        val fontFiraLight = loadFont("/fonts/FiraCode-Light.ttf", fontSize)
 //        val fontFiraRegular = loadFont("/fonts/FiraCode-Regular.ttf", fontSize)

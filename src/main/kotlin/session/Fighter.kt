@@ -1,5 +1,6 @@
 package session
 
+import application.LogText.Effect.*
 import javafx.beans.property.SimpleStringProperty
 import memscan.FighterData
 import tornadofx.getValue
@@ -52,6 +53,12 @@ class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldDa
             && (getData().seatingId() != 0 || getData().seatingId() != 1))
             || (oldData().seatingId() == 0 && getData().seatingId() == 1)
             || (oldData().seatingId() == 1 && getData().seatingId() == 0)
+
+    fun getLog() = when (getSeat()) {
+        0 -> L(getName(), RED)
+        1 -> L(getName(), BLU)
+        else -> L(getName(), YLW_FIGHT)
+    }
 
 }
 

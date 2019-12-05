@@ -22,7 +22,7 @@ class ModeNull(override val s: Session) : Mode(s) {
     override fun runCommandBet(e: ViewerBetEvent) { logMode(this, "ViewerBetEvent") }
 
     override fun runFighterJoined(e: FighterJoinedEvent) {
-        if (s.getFighters().isNotEmpty()) s.updateMode(ModeLobby(s))
+        if (s.getFighters().isNotEmpty()) s.mode().update(ModeLobby(s))
         runFighterJoinedCommons(e)
     }
 

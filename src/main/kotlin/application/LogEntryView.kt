@@ -42,7 +42,7 @@ val logs: MutableList<LogLine> = arrayListOf()
 
 fun log(text: String) = log(LogText(text))
 fun log(tag: String, value: Int) = log(tag, value.toString())
-fun log(tag: String, text: String) = log(LogText(tag, YLW), LogText(text))
+fun log(tag: String, text: String) = log(LogText(tag, YLW_FIGHT), LogText(text))
 fun log(vararg logTexts: LogText) {
     generateLogLines(*logTexts).forEach {
         prnt(it.getText())
@@ -65,7 +65,7 @@ class LogLine(val logTexts: List<LogText>) {
 }
 
 class LogText(private val text: String = "", private val effect: Effect = NONE) {
-    enum class Effect { NONE, LOW, MED, CYA, RED, TOX, YLW, GRN, BLU, ORN_MODE, PUR_SNAP, SCALE, BREAK }
+    enum class Effect { NONE, LOW, MED, CYA, RED, TOX_MATCH, YLW_FIGHT, GRN, BLU, ORN_MODE, PUR_SNAP, SCALE, BREAK }
 
     fun get() = text
     fun getEffect() = effect
@@ -76,8 +76,8 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
             MED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#888888") } } } }
             CYA -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#09F9F9") } } } }
             RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } }
-            TOX -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
-            YLW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
+            TOX_MATCH -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
+            YLW_FIGHT -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
             GRN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#40b581") } } } }
             BLU -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#33aaee") } } } }
             ORN_MODE -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#FF8F40") } } } }

@@ -1,6 +1,7 @@
 package session.modes
 
-import application.LogText.Effect.*
+import application.LogText.Effect.CYA
+import application.LogText.Effect.LOW
 import application.log
 import session.L
 import session.Session
@@ -25,16 +26,8 @@ class SessionMode(val s: Session, private var mode: Mode = ModeNull(s)) {
                 ModeVictory(s).toString() -> if (isMode(ModeSlash(s), ModeMatch(s))) updated = true
                 else -> updated = false
             }
-            if (updated) {
-                log(
-                    L("Session Mode changed to "),
-                    L(updatedMode.toString(), ORN_MODE),
-                    L(" (formerly ", LOW),
-                    L(mode.toString(), MED),
-                    L(")", LOW)
-                )
-                mode = updatedMode
-            }
+            if (updated) { log(L(mode.toString(), CYA), L(" -> ", LOW), L("$updatedMode", CYA))
+                mode = updatedMode }
         }
         return updated
     }

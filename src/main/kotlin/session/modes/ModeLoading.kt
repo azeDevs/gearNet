@@ -13,24 +13,20 @@ class ModeLoading(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}LOADING"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { logMode(this, "MatchConcludedEvent") }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { }
 
-    override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent")
-        s.updateMode(ModeLobby(s))
-    }
+    override fun runMatchResolved(e: MatchResolvedEvent) { }
 
-    override fun runRoundDraw(e: RoundDrawEvent) { logMode(this, "RoundDrawEvent") }
+    override fun runRoundDraw(e: RoundDrawEvent) { }
 
-    override fun runRoundResolved(e: RoundResolvedEvent) { logMode(this, "RoundResolvedEvent") }
+    override fun runRoundResolved(e: RoundResolvedEvent) { }
 
-    override fun runRoundStarted(e: RoundStartedEvent) { logMode(this, "RoundStartedEvent")
-        s.updateMode(ModeMatch(s))
-    }
+    override fun runRoundStarted(e: RoundStartedEvent) { runRoundStartedCommons(e) }
 
     override fun runMatchLoading(e: MatchLoadingEvent) {
-        if (step() == 0) { logMode(this, "MatchLoadingEvent")
-            log(e.match.getIdLog(), L(" loading ... "), L(e.match.getFighter(0).getName(), RED), L(" vs ", MED), L(e.match.getFighter(1).getName(), BLU))
-            nextStep()
+        // FIXME: MATCHES WITH ID GREATER THAN 0 GET STOPPED HERE, FIX THAT
+        if (step() == 0) { nextStep()
+            log(e.match.getIdLog(), L(" MatchLoadingEvent ... "), L(e.match.fighter(0).getName(), RED), L(" vs ", MED), L(e.match.fighter(1).getName(), BLU))
         }
     }
 

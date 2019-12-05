@@ -29,7 +29,7 @@ fun getSeatLog(sideId:Int = -1): LogText {
     return when(sideId) {
         0 -> L("Red seat", RED)
         1 -> L("Blue seat", BLU)
-        2 -> L("2nd seat", YLW)
+        2 -> L("2nd seat", YLW_FIGHT)
         3 -> L("3rd seat")
         4 -> L("4th seat")
         5 -> L("5th seat")

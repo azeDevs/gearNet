@@ -19,7 +19,7 @@ fun main(args: Array<String>) = launch<MyApp>(args)
 class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class) {
     companion object {
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
-        const val BUILD_VERSION = "0.8.5"
+        const val BUILD_VERSION = "0.8.6"
         const val WD = "\uD835\uDE86\$"
         const val SILENCE_BOT = true
     }

@@ -11,9 +11,7 @@ class ModeVictory(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}VICTORY"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e)
-        s.updateMode(ModeLobby(s))
-    }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e) }
 
     override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent") }
 
