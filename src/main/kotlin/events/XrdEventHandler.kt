@@ -69,13 +69,11 @@ class XrdEventHandler(private val s: Session) {
     }
 
     private fun getEventsRoundResolved() {
-        if (s.isMode(ModeMatch(s))) {
-            val m = s.stage().match()
-            if (m.getHealth(1) == 0 && m.getHealth(0) == 0) s.fire(RoundDrawEvent(m))
-            if (m.getTimer() == 0 && m.getHealth(1) == m.getHealth(0)) s.fire(RoundDrawEvent(m))
-            if (m.getHealth(1) == 0 || m.getHealth(0) == 0) s.fire(RoundResolvedEvent(m))
-            if (m.getTimer() == 0) s.fire(RoundResolvedEvent(m))
-        }
+        val m = s.stage().match()
+        if (m.getHealth(1) == 0 && m.getHealth(0) == 0) { s.fire(RoundDrawEvent(m)) }
+        if (m.getTimer() == 0 && m.getHealth(1) == m.getHealth(0)) s.fire(RoundDrawEvent(m))
+        if (m.getHealth(1) == 0 || m.getHealth(0) == 0) s.fire(RoundResolvedEvent(m))
+        if (m.getTimer() == 0) s.fire(RoundResolvedEvent(m))
     }
 
 }

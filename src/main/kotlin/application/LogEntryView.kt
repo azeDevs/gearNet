@@ -22,7 +22,8 @@ private fun generateLogLines(vararg logText: LogText): List<LogLine> {
         if (colCount > 100 && cutText.isNotEmpty()) {
             val newText = it.get().substring(0, it.get().length - (colCount - 100))
             truncatedLogTexts.add(LogText(newText, it.getEffect()))
-            cutLogTexts.add(LogText(cutText, it.getEffect()))
+            // TODO: restore LogText line wrapping once shit isn't so crayuz
+//            cutLogTexts.add(LogText(cutText, it.getEffect()))
         } else truncatedLogTexts.add(it)
     }
     truncatedLogTexts.add(LogText("\n"))

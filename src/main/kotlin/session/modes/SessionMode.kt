@@ -11,18 +11,18 @@ class SessionMode(val s: Session, private var mode: Mode = ModeNull(s)) {
     // TODO: MAKE EACH Mode HAVE ITS OWN SERIES OF FUNCTIONS BEFORE MOVING TO A NEW Mode
 
     fun get() = mode
-    fun isMode(vararg mode: Mode) = mode.any { it == this.mode }
+    fun isMode(vararg mode: Mode) = mode.any { it.toString().equals(this.mode.toString(), true) }
 
     fun update(updatedMode: Mode): Boolean {
         var updated = false
-        if (updatedMode != mode) {
+        if (!isMode(updatedMode)) {
             if (isMode(ModeNull(s))) updated = true
-            when (updatedMode) {
-                ModeLobby(s) -> if (isMode(ModeVictory(s), ModeMatch(s))) updated = true
-                ModeLoading(s) -> if (isMode(ModeLobby(s))) updated = true
-                ModeMatch(s) -> if (isMode(ModeLoading(s), ModeSlash(s))) updated = true
-                ModeSlash(s) -> if (isMode(ModeMatch(s))) updated = true
-                ModeVictory(s) -> if (isMode(ModeSlash(s), ModeMatch(s))) updated = true
+            when (updatedMode.toString()) {
+                ModeLobby(s).toString() -> if (isMode(ModeVictory(s), ModeMatch(s))) updated = true
+                ModeLoading(s).toString() -> if (isMode(ModeLobby(s))) updated = true
+                ModeMatch(s).toString() -> if (isMode(ModeLoading(s), ModeSlash(s))) updated = true
+                ModeSlash(s).toString() -> if (isMode(ModeMatch(s))) updated = true
+                ModeVictory(s).toString() -> if (isMode(ModeSlash(s), ModeMatch(s))) updated = true
                 else -> updated = false
             }
             if (updated) {

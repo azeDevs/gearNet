@@ -1,9 +1,9 @@
 package session.modes
 
-import application.LogText.Effect.*
+import application.LogText.Effect.RED
+import application.LogText.Effect.YLW
 import application.log
 import events.*
-import session.Fighter
 import session.L
 import session.Session
 
@@ -11,53 +11,46 @@ class ModeMatch(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}MATCH"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) {
-        logMode(this, "MatchConcludedEvent")
-        log(L("CONCLUDED ", YLW), e.match.getIdLog(false))
+    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e)
         s.updateMode(ModeLobby(s))
     }
 
-    override fun runMatchResolved(e: MatchResolvedEvent) {
-        logMode(this, "MatchResolvedEvent")
+    override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent")
         if (e.match.isResolved() && e.match.getTimer() > -1) {
             s.stage().finalizeMatch()
-            val winner = e.match.getWinningFighter()
-            s.sendMessage("${winner.getName()} WINS!")
-            log(e.match.getIdLog(), L(" FINALIZED: ", GRN), L("${e.match.getSnapCount()}"), L(" snaps, ", YLW), L(e.match.getFighter(0).getName(), RED), L(" wins"))
         }
     }
 
-    override fun runRoundDraw(e: RoundDrawEvent) {
-        logMode(this, "RoundDrawEvent")
+    override fun runRoundDraw(e: RoundDrawEvent) { logMode(this, "RoundDrawEvent")
         s.updateMode(ModeSlash(s))
-        val round = "Round ${e.match.getRoundNumber()-1}"
-        log(L(round, YLW), L(" resolved as a "), L("DRAW", YLW))
+        s.stage().match().incrementRounds()
+        log(e.match.getRoundLog(), L(" resolved as a "), L("DRAW", YLW))
     }
 
-    override fun runRoundResolved(e: RoundResolvedEvent) {
-        logMode(this, "RoundResolvedEvent")
+    override fun runRoundResolved(e: RoundResolvedEvent) { logMode(this, "RoundResolvedEvent")
         s.updateMode(ModeSlash(s))
-        var winner = Fighter()
-        val round = "Round ${e.match.getRoundNumber()-1}"
-        if (e.match.tookTheRound(0)) winner = e.match.getFighter(0)
-        else if (e.match.tookTheRound(1)) winner = e.match.getFighter(1)
-        when {
-            winner.getSeat() == 0 -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L(e.match.getFighter(0).getName(), RED))
-            winner.getSeat() == 1 -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L(e.match.getFighter(1).getName(), BLU))
-            else -> log(e.match.getIdLog(), L(round, YLW), L(" goes to "), L("ERROR", RED))
+        val round = e.match.getRoundLog(false, -1)
+        when(s.stage().match().tookTheRound()) {
+            0 -> { log(e.match.getIdLog(), round, L(" goes to "), e.match.getFighterLog(0))
+                s.stage().match().incrementRounds(0) }
+            1 -> { log(e.match.getIdLog(), round, L(" goes to "), e.match.getFighterLog(1))
+                s.stage().match().incrementRounds(1) }
+            else -> log(e.match.getIdLog(), round, L(" goes to "), L("ERROR", RED))
         }
     }
 
-    override fun runRoundStarted(e: RoundStartedEvent) {
-        logMode(this, "RoundStartedEvent")
-    }
+    override fun runRoundStarted(e: RoundStartedEvent) { logMode(this, "RoundStartedEvent") }
 
-    override fun runMatchLoading(e: MatchLoadingEvent) {
-        logMode(this, "MatchLoadingEvent")
-    }
+    override fun runMatchLoading(e: MatchLoadingEvent) { logMode(this, "MatchLoadingEvent") }
 
-    override fun runCommandBet(e: ViewerBetEvent) {
-        logMode(this, "ViewerBetEvent")
-    }
+    override fun runCommandBet(e: ViewerBetEvent) { logMode(this, "ViewerBetEvent") }
+
+    override fun runFighterJoined(e: FighterJoinedEvent) { runFighterJoinedCommons(e) }
+
+    override fun runViewerJoined(e: ViewerJoinedEvent) { runViewerJoinedCommons(e) }
+
+    override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
+
+    override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
 
 }

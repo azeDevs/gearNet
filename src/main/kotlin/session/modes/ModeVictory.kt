@@ -1,10 +1,8 @@
 package session.modes
 
 import MyApp.Companion.WD
-import application.LogText.Effect.YLW
 import application.log
 import events.*
-import session.L
 import session.Session
 import twitch.ViewerBet
 import utils.addCommas
@@ -13,8 +11,7 @@ class ModeVictory(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "${super.toString()}VICTORY"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { logMode(this, "MatchConcludedEvent")
-        log(L("CONCLUDED ", YLW), e.match.getIdLog(false))
+    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e)
         s.updateMode(ModeLobby(s))
     }
 
@@ -41,5 +38,13 @@ class ModeVictory(override val s: Session) : Mode(s) {
             }
         } else log("Viewer ${e.viewer.getName()} bet fizzled, betting is locked")
     }
+
+    override fun runFighterJoined(e: FighterJoinedEvent) { runFighterJoinedCommons(e) }
+
+    override fun runViewerJoined(e: ViewerJoinedEvent) { runViewerJoinedCommons(e) }
+
+    override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
+
+    override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
 
 }
