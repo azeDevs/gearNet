@@ -14,9 +14,8 @@ abstract class Mode(open val s: Session) : Controller() {
     fun step(): Int = stepNumber
     fun nextStep() { stepNumber++ }
 
-    fun logMatchStats() = "TIME=${s.stage().match().getTimer()} / P1=${s.stage().match().getHealth(0)} / P2=${s.stage().match().getHealth(1)}"
     fun logMode(mode:Mode, text:String) = log(L(mode.toString(), CYA), L(" [ ", LOW), L(text, CYA), L(" ] ", LOW))
-    override fun toString(): String = "MODE_"
+    override fun toString(): String = "$stepNumber"
 
     abstract fun runMatchConcluded(e: MatchConcludedEvent)
     abstract fun runMatchResolved(e: MatchResolvedEvent)
@@ -29,6 +28,7 @@ abstract class Mode(open val s: Session) : Controller() {
     abstract fun runViewerJoined(e: ViewerJoinedEvent)
     abstract fun runViewerMessage(e: ViewerMessageEvent)
     abstract fun runFighterMoved(e: FighterMovedEvent)
+    abstract fun runMatchUpdate(e: XrdMatchUpdateEvent)
 
     fun runRoundStartedCommons(e: RoundStartedEvent) {
         val round = "Round ${e.match.getRoundNumber()}"

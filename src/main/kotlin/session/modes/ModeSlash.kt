@@ -5,7 +5,7 @@ import session.Session
 
 class ModeSlash(override val s: Session) : Mode(s) {
 
-    override fun toString(): String = "${super.toString()}SLASH"
+    override fun toString(): String = "SLASH${super.toString()}"
 
     override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e) }
 
@@ -28,5 +28,7 @@ class ModeSlash(override val s: Session) : Mode(s) {
     override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
 
     override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
+
+    override fun runMatchUpdate(e: XrdMatchUpdateEvent) { s.updateMatch(e.matchSnap) }
 
 }

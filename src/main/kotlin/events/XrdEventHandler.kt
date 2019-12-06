@@ -1,10 +1,13 @@
 package events
 
+import application.LogText
 import memscan.MemHandler
 import memscan.XrdApi
 import session.Session
 import session.modes.ModeLobby
 import session.modes.ModeNull
+
+typealias L = LogText
 
 /**
  *
@@ -27,7 +30,7 @@ class XrdEventHandler(private val s: Session) {
                     s.fire(FighterJoinedEvent(s.getFighter(it.steamId())))
                 }
             }
-            s.updateMatch(xrdApi.getMatchSnap())
+            s.fire(XrdMatchUpdateEvent(xrdApi.getMatchSnap()))
             // 005: When the first Fighter appears in memory, a Lobby has been created/joined
             if (s.getFighters().isNotEmpty() && s.isMode(ModeNull(s))) s.mode().update(ModeLobby(s))
             getEventsFighterMoved()
@@ -62,7 +65,7 @@ class XrdEventHandler(private val s: Session) {
         if (s.stage().match().getWinningFighter().isValid()) s.fire(MatchResolvedEvent(s.stage().match()))
     }
 
-    private fun getEventsRoundStarted() { // NOTE: YOU WERER GONNA ADD THE TIMER AS A CONDITION
+    private fun getEventsRoundStarted() {
         if(s.stage().match().getHealth(0) == 420 && s.stage().match().getHealth(1) == 420) s.fire(RoundStartedEvent(s.stage().match()))
     }
 

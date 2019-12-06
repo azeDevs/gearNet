@@ -22,6 +22,7 @@ class MatchStage(private val s: Session) {
     /*
         FIXME: ACCOUNT FOR MOVING INTO STAGED SEATING FROM SPECTATOR
         FIXME: ACCOUNT FOR DRAWS, THE WHOLE SYSTEMJ SHITS ITSELF, FIX THAT TOO
+        NOTE: SLASH MODE AND MATCH MODE VIOLENTLY ALTERNATE WHEN A DRAW HAPPENS, MITE B USEFUL
     */
 
     private val archivedMatches: HashMap<Long, Match> = HashMap()
@@ -32,6 +33,8 @@ class MatchStage(private val s: Session) {
     fun getLastMatch() = if (getMatches().isNotEmpty()) getMatches()[getMatches().lastIndex] else Match()
     fun isMatchValid() = m.isValid()
     fun match() = m
+
+
 
     fun addSnap(ms: MatchSnap):Boolean = m.update(ms)
     fun addBet(vb: ViewerBet):Boolean = m.addViewerBet(vb)
@@ -48,43 +51,46 @@ class MatchStage(private val s: Session) {
 
         // Is there more than 1 fighter on the cabinet?
         if (isFighterSeatedAt(0) && isFighterSeatedAt(1) && !m.isValid()) {
-            if (!isFighterSeatedAt(2)) {
-                log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (2 Fighters on Cabinet)", LOW))
-
-                /*
-                 DO STUFF THAT WORKS WITH 2 FIGHTERS
-                 WHEN THE LOBBY LOADS, THE SEATS WILL NOT CHANGE
-                 TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED IS IDENTICAL TO THE CURRENT MATCH
-                */
-                val redFighter = s.getFighters().firstOrNull { it.getSeat() == 0 } ?: Fighter()
-                val bluFighter = s.getFighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
-                m = Match(matchId, Pair(redFighter, bluFighter))
-
-            } else {
-                log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (3+ Fighters on Cabinet)", LOW))
-
-                /*
-                 DO STUFF THAT WORKS WITH 3+ FIGHTERS
-                 WHEN THE LOBBY LOADS, THE SEATS WILL CHANGE AFTER THE MATCH HAS ALREADY BEEN STAGED
-                 TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED ISN'T IDENTICAL TO THE CURRENT MATCH
-                */
-
-                val prospect = s.getFighters().firstOrNull { it.isSeated(2) } ?: Fighter()
-                if (prospect.isValid()) {
-                    when (getLastMatch().getWinner()) {
-                        0 -> m = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
-                        1 -> m = Match(matchId, Pair(prospect, getLastMatch().getWinningFighter()))
-                        else -> {
-                            log(m.getIdLog(), L(" STAGING FAILED", RED), L(", last Match had no winner", MED))
-                        }
-                    }
-                }
-            }
+            if (!isFighterSeatedAt(2)) doStuffThatWorksWith2Fighters(matchId)
+            else doStuffThatWorkWith3PlusFighters(matchId)
 
             // Log the resulting Staged Match, failed or not
-            log(m.getIdLog(), L(" STAGED Fighters "), m.fighter(0).getLog(), L(" vs ", MED), m.fighter(1).getLog(), L(" SUCCESSFULLY", GRN))
+            log(m.getIdLog(), L(" SUCCESSFULLY STAGED Fighters ", GRN), m.fighter(0).getLog(), L(" vs ", MED), m.fighter(1).getLog())
         }
 
+    }
+
+    private fun doStuffThatWorkWith3PlusFighters(matchId: Long) {
+        log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (3+ Fighters on Cabinet)", LOW))
+
+        /*
+         DO STUFF THAT WORKS WITH 3+ FIGHTERS
+         WHEN THE LOBBY LOADS, THE SEATS WILL CHANGE AFTER THE MATCH HAS ALREADY BEEN STAGED
+         TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED ISN'T IDENTICAL TO THE CURRENT MATCH
+        */
+        val prospect = s.getFighters().firstOrNull { it.isSeated(2) } ?: Fighter()
+        if (prospect.isValid()) {
+            when (getLastMatch().getWinner()) {
+                0 -> m = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
+                1 -> m = Match(matchId, Pair(prospect, getLastMatch().getWinningFighter()))
+                else -> {
+                    log(m.getIdLog(), L(" STAGING FAILED", RED), L(", last Match had no winner", MED))
+                }
+            }
+        }
+    }
+
+    private fun doStuffThatWorksWith2Fighters(matchId: Long) {
+        log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (2 Fighters on Cabinet)", LOW))
+
+        /*
+         DO STUFF THAT WORKS WITH 2 FIGHTERS
+         WHEN THE LOBBY LOADS, THE SEATS WILL NOT CHANGE
+         TODO: CONFIRM THAT A MATCH ABOUT TO BE STAGED IS IDENTICAL TO THE CURRENT MATCH
+        */
+        val redFighter = s.getFighters().firstOrNull { it.getSeat() == 0 } ?: Fighter()
+        val bluFighter = s.getFighters().firstOrNull { it.getSeat() == 1 } ?: Fighter()
+        m = Match(matchId, Pair(redFighter, bluFighter))
     }
 
     /**

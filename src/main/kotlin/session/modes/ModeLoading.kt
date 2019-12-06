@@ -11,7 +11,7 @@ import utils.addCommas
 
 class ModeLoading(override val s: Session) : Mode(s) {
 
-    override fun toString(): String = "${super.toString()}LOADING"
+    override fun toString(): String = "LOADING${super.toString()}"
 
     override fun runMatchConcluded(e: MatchConcludedEvent) { }
 
@@ -24,7 +24,6 @@ class ModeLoading(override val s: Session) : Mode(s) {
     override fun runRoundStarted(e: RoundStartedEvent) { runRoundStartedCommons(e) }
 
     override fun runMatchLoading(e: MatchLoadingEvent) {
-        // FIXME: MATCHES WITH ID GREATER THAN 0 GET STOPPED HERE, FIX THAT
         if (step() == 0) { nextStep()
             log(e.match.getIdLog(), L(" MatchLoadingEvent ... "), L(e.match.fighter(0).getName(), RED), L(" vs ", MED), L(e.match.fighter(1).getName(), BLU))
         }
@@ -52,5 +51,7 @@ class ModeLoading(override val s: Session) : Mode(s) {
     override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
 
     override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
+
+    override fun runMatchUpdate(e: XrdMatchUpdateEvent) { s.updateMatch(e.matchSnap) }
 
 }

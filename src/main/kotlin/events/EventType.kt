@@ -1,5 +1,6 @@
 package events
 
+import memscan.MatchSnap
 import session.Fighter
 import session.Match
 import tornadofx.EventBus.RunOn.BackgroundThread
@@ -14,6 +15,8 @@ interface GearNetEvent {
 
 class XrdConnectionEvent(val connected: Boolean) : FXEvent(BackgroundThread),
     GearNetEvent { override fun getEventAsString() : String = "!XC${The(connected).toInt()}" }
+class XrdMatchUpdateEvent(val matchSnap: MatchSnap) : FXEvent(BackgroundThread),
+    GearNetEvent { override fun getEventAsString() : String = "!MU" }
 
 class FighterJoinedEvent(val fighter: Fighter) : FXEvent(BackgroundThread),
     GearNetEvent { override fun getEventAsString(): String = "!FJ" }

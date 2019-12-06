@@ -9,7 +9,6 @@ import session.Session
 class SessionMode(val s: Session, private var mode: Mode = ModeNull(s)) {
 
     // TODO: SET NULL MODE WHENEVER A MATCH IS INVALIDATED TO ALLOW FOR A CLEAN RESET
-    // TODO: MAKE EACH Mode HAVE ITS OWN SERIES OF FUNCTIONS BEFORE MOVING TO A NEW Mode
 
     fun get() = mode
     fun isMode(vararg mode: Mode) = mode.any { it.toString().equals(this.mode.toString(), true) }

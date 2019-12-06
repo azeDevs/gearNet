@@ -5,7 +5,7 @@ import session.Session
 
 class ModeNull(override val s: Session) : Mode(s) {
 
-    override fun toString(): String = "${super.toString()}NULL"
+    override fun toString(): String = "NULL${super.toString()}"
 
     override fun runMatchConcluded(e: MatchConcludedEvent) { logMode(this, "MatchConcludedEvent") }
 
@@ -31,5 +31,7 @@ class ModeNull(override val s: Session) : Mode(s) {
     override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
 
     override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
+
+    override fun runMatchUpdate(e: XrdMatchUpdateEvent) { }
 
 }

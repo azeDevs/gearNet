@@ -35,7 +35,7 @@ class AppView : View() {
         GlobalScope.launch {
             // 000: Beginning of GameLoop
             session.generateEvents()
-            delay(4); cycleGameLoop()
+            delay(8); cycleGameLoop()
         }
     }
 
@@ -60,8 +60,8 @@ class AppView : View() {
             else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
         }
 
-        xrdMode.text = session.mode().toString()
-        xrdTime.text = "TIMER ${session.stage().match().getTimer()}"
+        xrdTime.text = "TIMER ${session.stage().match().getTimer()} / ${session.stage().match().getSnapCount()} SNAPS"
+        xrdMode.text = "${session.mode()} ID${session.stage().match().getId()}"
         updateLogs(console)
     }
 
@@ -75,8 +75,8 @@ class AppView : View() {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
-                xrdTime = label("nullTime") { addClass(DebugStyle.statusText); textFill = c("#8080FF"); translateY += 320 }
-                xrdMode = label("nullMode") { addClass(DebugStyle.statusText); textFill = c("#FF8F40"); translateY += 320 }
+                xrdTime = label("nullTime") { addClass(DebugStyle.statusText); textFill = c("#8080FF"); translateY += 260 }
+                xrdMode = label("nullMode") { addClass(DebugStyle.statusText); textFill = c("#FF8F40"); translateY += 840 }
                 minHeight = AppStyle.TOP_GOALS_HEIGHT
             }
 

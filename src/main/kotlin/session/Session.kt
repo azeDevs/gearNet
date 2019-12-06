@@ -5,6 +5,7 @@ import events.*
 import memscan.FighterData
 import memscan.MatchSnap
 import session.modes.Mode
+import session.modes.ModeVictory
 import session.modes.SessionMode
 import tornadofx.Controller
 import twitch.BotEventHandler
@@ -28,6 +29,7 @@ class Session : Controller() {
 
     init {
         subscribe<XrdConnectionEvent> { mode.get().runXrdConnection(it) }
+        subscribe<XrdMatchUpdateEvent> { mode.get().runMatchUpdate(it) }
         subscribe<ViewerMessageEvent> { mode.get().runViewerMessage(it) }
         subscribe<ViewerJoinedEvent> { mode.get().runViewerJoined(it) }
         subscribe<ViewerBetEvent> { mode.get().runCommandBet(it) }
@@ -49,7 +51,7 @@ class Session : Controller() {
 
     // MATCH STUFF
     fun stage() = stage
-    fun updateMatch(matchSnap: MatchSnap) = stage.addSnap(matchSnap)
+    fun updateMatch(matchSnap: MatchSnap) = if (mode.isMode(ModeVictory(this))) false else stage.addSnap(matchSnap)
     fun getStagedFighters(): Pair<Fighter, Fighter> = Pair(stage.match().fighter(0), stage.match().fighter(1))
 
     // MODE STUFF

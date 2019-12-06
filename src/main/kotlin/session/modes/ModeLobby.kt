@@ -9,7 +9,7 @@ import utils.addCommas
 
 class ModeLobby(override val s: Session) : Mode(s) {
 
-    override fun toString(): String = "${super.toString()}LOBBY"
+    override fun toString(): String = "LOBBY${super.toString()}"
 
     override fun runMatchConcluded(e: MatchConcludedEvent) { }
     override fun runMatchResolved(e: MatchResolvedEvent) { }
@@ -42,5 +42,7 @@ class ModeLobby(override val s: Session) : Mode(s) {
     override fun runViewerMessage(e: ViewerMessageEvent) { runViewerMessageCommons(e) }
 
     override fun runFighterMoved(e: FighterMovedEvent) { runFighterMovedCommons(e) }
+
+    override fun runMatchUpdate(e: XrdMatchUpdateEvent) { }
 
 }
