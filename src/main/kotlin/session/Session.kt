@@ -24,8 +24,6 @@ class Session : Controller() {
     private val stage: MatchStage = MatchStage(this)
     private val viewers: HashMap<Long, Viewer> = HashMap()
     private val fighters: HashMap<Long, Fighter> = HashMap()
-//    private val fighters: ObservableMap<Long, Fighter> = FXCollections.emptyObservableMap()
-
 
     init {
         subscribe<XrdConnectionEvent> { mode.get().runXrdConnection(it) }

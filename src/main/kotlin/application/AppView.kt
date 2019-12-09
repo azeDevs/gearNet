@@ -4,6 +4,8 @@ import MyApp.Companion.ARTIFACT_NAME
 import MyApp.Companion.BUILD_VERSION
 import application.LogText.Effect.GRN
 import application.LogText.Effect.LOW
+import application.views.fighters.DebugFighterView
+import application.views.generic.DebugStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -12,6 +14,7 @@ import javafx.scene.text.TextFlow
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import session.Fighter
 import session.Session
 import tornadofx.*
 
@@ -20,15 +23,16 @@ typealias L = LogText
 class AppView : View() {
 
     private val session: Session by inject()
-//    private var fighterView: DebugFighterView by singleAssign()
+    private val fighterQueue: MutableList<DebugFighterView> = mutableListOf()
+
     private var debugBox: VBox by singleAssign()
     private var console: TextFlow by singleAssign()
     private var redFighter: Label by singleAssign()
     private var bluFighter: Label by singleAssign()
-//    private var redHP: Label by singleAssign()
-//    private var bluHP: Label by singleAssign()
     private var xrdMode: Label by singleAssign()
-    private var xrdTime: Label by singleAssign()
+    private var xrdTimer: Label by singleAssign()
+    private var xrdSnaps: Label by singleAssign()
+    private var xrdMatch: Label by singleAssign()
 
 
     private fun cycleGameLoop() {
@@ -60,8 +64,13 @@ class AppView : View() {
             else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
         }
 
-        xrdTime.text = "TIMER ${session.stage().match().getTimer()} / ${session.stage().match().getSnapCount()} SNAPS"
-        xrdMode.text = "${session.mode()} ID${session.stage().match().getId()}"
+        xrdMode.text = "Mode ${session.mode()}"
+        xrdMatch.text = "MatchID ${session.stage().match().getId()}"
+        xrdTimer.text = "Timer ${session.stage().match().getTimer()}"
+        xrdSnaps.text = "Snaps ${session.stage().match().getSnapCount()}"
+
+        for (i in 0..7) fighterQueue[i].updateFighter(session.getFighters().firstOrNull { it.isSeated(i) } ?: Fighter())
+
         updateLogs(console)
     }
 
@@ -70,13 +79,19 @@ class AppView : View() {
     init {
         with(root) {
             vbox { addClass(DebugStyle.wireFrame)
-                alignment = Pos.TOP_CENTER
+                alignment = Pos.TOP_RIGHT
+                translateX -= AppStyle.OVERLAY_MARGIN_WIDTH
                 label("$ARTIFACT_NAME $BUILD_VERSION / OBS Fullscreen Overlay") {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
-                xrdTime = label("nullTime") { addClass(DebugStyle.statusText); textFill = c("#8080FF"); translateY += 260 }
-                xrdMode = label("nullMode") { addClass(DebugStyle.statusText); textFill = c("#FF8F40"); translateY += 840 }
+                vbox { addClass(DebugStyle.statusText); translateY += 260
+                    xrdMode = label("Mode")
+                    xrdMatch = label("MatchID")
+                    xrdTimer = label("Timer")
+                    xrdSnaps = label("Snaps")
+                    for (i in 0..7) fighterQueue.add(DebugFighterView())
+                }
                 minHeight = AppStyle.TOP_GOALS_HEIGHT
             }
 
@@ -120,7 +135,7 @@ class AppView : View() {
                 }
 
                 // SHADE WING
-                vbox { addClass(DebugStyle.wireFrame)
+                vbox { addClass(DebugStyle.wireFrame); isVisible = true
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
                     vbox { addClass(AppStyle.fighterZone)
@@ -136,11 +151,13 @@ class AppView : View() {
                 }
             }
 
-            hbox { addClass(DebugStyle.wireFrame)
+            hbox { addClass(DebugStyle.wireFrame); isVisible = true
                 minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                 minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-                hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(DebugStyle.wireFrame) }
-                hbox { minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2; addClass(DebugStyle.wireFrame)
+                hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(
+                    DebugStyle.wireFrame) }
+                hbox { minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2; addClass(
+                    DebugStyle.wireFrame)
                     alignment = Pos.BOTTOM_LEFT
                     vbox {
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
@@ -162,7 +179,8 @@ class AppView : View() {
                         label("PAYOUT SCALE")
                     }
                 }
-                hbox { minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2; addClass(DebugStyle.wireFrame)
+                hbox { minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2; addClass(
+                    DebugStyle.wireFrame)
                     alignment = Pos.BOTTOM_RIGHT
                     vbox { addClass(AppStyle.viewerZone)
                         minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
@@ -184,12 +202,13 @@ class AppView : View() {
                         }
                     }
                 }
-                hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(DebugStyle.wireFrame) }
+                hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(
+                    DebugStyle.wireFrame) }
             }
 
             vbox { addClass(DebugStyle.wireFrame); alignment = Pos.CENTER
                 minHeight = AppStyle.TICKER_HEIGHT
-                label("NEWS TICKER") { addClass(DebugStyle.wireText) }
+//                label("NEWS TICKER") { addClass(DebugStyle.wireText) }
             }
 
             // DEBUG CONSOLE STUFF

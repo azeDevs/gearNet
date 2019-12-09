@@ -1,5 +1,6 @@
-package application
+package application.views.generic
 
+import application.AppStyle
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
@@ -11,8 +12,11 @@ class DebugStyle : Stylesheet() {
 
     companion object {
         private const val DEBUG_FONTSIZE = 20.0
-        val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf", DEBUG_FONTSIZE)
+        val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf",
+            DEBUG_FONTSIZE
+        )
         val statusText by cssclass()
+        val debugFighter by cssclass()
         val debugText by cssclass()
         val wireText by cssclass()
         val wirePane by cssclass()
@@ -23,10 +27,22 @@ class DebugStyle : Stylesheet() {
     init {
 
         statusText {
-            AppStyle.fontFiraBold?.let { font = it }
-            textFill = c("#AACCFF")
+            alignment = Pos.TOP_RIGHT
             padding = box(8.px)
-            fontSize = 36.px
+            label {
+                AppStyle.fontFiraBold?.let { font = it }
+                textFill = c("#AACCFF")
+                fontSize = 36.px
+            }
+        }
+
+        debugFighter {
+            label {
+                AppStyle.fontFiraBold?.let { font = it }
+                textFill = c("#AACCFF")
+                padding = box(8.px)
+                fontSize = 24.px
+            }
         }
 
         debugText {
@@ -47,8 +63,8 @@ class DebugStyle : Stylesheet() {
         wireFrame {
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
             borderColor += box(c("#00000055"))
-            borderWidth += box(1.px)
-            padding = box((-1).px)
+            borderWidth += box(2.px)
+            padding = box(-2.px)
         }
 
         wirePane {

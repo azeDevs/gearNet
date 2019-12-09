@@ -52,7 +52,11 @@ fun log(vararg logTexts: LogText) {
 }
 
 fun updateLogs(console: TextFlow) {
-    logs.forEach { log -> log.logTexts.forEach { it.appendTo(console) } }
+    // FIXME: SEVERE: Uncaught error java.util.ConcurrentModificationException
+    logs.forEach { log -> log.logTexts.forEach {
+          it.appendTo(console)
+        }
+    }
     logs.clear()
 }
 

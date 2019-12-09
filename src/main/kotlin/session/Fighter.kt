@@ -1,10 +1,7 @@
 package session
 
 import application.LogText.Effect.*
-import javafx.beans.property.SimpleStringProperty
 import memscan.FighterData
-import tornadofx.getValue
-import tornadofx.setValue
 
 /**
  *
@@ -19,9 +16,6 @@ import tornadofx.setValue
  *
  */
 class Fighter(oldData: FighterData = FighterData(), newData: FighterData = oldData) : PlayerData<FighterData>(oldData, newData, newData.displayName(), newData.steamId()) {
-
-    private val nameProperty = SimpleStringProperty(this, "name", newData.displayName())
-    var fighterName by nameProperty
 
     private var bounty = 0
     private var delta = 0
