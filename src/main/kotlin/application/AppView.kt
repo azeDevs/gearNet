@@ -5,6 +5,7 @@ import MyApp.Companion.BUILD_VERSION
 import application.LogText.Effect.GRN
 import application.LogText.Effect.LOW
 import application.views.fighters.DebugFighterView
+import application.views.generic.DebugLabelView
 import application.views.generic.DebugStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
@@ -23,16 +24,13 @@ typealias L = LogText
 class AppView : View() {
 
     private val session: Session by inject()
-    private val fighterQueue: MutableList<DebugFighterView> = mutableListOf()
+    private val fighterQueue: MutableList<DebugFighterView> = ArrayList()
+    private val debugLabels: MutableMap<String, DebugLabelView> = HashMap()
 
     private var debugBox: VBox by singleAssign()
     private var console: TextFlow by singleAssign()
     private var redFighter: Label by singleAssign()
     private var bluFighter: Label by singleAssign()
-    private var xrdMode: Label by singleAssign()
-    private var xrdTimer: Label by singleAssign()
-    private var xrdSnaps: Label by singleAssign()
-    private var xrdMatch: Label by singleAssign()
 
 
     private fun cycleGameLoop() {
@@ -64,10 +62,14 @@ class AppView : View() {
             else bluFighter.text = "BLU FIGHTER: ${session.stage().match().getHealth(1)} HP"
         }
 
-        xrdMode.text = "Mode ${session.mode()}"
-        xrdMatch.text = "MatchID ${session.stage().match().getId()}"
-        xrdTimer.text = "Timer ${session.stage().match().getTimer()}"
-        xrdSnaps.text = "Snaps ${session.stage().match().getSnapCount()}"
+        debugLabels.forEach {
+            when(it.key) {
+                "Mode" -> it.value.update(it.key, "${session.mode()}")
+                "Match" -> it.value.update(it.key, "${session.stage().match().getId()}")
+                "Timer" -> it.value.update(it.key, "${session.stage().match().getTimer()}")
+                "Snaps" -> it.value.update(it.key, "${session.stage().match().getTimer()}")
+            }
+        }
 
         for (i in 0..7) fighterQueue[i].updateFighter(session.getFighters().firstOrNull { it.isSeated(i) } ?: Fighter())
 
@@ -85,12 +87,24 @@ class AppView : View() {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
-                vbox { addClass(DebugStyle.statusText); translateY += 260
-                    xrdMode = label("Mode")
-                    xrdMatch = label("MatchID")
-                    xrdTimer = label("Timer")
-                    xrdSnaps = label("Snaps")
-                    for (i in 0..7) fighterQueue.add(DebugFighterView())
+                vbox { addClass(DebugStyle.wireFrame)
+                    minWidth = AppStyle.BATTLE_STAGE_WIDTH*0.5; maxWidth = AppStyle.BATTLE_STAGE_WIDTH*0.5
+                    alignment = Pos.TOP_RIGHT
+                    translateY += 260
+
+                    vbox {
+                        for (i in 0..7) hbox {
+                            fighterQueue.add(DebugFighterView(parent))
+                        }
+                    }
+
+                    vbox { addClass(DebugStyle.statusText)
+                        debugLabels["Mode"] = DebugLabelView(parent)
+                        debugLabels["Match"] = DebugLabelView(parent)
+                        debugLabels["Timer"] = DebugLabelView(parent)
+                        debugLabels["Snaps"] = DebugLabelView(parent)
+                    }
+
                 }
                 minHeight = AppStyle.TOP_GOALS_HEIGHT
             }
@@ -135,7 +149,7 @@ class AppView : View() {
                 }
 
                 // SHADE WING
-                vbox { addClass(DebugStyle.wireFrame); isVisible = true
+                vbox { addClass(DebugStyle.wireFrame); isVisible = false
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
                     vbox { addClass(AppStyle.fighterZone)
@@ -151,7 +165,7 @@ class AppView : View() {
                 }
             }
 
-            hbox { addClass(DebugStyle.wireFrame); isVisible = true
+            hbox { addClass(DebugStyle.wireFrame); isVisible = false
                 minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                 minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
                 hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(

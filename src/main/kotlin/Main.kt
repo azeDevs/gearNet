@@ -1,5 +1,6 @@
 import application.AppStyle
 import application.AppView
+import application.views.fighters.DebugFighterStyle
 import application.views.generic.DebugStyle
 import javafx.scene.paint.Color
 import javafx.stage.Stage
@@ -16,7 +17,7 @@ fun main(args: Array<String>) = launch<MyApp>(args)
  * @author  aze
  * @since   0.0.1
  */
-class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class) {
+class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class, DebugFighterStyle::class) {
     companion object {
         const val ARTIFACT_NAME = "GearNet // Bounty Bets"
         const val BUILD_VERSION = "0.8.8"

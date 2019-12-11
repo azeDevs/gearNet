@@ -19,7 +19,17 @@ class The {
 
     /** The value [toInt]
      * @return Int */
-    fun toInt(defaultTo:Int = -1): Int { for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo; return Integer.valueOf(value) }
+    fun toInt(defaultTo:Int = -1): Int {
+        if(value.replace("[^\\d]".toRegex(), "").equals("-", true)) {
+            for (c in value.replace("[\\d]".toRegex(), "").toCharArray()) if (!Character.isDigit(c)) return defaultTo; return -Integer.valueOf(value)
+        } else for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo;
+        return Integer.valueOf(value)
+    }
+
+    fun isInt(): Boolean {
+        for (c in value.replace("[-]".toRegex(), "")) if (!Character.isDigit(c)) return false
+        return true
+    }
 
     /** The value [toLong]
      * @return Long */

@@ -54,16 +54,13 @@ class AppStyle : Stylesheet() {
             }
         }
         fighterView {
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
+            borderColor += box(c("#FFAA00"),c("#CC8800"),c("#AA4400"),c("#CC8800"))
+            borderWidth += box(2.px)
             label {
-                alignment = Pos.TOP_LEFT
-                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.ROUND, StrokeLineCap.SQUARE, 1.0, 1.0, listOf(1.0))
-                borderColor += box(c("#FFAA00"),c("#CC8800"),c("#AA4400"),c("#CC8800"))
-                borderWidth += box(2.px)
-                textFill = c("#FFAA00")
+                textFill = c("#FFFF00")
                 padding = box(2.px)
                 fontSize = 16.px
-                minWidth = OVERLAY_MARGIN_WIDTH.px // 2
-                maxWidth = OVERLAY_MARGIN_WIDTH.px // 2
             }
         }
         viewerZone {

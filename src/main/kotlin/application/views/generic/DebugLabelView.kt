@@ -1,21 +1,31 @@
 package application.views.generic
 
+import javafx.application.Platform
+import javafx.scene.Parent
 import javafx.scene.control.Label
-import tornadofx.Fragment
+import tornadofx.*
+import utils.The
 
-class DebugLabelView(override val root: Label) : Fragment() {
+class DebugLabelView(override val root: Parent) : Fragment() {
 
-//    val controller: DebugLabelController by inject()
-//
-//    fun update(value:Int) {
-//        controller.value
-//    }
-//
-//    init {
-//        val bountyProp = observable(value, Fighter::getBounty, Fighter::setBounty)
-//        with(root) {
-//            root.text = "adf"
-//        }
-//    }
+    private var tagText: Label by singleAssign()
+    private var valueText: Label by singleAssign()
+
+    init {
+        with(root) {
+            hbox {
+                tagText = label("-") { addClass(DebugStyle.debugText) }
+                valueText = label("-") { addClass(DebugStyle.debugText) }
+            }
+        }
+    }
+
+    fun update(tag: String, value: String) = Platform.runLater {
+        tagText.text = tag
+        valueText.text = value
+        if (The(value).isInt() && The(value).toInt() > 0) valueText.textFill = c("#00FF00")
+        else if (The(value).isInt() && The(value).toInt() < 0) valueText.textFill = c("#FF0000")
+        else valueText.textFill = c("#AACCFF")
+    }
 
 }

@@ -27,21 +27,29 @@ class DebugStyle : Stylesheet() {
     init {
 
         statusText {
-            alignment = Pos.TOP_RIGHT
             padding = box(8.px)
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
+            borderColor += box(c("#FFAA00"))
+            borderWidth += box(2.px)
+            minWidth = AppStyle.OVERLAY_MARGIN_WIDTH.px*2
+            maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH.px*2
             label {
                 AppStyle.fontFiraBold?.let { font = it }
                 textFill = c("#AACCFF")
-                fontSize = 36.px
+                fontSize = 32.px
             }
         }
 
         debugFighter {
+            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
+            borderColor += box(c("#FFAA00"))
+            borderWidth += box(2.px)
+            minWidth = AppStyle.OVERLAY_MARGIN_WIDTH.px*2
+            maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH.px*2
             label {
                 AppStyle.fontFiraBold?.let { font = it }
-                textFill = c("#AACCFF")
-                padding = box(8.px)
-                fontSize = 24.px
+                textFill = c("#FFAA00")
+                fontSize = 16.px
             }
         }
 
@@ -62,7 +70,7 @@ class DebugStyle : Stylesheet() {
 
         wireFrame {
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
-            borderColor += box(c("#00000055"))
+            borderColor += box(c("#AACCFF00"))
             borderWidth += box(2.px)
             padding = box(-2.px)
         }

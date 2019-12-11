@@ -7,7 +7,7 @@ class ModeNull(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "NULL${super.toString()}"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { logMode(this, "MatchConcludedEvent") }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { }
 
     override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent") }
 

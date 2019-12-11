@@ -1,6 +1,7 @@
 package application
 
 import application.LogText.Effect.*
+import javafx.application.Platform
 import javafx.scene.text.TextFlow
 import tornadofx.c
 import tornadofx.text
@@ -51,7 +52,7 @@ fun log(vararg logTexts: LogText) {
     }
 }
 
-fun updateLogs(console: TextFlow) {
+fun updateLogs(console: TextFlow) = Platform.runLater {
     // FIXME: SEVERE: Uncaught error java.util.ConcurrentModificationException
     logs.forEach { log -> log.logTexts.forEach {
           it.appendTo(console)
