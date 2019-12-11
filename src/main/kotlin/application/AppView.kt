@@ -98,7 +98,7 @@ class AppView : View() {
                         }
                     }
 
-                    vbox { addClass(DebugStyle.statusText)
+                    vbox {
                         debugLabels["Mode"] = DebugLabelView(parent)
                         debugLabels["Match"] = DebugLabelView(parent)
                         debugLabels["Timer"] = DebugLabelView(parent)
