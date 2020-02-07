@@ -1,11 +1,17 @@
+import org.junit.Before
 import org.junit.Test
-import robo.BaseTestCase
+import org.mockito.MockitoAnnotations
 
-class MainTest : BaseTestCase() {
+class MainTest {
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.initMocks(this)
+    }
 
     @Test
     fun solveStandardQueries() {
-//        assertNotNull(fs.solveIntendedKit(params))
+        // Zeta
     }
 
 }

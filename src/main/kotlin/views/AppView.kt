@@ -1,25 +1,25 @@
 package views
 
-import MyApp.Companion.ARTIFACT_NAME
-import MyApp.Companion.BUILD_VERSION
+import MyApp.Companion.atifactName
+import MyApp.Companion.buildVersion
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextFlow
-import views.logging.LogText.Effect.GRN
-import views.logging.LogText.Effect.LOW
-import views.fighters.DebugFighterView
-import views.generic.DebugLabelView
-import views.generic.DebugStyle
-import views.logging.LogText
-import views.logging.log
-import views.logging.updateLogs
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import session.Fighter
 import session.Session
 import tornadofx.*
+import views.fighters.DebugFighterView
+import views.generic.DebugLabelView
+import views.generic.DebugStyle
+import views.logging.LogText
+import views.logging.LogText.Effect.GRN
+import views.logging.LogText.Effect.LOW
+import views.logging.log
+import views.logging.updateLogs
 
 typealias L = LogText
 
@@ -87,7 +87,7 @@ class AppView : View() {
             vbox { addClass(DebugStyle.wireFrame)
                 alignment = Pos.TOP_RIGHT
                 translateX -= AppStyle.OVERLAY_MARGIN_WIDTH
-                label("$ARTIFACT_NAME $BUILD_VERSION / OBS Fullscreen Overlay") {
+                label("$atifactName $buildVersion / OBS Fullscreen Overlay") {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
@@ -240,8 +240,8 @@ class AppView : View() {
 
         log(
             L("Starting "),
-            L("$ARTIFACT_NAME ", GRN),
-            L(BUILD_VERSION, LOW)
+            L("$atifactName ", GRN),
+            L(buildVersion, LOW)
         )
         cycleGameLoop()
         cycleUILoop()

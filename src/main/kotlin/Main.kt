@@ -1,12 +1,12 @@
-import views.AppStyle
-import views.AppView
-import views.fighters.DebugFighterStyle
-import views.generic.DebugStyle
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
+import views.AppStyle
+import views.AppView
+import views.fighters.DebugFighterStyle
+import views.generic.DebugStyle
 
 
 fun main(args: Array<String>) = launch<MyApp>(args)
@@ -19,15 +19,16 @@ fun main(args: Array<String>) = launch<MyApp>(args)
  */
 class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class, DebugFighterStyle::class) {
     companion object {
-        const val ARTIFACT_NAME = "GearNet // Bounty Bets"
-        const val BUILD_VERSION = "0.8.8"
-        const val WD = "\uD835\uDE86\$"
-        const val SILENCE_BOT = true
+        const val atifactName = "GearNet // Bounty Bets"
+        const val buildVersion = "0.8.8"
+        const val bountyGlyph = "\uD835\uDE86\$"
+        const val dumbTwitch = true // Silence robo's Twitch mask
+        const val expertMode = true // Mask in-game health
     }
     override fun createPrimaryScene(view: UIComponent) = super.createPrimaryScene(view).apply {
         fill = Color.MAGENTA
     }
-    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$ARTIFACT_NAME $BUILD_VERSION" }
+    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$atifactName $buildVersion" }
     override fun start(stage: Stage) {
         stage.width  = 1904.0 + 16 // 1600.0 + 16
         stage.height = 1041.0 + 39 // 900.0 + 39
