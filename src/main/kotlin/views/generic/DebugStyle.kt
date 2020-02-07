@@ -1,6 +1,6 @@
-package application.views.generic
+package views.generic
 
-import application.AppStyle
+import views.AppStyle
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap

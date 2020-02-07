@@ -1,6 +1,5 @@
-package application.views.generic
+package views.generic
 
-import javafx.application.Platform
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import tornadofx.*
@@ -20,7 +19,7 @@ class DebugLabelView(override val root: Parent) : Fragment() {
         }
     }
 
-    fun update(tag: String, value: String) = Platform.runLater {
+    fun update(tag: String, value: String) = runLater {
         tagText.text = tag
         valueText.text = value
         if (The(value).isInt() && The(value).toInt() > 0) valueText.textFill = c("#00FF00")

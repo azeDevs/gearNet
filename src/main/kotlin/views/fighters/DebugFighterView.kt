@@ -1,12 +1,14 @@
-package application.views.fighters
+package views.fighters
 
-import application.views.generic.DebugLabelView
+import views.generic.DebugLabelView
 import javafx.application.Platform
 import javafx.scene.Parent
 import session.Fighter
 import tornadofx.Fragment
 import tornadofx.hbox
+import tornadofx.runLater
 import tornadofx.singleAssign
+import views.ViewFrag
 
 class DebugFighterView(override val root: Parent) : Fragment() {
 
@@ -20,7 +22,7 @@ class DebugFighterView(override val root: Parent) : Fragment() {
         }
     }
 
-    fun updateFighter(fighter: Fighter) = Platform.runLater {
+    fun updateFighter(fighter: Fighter) = runLater {
         seatIdText.update(fighter.getName(), "${fighter.getSeat()}")
     }
 

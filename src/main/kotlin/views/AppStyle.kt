@@ -1,4 +1,4 @@
-package application
+package views
 
 import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
@@ -30,7 +30,9 @@ class AppStyle : Stylesheet() {
 
 //        val fontFiraLight = loadFont("/fonts/FiraCode-Light.ttf", fontSize)
 //        val fontFiraRegular = loadFont("/fonts/FiraCode-Regular.ttf", fontSize)
-        val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf", fontSize)
+        val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf",
+    fontSize
+)
         val fighterView by cssclass()
         val fighterZone by cssclass()
         val viewerZone by cssclass()

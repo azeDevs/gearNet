@@ -1,6 +1,6 @@
 package session
 
-import application.LogText
+import views.logging.LogText
 import events.*
 import memscan.FighterData
 import memscan.MatchSnap

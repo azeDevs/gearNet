@@ -1,6 +1,6 @@
-package application.views.fighters
+package views.fighters
 
-import application.AppStyle
+import views.AppStyle
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin

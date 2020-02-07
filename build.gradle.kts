@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.30"
+    kotlin("jvm") version "1.3.60"
     id("edu.sc.seis.launch4j") version "2.4.6"
     id("org.openjfx.javafxplugin") version "0.0.7"
 }
@@ -26,6 +26,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testImplementation("junit:junit:4.12")
     testImplementation("org.mockito:mockito-core:2.23.4")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 

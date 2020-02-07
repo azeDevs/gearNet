@@ -1,7 +1,7 @@
 package session.modes
 
 import MyApp.Companion.WD
-import application.log
+import views.logging.log
 import events.*
 import session.Session
 import twitch.ViewerBet

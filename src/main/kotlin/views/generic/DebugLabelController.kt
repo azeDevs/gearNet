@@ -1,4 +1,4 @@
-package application.views.generic
+package views.generic
 
 import tornadofx.Controller
 

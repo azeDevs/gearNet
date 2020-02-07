@@ -1,7 +1,7 @@
 package session
 
-import application.LogText.Effect.TOX_MATCH
-import application.LogText.Effect.YLW_FIGHT
+import views.logging.LogText.Effect.TOX_MATCH
+import views.logging.LogText.Effect.YLW_FIGHT
 import memscan.MatchSnap
 import twitch.ViewerBet
 import utils.getIdStr

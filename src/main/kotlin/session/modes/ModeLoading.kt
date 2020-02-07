@@ -1,8 +1,8 @@
 package session.modes
 
 import MyApp.Companion.WD
-import application.LogText.Effect.*
-import application.log
+import views.logging.LogText.Effect.*
+import views.logging.log
 import events.*
 import session.L
 import session.Session
@@ -25,7 +25,13 @@ class ModeLoading(override val s: Session) : Mode(s) {
 
     override fun runMatchLoading(e: MatchLoadingEvent) {
         if (step() == 0) { nextStep()
-            log(e.match.getIdLog(), L(" MatchLoadingEvent ... "), L(e.match.fighter(0).getName(), RED), L(" vs ", MED), L(e.match.fighter(1).getName(), BLU))
+            log(
+                e.match.getIdLog(),
+                L(" MatchLoadingEvent ... "),
+                L(e.match.fighter(0).getName(), RED),
+                L(" vs ", MED),
+                L(e.match.fighter(1).getName(), BLU)
+            )
         }
     }
 

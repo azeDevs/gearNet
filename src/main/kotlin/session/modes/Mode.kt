@@ -1,7 +1,7 @@
 package session.modes
 
-import application.LogText.Effect.*
-import application.log
+import views.logging.LogText.Effect.*
+import views.logging.log
 import events.*
 import session.L
 import session.Session
@@ -14,7 +14,12 @@ abstract class Mode(open val s: Session) : Controller() {
     fun step(): Int = stepNumber
     fun nextStep() { stepNumber++ }
 
-    fun logMode(mode:Mode, text:String) = log(L(mode.toString(), CYA), L(" [ ", LOW), L(text, CYA), L(" ] ", LOW))
+    fun logMode(mode:Mode, text:String) = log(
+        L(mode.toString(), CYA),
+        L(" [ ", LOW),
+        L(text, CYA),
+        L(" ] ", LOW)
+    )
     override fun toString(): String = "$stepNumber"
 
     abstract fun runMatchConcluded(e: MatchConcludedEvent)
@@ -32,41 +37,61 @@ abstract class Mode(open val s: Session) : Controller() {
 
     fun runRoundStartedCommons(e: RoundStartedEvent) {
         val round = "Round ${e.match.getRoundNumber()}"
-        log(e.match.getIdLog(), L(" "), L(round, YLW_FIGHT), L(" started ...", CYA), e.match.getMatchLog())
+        log(
+            e.match.getIdLog(),
+            L(" "),
+            L(round, YLW_FIGHT),
+            L(" started ...", CYA),
+            e.match.getMatchLog()
+        )
         s.mode().update(ModeMatch(s))
     }
 
     fun runMatchConcludedCommons(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     fun runFighterJoinedCommons(e: FighterJoinedEvent) {
-        log(L(e.fighter.getName(), YLW_FIGHT),
+        log(
+            L(e.fighter.getName(), YLW_FIGHT),
             L(" added to Fighter map"),
-            L(" ${e.fighter.getIdString()}", LOW))
+            L(" ${e.fighter.getIdString()}", LOW)
+        )
     }
 
     fun runViewerJoinedCommons(e: ViewerJoinedEvent) {
         s.addViewer(e.viewer)
-        log(L(e.viewer.getName(), PUR_SNAP),
-            L(" added to Viewer map"))
+        log(
+            L(e.viewer.getName(), PUR_SNAP),
+            L(" added to Viewer map")
+        )
     }
 
     fun runViewerMessageCommons(e: ViewerMessageEvent) {
         s.updateViewer(e.viewer.getData())
-        log(L(e.viewer.getName(), PUR_SNAP),
+        log(
+            L(e.viewer.getName(), PUR_SNAP),
             L(" said: ", LOW),
-            L("“${e.text}”"))
+            L("“${e.text}”")
+        )
     }
 
     fun runFighterMovedCommons(e: FighterMovedEvent) {
         // FIXME: DOES NOT TRIGGER WHEN MOVING FROM SPECTATOR
         val destination = if (e.fighter.getCabinet() > 3) L( "off cabinet") else getSeatLog(e.fighter.getSeat())
-        log(L(e.fighter.getName(), YLW_FIGHT), L(" moved to ", MED), destination)
+        log(
+            L(e.fighter.getName(), YLW_FIGHT),
+            L(" moved to ", MED),
+            destination
+        )
         if (s.stage().isMatchValid() && e.fighter.justExitedStage()) s.stage().finalizeMatch()
     }
 
     fun runXrdConnection(e: XrdConnectionEvent) {
 //        log(L("MODE_*", MED), L("XrdConnectionEvent", CYA))
-        if (e.connected) log(L("Xrd", GRN), L(" has ", LOW), L("CONNECTED", GRN))
+        if (e.connected) log(
+            L("Xrd", GRN),
+            L(" has ", LOW),
+            L("CONNECTED", GRN)
+        )
         else log(L("Xrd", GRN), L(" has ", LOW), L("DISCONNECTED", RED))
     }
 

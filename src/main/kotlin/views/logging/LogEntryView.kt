@@ -1,6 +1,7 @@
-package application
+package views.logging
 
-import application.LogText.Effect.*
+import views.AppStyle
+import views.logging.LogText.Effect.*
 import javafx.application.Platform
 import javafx.scene.text.TextFlow
 import tornadofx.c
@@ -41,9 +42,15 @@ private fun generateLogLines(vararg logText: LogText): List<LogLine> {
  */
 val logs: MutableList<LogLine> = arrayListOf()
 
-fun log(text: String) = log(LogText(text))
+fun log(text: String) =
+    log(LogText(text))
 fun log(tag: String, value: Int) = log(tag, value.toString())
-fun log(tag: String, text: String) = log(LogText(tag, YLW_FIGHT), LogText(text))
+fun log(tag: String, text: String) = log(
+    LogText(
+        tag,
+        YLW_FIGHT
+    ), LogText(text)
+)
 fun log(vararg logTexts: LogText) {
     generateLogLines(*logTexts).forEach {
         prnt(it.getText())

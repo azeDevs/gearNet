@@ -1,6 +1,6 @@
 package events
 
-import application.LogText
+import views.logging.LogText
 import memscan.MemHandler
 import memscan.XrdApi
 import session.Session

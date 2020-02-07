@@ -1,7 +1,7 @@
-import application.AppStyle
-import application.AppView
-import application.views.fighters.DebugFighterStyle
-import application.views.generic.DebugStyle
+import views.AppStyle
+import views.AppView
+import views.fighters.DebugFighterStyle
+import views.generic.DebugStyle
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import tornadofx.App

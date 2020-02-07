@@ -1,8 +1,8 @@
 package session.modes
 
-import application.LogText.Effect.RED
-import application.LogText.Effect.YLW_FIGHT
-import application.log
+import views.logging.LogText.Effect.RED
+import views.logging.LogText.Effect.YLW_FIGHT
+import views.logging.log
 import events.*
 import session.L
 import session.Session
@@ -19,18 +19,45 @@ class ModeMatch(override val s: Session) : Mode(s) {
 
     override fun runRoundDraw(e: RoundDrawEvent) {
         s.stage().match().incrementRounds()
-        log(e.match.getRoundLog(), L(" resolved as a "), L("DRAW", YLW_FIGHT))
+        log(
+            e.match.getRoundLog(),
+            L(" resolved as a "),
+            L("DRAW", YLW_FIGHT)
+        )
         s.mode().update(ModeSlash(s))
     }
 
     override fun runRoundResolved(e: RoundResolvedEvent) {
         val round = e.match.getRoundLog(false, -1)
         when(s.stage().match().tookTheRound()) {
-            0 -> { log(e.match.getIdLog(), L(" "), round, L(" goes to "), e.match.fighter(0).getLog(), e.match.getMatchLog())
+            0 -> {
+                log(
+                    e.match.getIdLog(),
+                    L(" "),
+                    round,
+                    L(" goes to "),
+                    e.match.fighter(0).getLog(),
+                    e.match.getMatchLog()
+                )
                 s.stage().match().incrementRounds(0) }
-            1 -> { log(e.match.getIdLog(), L(" "), round, L(" goes to "), e.match.fighter(1).getLog(), e.match.getMatchLog())
+            1 -> {
+                log(
+                    e.match.getIdLog(),
+                    L(" "),
+                    round,
+                    L(" goes to "),
+                    e.match.fighter(1).getLog(),
+                    e.match.getMatchLog()
+                )
                 s.stage().match().incrementRounds(1) }
-            else -> log(e.match.getIdLog(), L(" "), round, L(" goes to "), L("ERROR", RED), e.match.getMatchLog())
+            else -> log(
+                e.match.getIdLog(),
+                L(" "),
+                round,
+                L(" goes to "),
+                L("ERROR", RED),
+                e.match.getMatchLog()
+            )
         }
         s.mode().update(ModeSlash(s))
     }

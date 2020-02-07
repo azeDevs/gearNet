@@ -1,6 +1,6 @@
 package session
 
-import application.LogText.Effect.*
+import views.logging.LogText.Effect.*
 import memscan.FighterData
 
 /**

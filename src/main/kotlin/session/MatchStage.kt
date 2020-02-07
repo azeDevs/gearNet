@@ -1,8 +1,8 @@
 package session
 
 import MyApp.Companion.WD
-import application.LogText.Effect.*
-import application.log
+import views.logging.LogText.Effect.*
+import views.logging.log
 import memscan.MatchSnap
 import session.modes.ModeLobby
 import session.modes.ModeMatch
@@ -56,13 +56,23 @@ class MatchStage(private val s: Session) {
             else doStuffThatWorkWith3PlusFighters(matchId)
 
             // Log the resulting Staged Match, failed or not
-            log(m.getIdLog(), L(" SUCCESSFULLY STAGED Fighters ", GRN), m.fighter(0).getLog(), L(" vs ", MED), m.fighter(1).getLog())
+            log(
+                m.getIdLog(),
+                L(" SUCCESSFULLY STAGED Fighters ", GRN),
+                m.fighter(0).getLog(),
+                L(" vs ", MED),
+                m.fighter(1).getLog()
+            )
         }
 
     }
 
     private fun doStuffThatWorkWith3PlusFighters(matchId: Long) {
-        log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (3+ Fighters on Cabinet)", LOW))
+        log(
+            L("STAGING ", YLW_FIGHT),
+            m.getIdLog(false, matchId),
+            L(" (3+ Fighters on Cabinet)", LOW)
+        )
 
         /*
          DO STUFF THAT WORKS WITH 3+ FIGHTERS
@@ -75,14 +85,22 @@ class MatchStage(private val s: Session) {
                 0 -> m = Match(matchId, Pair(getLastMatch().getWinningFighter(), prospect))
                 1 -> m = Match(matchId, Pair(prospect, getLastMatch().getWinningFighter()))
                 else -> {
-                    log(m.getIdLog(), L(" STAGING FAILED", RED), L(", last Match had no winner", MED))
+                    log(
+                        m.getIdLog(),
+                        L(" STAGING FAILED", RED),
+                        L(", last Match had no winner", MED)
+                    )
                 }
             }
         }
     }
 
     private fun doStuffThatWorksWith2Fighters(matchId: Long) {
-        log(L("STAGING ", YLW_FIGHT), m.getIdLog(false, matchId), L(" (2 Fighters on Cabinet)", LOW))
+        log(
+            L("STAGING ", YLW_FIGHT),
+            m.getIdLog(false, matchId),
+            L(" (2 Fighters on Cabinet)", LOW)
+        )
 
         /*
          DO STUFF THAT WORKS WITH 2 FIGHTERS
@@ -101,7 +119,11 @@ class MatchStage(private val s: Session) {
      */
     private fun archiveMatch() {
         if (archivedMatches.containsKey(m.getId())) {
-            log(m.getIdLog(false), L(" FAILED TO ARCHIVE", RED), L(", duplicate IDs", MED))
+            log(
+                m.getIdLog(false),
+                L(" FAILED TO ARCHIVE", RED),
+                L(", duplicate IDs", MED)
+            )
         } else {
             archivedMatches[m.getId()] = m
             log(m.getIdLog(false), L(" WAS ARCHIVED SUCCESSFULLY", GRN))
@@ -119,7 +141,15 @@ class MatchStage(private val s: Session) {
             s.mode().update(ModeVictory(s))
             val winner = m.getWinningFighter()
             s.sendMessage("${winner.getName()} WINS!")
-            log(m.getIdLog(false), L(" FINALIZED: ", GRN), L("${m.getSnapCount()}", YLW_FIGHT), L(" snaps, ", GRN), m.fighter(winner.getSeat()).getLog(), L(" wins", GRN), m.getMatchLog())
+            log(
+                m.getIdLog(false),
+                L(" FINALIZED: ", GRN),
+                L("${m.getSnapCount()}", YLW_FIGHT),
+                L(" snaps, ", GRN),
+                m.fighter(winner.getSeat()).getLog(),
+                L(" wins", GRN),
+                m.getMatchLog()
+            )
             finalizePayouts()
             archiveMatch()
         } else if (!m.getWinningFighter().isValid() && !s.isMode(ModeVictory(s))) {
@@ -128,7 +158,11 @@ class MatchStage(private val s: Session) {
             log(m.getIdLog(false), L(" INVALIDATED", RED), m.getMatchLog())
             // Invalidate any Bets
             if (m.getBets().isNotEmpty())
-                log(m.getIdLog(), L(" ${m.betCount()} ${plural("bet", m.betCount())} INVALIDATED", RED), m.getMatchLog())
+                log(
+                    m.getIdLog(),
+                    L(" ${m.betCount()} ${plural("bet", m.betCount())} INVALIDATED", RED),
+                    m.getMatchLog()
+                )
         }
         clearStage()
     }

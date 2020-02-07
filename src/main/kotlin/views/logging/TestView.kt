@@ -1,4 +1,4 @@
-package application.views
+package views.logging
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Pos

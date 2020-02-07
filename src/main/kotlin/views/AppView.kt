@@ -1,17 +1,19 @@
-package application
+package views
 
 import MyApp.Companion.ARTIFACT_NAME
 import MyApp.Companion.BUILD_VERSION
-import application.LogText.Effect.GRN
-import application.LogText.Effect.LOW
-import application.views.fighters.DebugFighterView
-import application.views.generic.DebugLabelView
-import application.views.generic.DebugStyle
-import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextFlow
+import views.logging.LogText.Effect.GRN
+import views.logging.LogText.Effect.LOW
+import views.fighters.DebugFighterView
+import views.generic.DebugLabelView
+import views.generic.DebugStyle
+import views.logging.LogText
+import views.logging.log
+import views.logging.updateLogs
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,7 +50,7 @@ class AppView : View() {
         }
     }
 
-    private fun updateConsole() = Platform.runLater {
+    private fun updateConsole() = runLater {
 
         if (session.getStagedFighters().first.getName().isNotEmpty()) redFighter.text = "${session.getStagedFighters().first.getName()}: ${session.stage().match().getHealth(0)} HP"
         else {
@@ -71,7 +73,9 @@ class AppView : View() {
             }
         }
 
-        for (i in 0..7) fighterQueue[i].updateFighter(session.getFighters().firstOrNull { it.isSeated(i) } ?: Fighter())
+        for (i in 0..7) fighterQueue[i].updateFighter(session.getFighters().firstOrNull {
+            it.isSeated(i)
+        } ?: Fighter())
 
         updateLogs(console)
     }
@@ -234,7 +238,11 @@ class AppView : View() {
             }
         }
 
-        log(L("Starting "), L("$ARTIFACT_NAME ", GRN), L(BUILD_VERSION, LOW))
+        log(
+            L("Starting "),
+            L("$ARTIFACT_NAME ", GRN),
+            L(BUILD_VERSION, LOW)
+        )
         cycleGameLoop()
         cycleUILoop()
     }

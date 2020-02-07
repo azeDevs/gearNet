@@ -1,7 +1,7 @@
 package utils
 
-import application.LogText
-import application.LogText.Effect.*
+import views.logging.LogText
+import views.logging.LogText.Effect.*
 import session.L
 
 
