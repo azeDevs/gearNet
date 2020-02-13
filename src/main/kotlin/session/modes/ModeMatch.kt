@@ -1,17 +1,17 @@
 package session.modes
 
-import views.logging.LogText.Effect.RED
-import views.logging.LogText.Effect.YLW_FIGHT
-import views.logging.log
 import events.*
 import session.L
 import session.Session
+import views.logging.LogText.Effect.RED
+import views.logging.LogText.Effect.YLW_FIGHT
+import views.logging.log
 
 class ModeMatch(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "MATCH${super.toString()}"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e) }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     override fun runMatchResolved(e: MatchResolvedEvent) {
         if (e.match.isResolved() && e.match.getTimer() > -1)  s.stage().finalizeMatch()

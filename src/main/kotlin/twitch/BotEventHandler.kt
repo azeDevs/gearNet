@@ -1,6 +1,6 @@
 package twitch
 
-import MyApp.Companion.SILENCE_BOT
+import MyApp.Companion.QUIET_ROBOT
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
@@ -35,7 +35,7 @@ class BotEventHandler(private val s: Session) : BotApi {
     }
 
     override fun sendMessage(message: String) {
-        if (!SILENCE_BOT) twitchClient.chat.sendMessage("azeDevs", message)
+        if (!QUIET_ROBOT) twitchClient.chat.sendMessage("azeDevs", message)
         else s.fire(ViewerMessageEvent(Viewer(ViewerData(1,"roboaze")), message))
     }
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution

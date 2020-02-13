@@ -4,7 +4,8 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 import views.AppStyle
-import views.AppView
+import views.Application
+import views.atifactName
 import views.fighters.DebugFighterStyle
 import views.generic.DebugStyle
 
@@ -12,23 +13,22 @@ import views.generic.DebugStyle
 fun main(args: Array<String>) = launch<MyApp>(args)
 
 /**
- * Primary Application class for GearNet // Bounty Bets
+ * Prime Application Class for GearNet // Bounty Bets // Atension Impulse
  *
  * @author  aze
  * @since   0.0.1
  */
-class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class, DebugFighterStyle::class) {
+class MyApp : App(Application::class, AppStyle::class, DebugStyle::class, DebugFighterStyle::class) {
     companion object {
-        const val atifactName = "GearNet // Bounty Bets"
-        const val BUILD_VERSION = "0.8.8"
+        const val buildVersion = "0.9.1"
         const val WD = "\uD835\uDE86\$"
-        const val DUMBTWITCH = true // Silence robo's Twitch mask
-        const val EXPERTMODE = true // Mask in-game health
+        const val QUIET_ROBOT = true
+        const val LIGHT_BUILD = true
     }
     override fun createPrimaryScene(view: UIComponent) = super.createPrimaryScene(view).apply {
         fill = Color.MAGENTA
     }
-    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$atifactName $BUILD_VERSION" }
+    override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$atifactName $buildVersion" }
     override fun start(stage: Stage) {
         stage.width  = 1904.0 + 16 // 1600.0 + 16
         stage.height = 1041.0 + 39 // 900.0 + 39

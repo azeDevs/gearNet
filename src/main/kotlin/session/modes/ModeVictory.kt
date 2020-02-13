@@ -1,17 +1,17 @@
 package session.modes
 
 import MyApp.Companion.WD
-import views.logging.log
 import events.*
 import session.Session
 import twitch.ViewerBet
 import utils.addCommas
+import views.logging.log
 
 class ModeVictory(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "VICTORY${super.toString()}"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e) }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent") }
 

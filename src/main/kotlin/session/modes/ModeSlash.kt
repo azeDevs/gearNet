@@ -7,7 +7,7 @@ class ModeSlash(override val s: Session) : Mode(s) {
 
     override fun toString(): String = "SLASH${super.toString()}"
 
-    override fun runMatchConcluded(e: MatchConcludedEvent) { runMatchConcludedCommons(e) }
+    override fun runMatchConcluded(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     override fun runMatchResolved(e: MatchResolvedEvent) { logMode(this, "MatchResolvedEvent") }
 

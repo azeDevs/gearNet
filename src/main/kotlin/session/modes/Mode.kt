@@ -1,12 +1,12 @@
 package session.modes
 
-import views.logging.LogText.Effect.*
-import views.logging.log
 import events.*
 import session.L
 import session.Session
 import tornadofx.Controller
 import utils.getSeatLog
+import views.logging.LogText.Effect.*
+import views.logging.log
 
 abstract class Mode(open val s: Session) : Controller() {
 
@@ -46,8 +46,6 @@ abstract class Mode(open val s: Session) : Controller() {
         )
         s.mode().update(ModeMatch(s))
     }
-
-    fun runMatchConcludedCommons(e: MatchConcludedEvent) { s.mode().update(ModeLobby(s)) }
 
     fun runFighterJoinedCommons(e: FighterJoinedEvent) {
         log(

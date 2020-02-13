@@ -1,7 +1,5 @@
 package views
 
-import MyApp.Companion.atifactName
-import MyApp.Companion.buildVersion
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
@@ -17,13 +15,13 @@ import views.generic.DebugLabelView
 import views.generic.DebugStyle
 import views.logging.LogText
 import views.logging.LogText.Effect.GRN
-import views.logging.LogText.Effect.LOW
 import views.logging.log
 import views.logging.updateLogs
 
+const val atifactName = "GearNet // Atension impulse"
 typealias L = LogText
 
-class AppView : View() {
+class Application : View() {
 
     private val session: Session by inject()
     private val fighterQueue: MutableList<DebugFighterView> = ArrayList()
@@ -87,7 +85,7 @@ class AppView : View() {
             vbox { addClass(DebugStyle.wireFrame)
                 alignment = Pos.TOP_RIGHT
                 translateX -= AppStyle.OVERLAY_MARGIN_WIDTH
-                label("$atifactName $buildVersion / OBS Fullscreen Overlay") {
+                label("$atifactName / OBS Fullscreen Overlay") {
                     addClass(DebugStyle.wireText)
                     scaleX = 1.6; scaleY = 1.6
                 }
@@ -239,9 +237,7 @@ class AppView : View() {
         }
 
         log(
-            L("Starting "),
-            L("$atifactName ", GRN),
-            L(buildVersion, LOW)
+            L("Beginning.. "), L(atifactName, GRN) /*.to.see.further.*/
         )
         cycleGameLoop()
         cycleUILoop()
