@@ -7,7 +7,7 @@ import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
 import tornadofx.*
 
-class DebugFighterStyle : Stylesheet() {
+class FighterViewStyle : Stylesheet() {
 
     companion object {
         val fighterFrame by cssclass()

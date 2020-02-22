@@ -28,6 +28,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:2.23.4")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.2.1")
     implementation("edu.sc.seis.gradle:launch4j:2.4.6")
 
     // Memscan
@@ -47,7 +48,7 @@ dependencies {
     implementation("org.slf4j:slf4j-nop:1.8.0-beta4")
 
     // GUI
-    implementation("no.tornado:tornadofx:1.7.17")
+    implementation("no.tornado:tornadofx:1.7.20")
 }
 
 launch4j {

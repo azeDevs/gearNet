@@ -4,9 +4,9 @@ import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 import views.AppStyle
-import views.Application
+import views.AppView
 import views.atifactName
-import views.fighters.DebugFighterStyle
+import views.fighters.FighterViewStyle
 import views.generic.DebugStyle
 
 
@@ -18,15 +18,18 @@ fun main(args: Array<String>) = launch<MyApp>(args)
  * @author  aze
  * @since   0.0.1
  */
-class MyApp : App(Application::class, AppStyle::class, DebugStyle::class, DebugFighterStyle::class) {
+class MyApp : App(AppView::class, AppStyle::class, DebugStyle::class, FighterViewStyle::class) {
     companion object {
         const val buildVersion = "0.9.1"
         const val WD = "\uD835\uDE86\$"
-        const val QUIET_ROBOT = true
+        const val SILENCE_BOT = true
         const val LIGHT_BUILD = true
     }
     override fun createPrimaryScene(view: UIComponent) = super.createPrimaryScene(view).apply {
-        fill = Color.MAGENTA
+        fill = when (LIGHT_BUILD) {
+            true -> Color.BLACK
+            false -> Color.MAGENTA
+        }
     }
     override fun onBeforeShow(view: UIComponent) { super.onBeforeShow(view); view.title = "$atifactName $buildVersion" }
     override fun start(stage: Stage) {
@@ -36,6 +39,9 @@ class MyApp : App(Application::class, AppStyle::class, DebugStyle::class, DebugF
         stage.isFullScreen = true
         super.start(stage)
         stage.toBack()
+        stage.apply {
+
+        }
     }
 }
 
@@ -46,8 +52,9 @@ class MyApp : App(Application::class, AppStyle::class, DebugStyle::class, DebugF
     TODO -------------------------- ORDER OF OPERATIONS --------------------------
 
 
-    1. FIGHTER QUEUE (BASIC LOBBY STATUS)
-    2. IN-MATCH UI
+    1. RISK RATE (0-7) affected by Wins
+    2. STUN RATE (0-?) affected by Stun
+    3. GUILT GAUGE (0-88) affected by mutual Pulse, causes pageTurns once beyond threshold.. gun fire
 
 
 
@@ -128,16 +135,16 @@ class MyApp : App(Application::class, AppStyle::class, DebugStyle::class, DebugF
     NOTE ------------------------------ BOUNTIES ------------------------------
 
 
-    ⚙️ BOUNTY REWARD:
+    ⚙️ ATENSION:
 
-    The reward in W$ Bounty points that the victor takes from their fallen opponent.
+    Players fight for Atension. Atension is captured from a defeated Player.
 
-    ❓ For What Purpose: You should be higher on the scoreboard if you win and lower if you lose.
+    ❓ For What Purpose: Consistency keeps a Player high on the leaderboard.
 
 
     ⚙️ BOUNTY INFLATE:
 
-    After every fight, increase every player's Bounty by (matchesWon + matchesSum) * (bountyInflate)%.
+    After every match, increase every player's Bounty by (matchesWon + matchesSum) * (bountyInflate)%.
     Every match, win or loss, will reward a Fighter with a BI bonus. The longer a Fighter has been
     participating in the lobby, the higher their base value is increased before BI bonus is applied.
 

@@ -4,13 +4,14 @@ import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import session.Fighter
 import session.Session
 import tornadofx.*
-import views.fighters.DebugFighterView
+import views.fighters.FighterViewFragment
 import views.generic.DebugLabelView
 import views.generic.DebugStyle
 import views.logging.LogText
@@ -21,10 +22,15 @@ import views.logging.updateLogs
 const val atifactName = "GearNet // Atension impulse"
 typealias L = LogText
 
-class Application : View() {
+/*  ⚀⚀⚓⚀⚀
+ *
+ *
+ */
+
+class AppView : View() {
 
     private val session: Session by inject()
-    private val fighterQueue: MutableList<DebugFighterView> = ArrayList()
+    private val fighterQueue: MutableList<FighterViewFragment> = ArrayList()
     private val debugLabels: MutableMap<String, DebugLabelView> = HashMap()
 
     private var debugBox: VBox by singleAssign()
@@ -34,17 +40,10 @@ class Application : View() {
 
 
     private fun cycleGameLoop() {
-        GlobalScope.launch {
-            // 000: Beginning of GameLoop
+        GlobalScope.launch(Dispatchers.Main) {
             session.generateEvents()
-            delay(8); cycleGameLoop()
-        }
-    }
-
-    private fun cycleUILoop() {
-        GlobalScope.launch {
             updateConsole()
-            delay(16); cycleUILoop()
+            delay(8); cycleGameLoop()
         }
     }
 
@@ -85,10 +84,6 @@ class Application : View() {
             vbox { addClass(DebugStyle.wireFrame)
                 alignment = Pos.TOP_RIGHT
                 translateX -= AppStyle.OVERLAY_MARGIN_WIDTH
-                label("$atifactName / OBS Fullscreen Overlay") {
-                    addClass(DebugStyle.wireText)
-                    scaleX = 1.6; scaleY = 1.6
-                }
                 vbox { addClass(DebugStyle.wireFrame)
                     minWidth = AppStyle.BATTLE_STAGE_WIDTH*0.5; maxWidth = AppStyle.BATTLE_STAGE_WIDTH*0.5
                     alignment = Pos.TOP_RIGHT
@@ -96,11 +91,11 @@ class Application : View() {
 
                     vbox {
                         for (i in 0..7) hbox {
-                            fighterQueue.add(DebugFighterView(parent))
+                            fighterQueue.add(FighterViewFragment(parent))
                         }
                     }
 
-                    vbox {
+                    vbox { isVisible = false
                         debugLabels["Mode"] = DebugLabelView(parent)
                         debugLabels["Match"] = DebugLabelView(parent)
                         debugLabels["Timer"] = DebugLabelView(parent)
@@ -116,16 +111,15 @@ class Application : View() {
                 vbox { addClass(DebugStyle.wireFrame); alignment = Pos.TOP_RIGHT
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-//                    vbox { addClass(AppStyle.fighterZone)
-//                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
-//                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-//                        label("FIGHTER QUEUE")
-//                        fighterView = DebugFighterView(this)
-//                    }
-//                    label("VIEWER CHAT") { addClass(AppStyle.viewerZone)
-//                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
-//                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
-//                    }
+                    vbox { addClass(AppStyle.fighterZone)
+                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
+                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+                        label("FIGHTER QUEUE")
+                    }
+                    label("VIEWER CHAT") { addClass(AppStyle.viewerZone)
+                        minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT/2
+                        minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
+                    }
                 }
 
                 // BATTLE THEATRE
@@ -136,7 +130,6 @@ class Application : View() {
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
                         redFighter = label("RED FIGHTER")
-//                        redHP = label("-redHP")
                     }
                 }
                 vbox { addClass(DebugStyle.wireFrame)
@@ -146,12 +139,11 @@ class Application : View() {
                         minHeight = AppStyle.FIGHTER_STAT_HEIGHT; maxHeight = AppStyle.FIGHTER_STAT_HEIGHT
                         minWidth = AppStyle.BATTLE_STAGE_WIDTH/2; maxWidth = AppStyle.BATTLE_STAGE_WIDTH/2
                         bluFighter = label("BLU FIGHTER")
-//                        bluHP = label("-bluHP")
                     }
                 }
 
                 // SHADE WING
-                vbox { addClass(DebugStyle.wireFrame); isVisible = false
+                vbox { addClass(DebugStyle.wireFrame); isVisible = true
                     minHeight = AppStyle.OVERLAY_MARGIN_HEIGHT; maxHeight = AppStyle.OVERLAY_MARGIN_HEIGHT
                     minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
                     vbox { addClass(AppStyle.fighterZone)
@@ -167,7 +159,7 @@ class Application : View() {
                 }
             }
 
-            hbox { addClass(DebugStyle.wireFrame); isVisible = false
+            hbox { addClass(DebugStyle.wireFrame); isVisible = true
                 minHeight = AppStyle.BET_CONTAINER_HEIGHT; maxHeight = AppStyle.BET_CONTAINER_HEIGHT
                 minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH
                 hbox { minWidth = AppStyle.OVERLAY_MARGIN_WIDTH; maxWidth = AppStyle.OVERLAY_MARGIN_WIDTH; addClass(
@@ -224,11 +216,11 @@ class Application : View() {
 
             vbox { addClass(DebugStyle.wireFrame); alignment = Pos.CENTER
                 minHeight = AppStyle.TICKER_HEIGHT
-//                label("NEWS TICKER") { addClass(DebugStyle.wireText) }
+                label("NEWS TICKER") { addClass(DebugStyle.wireText) }
             }
 
             // DEBUG CONSOLE STUFF
-            vbox { alignment = Pos.TOP_CENTER
+            return@with vbox { alignment = Pos.TOP_CENTER
                 debugBox = vbox { addClass(DebugStyle.debugContainer)
                     console = textflow { addClass(DebugStyle.debugText); translateY += 16 }
                 }
@@ -236,11 +228,9 @@ class Application : View() {
             }
         }
 
-        log(
-            L("Beginning.. "), L(atifactName, GRN) /*.to.see.further.*/
-        )
+        log(L("Beginning.. "), L(atifactName, GRN) /*.to.see.further.*/ )
         cycleGameLoop()
-        cycleUILoop()
+
     }
 }
 

@@ -10,7 +10,7 @@ import tornadofx.runLater
 import tornadofx.singleAssign
 import views.ViewFrag
 
-class DebugFighterView(override val root: Parent) : Fragment() {
+class FighterViewFragment(override val root: Parent) : Fragment("DebugFighterView") {
 
     private var seatIdText: DebugLabelView by singleAssign()
 

@@ -11,7 +11,7 @@ import tornadofx.*
 class DebugStyle : Stylesheet() {
 
     companion object {
-        private const val DEBUG_FONTSIZE = 20.0
+        private const val DEBUG_FONTSIZE = 16.0
         val fontFiraBold = loadFont("/fonts/FiraCode-Bold.ttf",
             DEBUG_FONTSIZE
         )
@@ -28,7 +28,7 @@ class DebugStyle : Stylesheet() {
 
         statusText {
             padding = box(8.px)
-            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
+//            borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 2.0, listOf(10.0, 1.0))
             borderColor += box(c("#FFAA00"))
             borderWidth += box(2.px)
             minWidth = AppStyle.OVERLAY_MARGIN_WIDTH.px*2

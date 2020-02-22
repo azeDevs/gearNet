@@ -35,7 +35,9 @@ abstract class Mode(open val s: Session) : Controller() {
     abstract fun runFighterMoved(e: FighterMovedEvent)
     abstract fun runMatchUpdate(e: XrdMatchUpdateEvent)
 
+    // TODO: THIS RUNS FOREVER AND SHOULD ONLY RUN ONCE Æ
     fun runRoundStartedCommons(e: RoundStartedEvent) {
+        s.mode().update(ModeMatch(s))
         val round = "Round ${e.match.getRoundNumber()}"
         log(
             e.match.getIdLog(),
@@ -44,7 +46,7 @@ abstract class Mode(open val s: Session) : Controller() {
             L(" started ...", CYA),
             e.match.getMatchLog()
         )
-        s.mode().update(ModeMatch(s))
+         //NOTE: IS THIS GETTING RESET SOMEWHERE DURING THE INTROS?
     }
 
     fun runFighterJoinedCommons(e: FighterJoinedEvent) {
