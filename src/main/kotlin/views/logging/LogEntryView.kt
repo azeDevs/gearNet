@@ -1,6 +1,8 @@
-package application
+package views.logging
 
-import application.LogText.Effect.*
+import views.AppStyle
+import views.logging.LogText.Effect.*
+import javafx.application.Platform
 import javafx.scene.text.TextFlow
 import tornadofx.c
 import tornadofx.text
@@ -22,7 +24,8 @@ private fun generateLogLines(vararg logText: LogText): List<LogLine> {
         if (colCount > 100 && cutText.isNotEmpty()) {
             val newText = it.get().substring(0, it.get().length - (colCount - 100))
             truncatedLogTexts.add(LogText(newText, it.getEffect()))
-            cutLogTexts.add(LogText(cutText, it.getEffect()))
+            // TODO: restore LogText line wrapping once shit isn't so crayuz
+//            cutLogTexts.add(LogText(cutText, it.getEffect()))
         } else truncatedLogTexts.add(it)
     }
     truncatedLogTexts.add(LogText("\n"))
@@ -39,9 +42,15 @@ private fun generateLogLines(vararg logText: LogText): List<LogLine> {
  */
 val logs: MutableList<LogLine> = arrayListOf()
 
-fun log(text: String) = log(LogText(text))
+fun log(text: String) =
+    log(LogText(text))
 fun log(tag: String, value: Int) = log(tag, value.toString())
-fun log(tag: String, text: String) = log(LogText(tag, YLW), LogText(text))
+fun log(tag: String, text: String) = log(
+    LogText(
+        tag,
+        YLW_FIGHT
+    ), LogText(text)
+)
 fun log(vararg logTexts: LogText) {
     generateLogLines(*logTexts).forEach {
         prnt(it.getText())
@@ -50,8 +59,12 @@ fun log(vararg logTexts: LogText) {
     }
 }
 
-fun updateLogs(console: TextFlow) {
-    logs.forEach { log -> log.logTexts.forEach { it.appendTo(console) } }
+fun updateLogs(console: TextFlow) = Platform.runLater {
+    // FIXME: SEVERE: Uncaught error java.util.ConcurrentModificationException
+    logs.forEach { log -> log.logTexts.forEach {
+          it.appendTo(console)
+        }
+    }
     logs.clear()
 }
 
@@ -64,19 +77,19 @@ class LogLine(val logTexts: List<LogText>) {
 }
 
 class LogText(private val text: String = "", private val effect: Effect = NONE) {
-    enum class Effect { NONE, LOW, MED, CYA, RED, TOX, YLW, GRN, BLU, ORN_MODE, PUR_SNAP, SCALE, BREAK }
+    enum class Effect { NONE, LOW, MED, CYA, RED, TOX_MATCH, YLW_FIGHT, GRN, BLU, ORN_MODE, PUR_SNAP, SCALE, BREAK }
 
     fun get() = text
     fun getEffect() = effect
     fun appendTo(flow: TextFlow) {
         when (effect) {
-            NONE -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#dcddde") } } } }
-            LOW -> { flow.apply { text(get()) { AppStyle.fontFiraLight?.let { font = it; fill = c("#666666") } } } }
-            MED -> { flow.apply { text(get()) { AppStyle.fontFiraRegular?.let { font = it; fill = c("#888888") } } } }
+            NONE -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#dcddde") } } } }
+            LOW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#666666") } } } }
+            MED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#888888") } } } }
             CYA -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#09F9F9") } } } }
             RED -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#f04747") } } } }
-            TOX -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
-            YLW -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
+            TOX_MATCH -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#d0ff40") } } } }
+            YLW_FIGHT -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
             GRN -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#40b581") } } } }
             BLU -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#33aaee") } } } }
             ORN_MODE -> { flow.apply { text(get()) { AppStyle.fontFiraBold?.let { font = it; fill = c("#FF8F40") } } } }
@@ -100,7 +113,7 @@ class LogText(private val text: String = "", private val effect: Effect = NONE) 
                     }
                 }
             }
-            BREAK -> { flow.apply { text("\n") { AppStyle.fontFiraLight?.let { font = it; fill = c("#faa61a") } } } }
+            BREAK -> { flow.apply { text("\n") { AppStyle.fontFiraBold?.let { font = it; fill = c("#faa61a") } } } }
         }
     }
 }

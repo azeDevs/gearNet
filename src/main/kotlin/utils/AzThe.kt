@@ -2,6 +2,7 @@ package utils
 
 class The {
     private val value: String
+    constructor(value: Boolean) { this.value = if (value) "1" else "0" }
     constructor(value: String) { this.value = value }
     constructor(value: Long) { this.value = value.toString() }
     constructor(value: Int) { this.value = value.toString() }
@@ -14,7 +15,21 @@ class The {
 
     /** The value [toInt]
      * @return Int */
-    fun toInt(defaultTo:Int = -1): Int { for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo; return Integer.valueOf(value) }
+    fun toBool(defaultTo:Boolean = false): Boolean { for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo; return Integer.valueOf(value) > 0 }
+
+    /** The value [toInt]
+     * @return Int */
+    fun toInt(defaultTo:Int = -1): Int {
+        if(value.replace("[^\\d]".toRegex(), "").equals("-", true)) {
+            for (c in value.replace("[\\d]".toRegex(), "").toCharArray()) if (!Character.isDigit(c)) return defaultTo; return -Integer.valueOf(value)
+        } else for (c in value.toCharArray()) if (!Character.isDigit(c)) return defaultTo;
+        return Integer.valueOf(value)
+    }
+
+    fun isInt(): Boolean {
+        for (c in value.replace("[-]".toRegex(), "")) if (!Character.isDigit(c)) return false
+        return true
+    }
 
     /** The value [toLong]
      * @return Long */

@@ -206,7 +206,7 @@ fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, 
  * @return boolean for whether or not the value was within the indicated range
  */
 fun isInRange(value:Int, minimum:Int = 0, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
-fun isWithin(value:Int, maximum:Int): Boolean = isInRange(value, 0, maximum)
+fun isWithin(value:Int, maximum:Int = 1): Boolean = isInRange(value, 0, maximum)
 
 /**
  * Write a String to a local text file
