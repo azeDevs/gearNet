@@ -6,7 +6,6 @@ import session.Match
 import tornadofx.EventBus.RunOn.BackgroundThread
 import tornadofx.FXEvent
 import twitch.Viewer
-import twitch.ViewerBet
 import utils.The
 
 interface GearNetEvent {
@@ -41,5 +40,3 @@ class ViewerJoinedEvent(val viewer:Viewer) : FXEvent(BackgroundThread),
     GearNetEvent { override fun getEventAsString(): String = "!VJ" }
 class ViewerMessageEvent(val viewer:Viewer, val text:String) : FXEvent(BackgroundThread),
     GearNetEvent { override fun getEventAsString(): String = "!VM" }
-class ViewerBetEvent(val viewer:Viewer, val bet:ViewerBet) : FXEvent(BackgroundThread),
-    GearNetEvent { override fun getEventAsString(): String = "!VB" }

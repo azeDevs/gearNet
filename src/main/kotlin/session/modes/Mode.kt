@@ -28,14 +28,13 @@ abstract class Mode(open val s: Session) : Controller() {
     abstract fun runRoundResolved(e: RoundResolvedEvent)
     abstract fun runRoundStarted(e: RoundStartedEvent)
     abstract fun runMatchLoading(e: MatchLoadingEvent)
-    abstract fun runCommandBet(e: ViewerBetEvent)
     abstract fun runFighterJoined(e: FighterJoinedEvent)
     abstract fun runViewerJoined(e: ViewerJoinedEvent)
     abstract fun runViewerMessage(e: ViewerMessageEvent)
     abstract fun runFighterMoved(e: FighterMovedEvent)
     abstract fun runMatchUpdate(e: XrdMatchUpdateEvent)
 
-    // TODO: THIS RUNS FOREVER AND SHOULD ONLY RUN ONCE Æ
+    // TODO: THIS RUNS FOREVER AND SHOULD ONLY RUN ONCE
     fun runRoundStartedCommons(e: RoundStartedEvent) {
         s.mode().update(ModeMatch(s))
         val round = "Round ${e.match.getRoundNumber()}"
@@ -86,7 +85,6 @@ abstract class Mode(open val s: Session) : Controller() {
     }
 
     fun runXrdConnection(e: XrdConnectionEvent) {
-//        log(L("MODE_*", MED), L("XrdConnectionEvent", CYA))
         if (e.connected) log(
             L("Xrd", GRN),
             L(" has ", LOW),

@@ -5,7 +5,6 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import events.ViewerBetEvent
 import events.ViewerJoinedEvent
 import events.ViewerMessageEvent
 import session.Session
@@ -56,7 +55,6 @@ class BotEventHandler(private val s: Session) : BotApi {
             if (!s.getViewer(viewer.getId()).isValid()) s.fire(ViewerJoinedEvent(viewer))
             else viewer = Viewer(s.getViewer(it.twitchId).getData(), it)
             s.fire(ViewerMessageEvent(viewer, it.text))
-            if (ViewerBet(viewer).isValid()) s.fire(ViewerBetEvent(viewer, ViewerBet(viewer)))
         }
     }
 

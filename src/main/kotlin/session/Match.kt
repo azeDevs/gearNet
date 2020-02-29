@@ -1,10 +1,10 @@
 package session
 
-import views.logging.LogText.Effect.TOX_MATCH
-import views.logging.LogText.Effect.YLW_FIGHT
 import memscan.MatchSnap
 import twitch.ViewerBet
 import utils.getIdStr
+import views.logging.LogText.Effect.TOX_MATCH
+import views.logging.LogText.Effect.YLW_FIGHT
 
 /**
  *
@@ -29,8 +29,6 @@ class Match (
     fun incrementRounds(seatId: Int = -1) = if (seatId == 0) roundsRed++ else if (seatId == 1) roundsBlu++ else roundsDraw++
 
     fun getId() = matchId
-    fun getBets(): List<ViewerBet> = viewerBets
-    fun betCount() = getBets().size
     fun getWinner() = winner
     fun getWinningFighter() = fighter(getWinner())
     fun getTimer() = getSnap().timer()
@@ -39,7 +37,6 @@ class Match (
     fun fighter(seatId: Int) = if (seatId == 0) fighters.first else if (seatId == 1) fighters.second else Fighter()
 
     fun isValid() = matchId > -1 && fighter(0).isValid() && fighter(1).isValid()
-    fun addViewerBet(bet: ViewerBet) = viewerBets.add(bet)
     fun update(matchSnap: MatchSnap): Boolean {
         if (!isResolved() && !matchSnap.isSameAs(getSnap())) {
             snaps.add(matchSnap)
