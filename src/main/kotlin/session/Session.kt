@@ -1,6 +1,5 @@
 package session
 
-import views.logging.LogText
 import events.*
 import memscan.FighterData
 import memscan.MatchSnap
@@ -11,6 +10,7 @@ import tornadofx.Controller
 import twitch.BotEventHandler
 import twitch.Viewer
 import twitch.ViewerData
+import views.logging.LogText
 
 typealias L = LogText
 
@@ -30,7 +30,6 @@ class Session : Controller() {
         subscribe<XrdMatchUpdateEvent> { mode.get().runMatchUpdate(it) }
         subscribe<ViewerMessageEvent> { mode.get().runViewerMessage(it) }
         subscribe<ViewerJoinedEvent> { mode.get().runViewerJoined(it) }
-        subscribe<ViewerBetEvent> { mode.get().runCommandBet(it) }
         subscribe<FighterJoinedEvent> { mode.get().runFighterJoined(it) }
         subscribe<FighterMovedEvent> { mode.get().runFighterMoved(it) }
         subscribe<MatchLoadingEvent> { mode.get().runMatchLoading(it) }

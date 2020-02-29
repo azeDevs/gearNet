@@ -66,8 +66,6 @@ class ModeMatch(override val s: Session) : Mode(s) {
 
     override fun runMatchLoading(e: MatchLoadingEvent) { logMode(this, "MatchLoadingEvent") }
 
-    override fun runCommandBet(e: ViewerBetEvent) { logMode(this, "ViewerBetEvent") }
-
     override fun runFighterJoined(e: FighterJoinedEvent) { runFighterJoinedCommons(e) }
 
     override fun runViewerJoined(e: ViewerJoinedEvent) { runViewerJoinedCommons(e) }

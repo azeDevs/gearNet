@@ -1,16 +1,11 @@
 package session
 
-import MyApp.Companion.WD
-import views.logging.LogText.Effect.*
-import views.logging.log
 import memscan.MatchSnap
 import session.modes.ModeLobby
 import session.modes.ModeMatch
 import session.modes.ModeVictory
-import twitch.ViewerBet
-import utils.addCommas
-import utils.plural
-import kotlin.math.abs
+import views.logging.LogText.Effect.*
+import views.logging.log
 
 /**
  *  [MatchStage]
@@ -38,7 +33,6 @@ class MatchStage(private val s: Session) {
 
 
     fun addSnap(ms: MatchSnap):Boolean = m.update(ms)
-    fun addBet(vb: ViewerBet):Boolean = m.addViewerBet(vb)
 
     /**
      *  [STAGING]
@@ -150,43 +144,19 @@ class MatchStage(private val s: Session) {
                 L(" wins", GRN),
                 m.getMatchLog()
             )
-            finalizePayouts()
             archiveMatch()
         } else if (!m.getWinningFighter().isValid() && !s.isMode(ModeVictory(s))) {
             // Do stuff if there wasn't a winner
             if (!s.isMode(ModeLobby(s))) s.mode().update(ModeLobby(s))
             log(m.getIdLog(false), L(" INVALIDATED", RED), m.getMatchLog())
-            // Invalidate any Bets
-            if (m.getBets().isNotEmpty())
-                log(
-                    m.getIdLog(),
-                    L(" ${m.betCount()} ${plural("bet", m.betCount())} INVALIDATED", RED),
-                    m.getMatchLog()
-                )
         }
         clearStage()
-    }
-
-    private fun finalizePayouts() {
-        m.getBets().forEach {
-            it.getViewer().changeScore(it.getWager(m.getWinner()), it.getWager(abs(m.getWinner()-1)))
-            logViewerBetResolution(it) }
     }
 
     private fun isFighterSeatedAt(seatId: Int): Boolean {
         val seatCheck = s.getFighters().firstOrNull { it.getSeat() == seatId } ?: Fighter()
         if (seatCheck.getCabinet() != 0) return false
         return seatCheck.isValid()
-    }
-
-    private fun logViewerBetResolution(it: ViewerBet) {
-        val sb = StringBuilder("Viewer ${it.getViewer().getName()} ")
-        when {
-            it.getViewer().getScoreDelta() > 0 -> sb.append("WON ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
-            it.getViewer().getScoreDelta() < 0 -> sb.append("LOST ${addCommas(it.getViewer().getScoreDelta())} $WD, ")
-            else -> sb.append("BROKE EVEN, ") }
-        sb.append("wallet total now ${addCommas(it.getViewer().getScoreTotal())} $WD")
-        log(sb.toString())
     }
 
 }
