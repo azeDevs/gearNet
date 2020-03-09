@@ -87,9 +87,9 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                     blendMode = BlendMode.HARD_LIGHT
                 }
 
-                val chainsLightFit = 50.0
+                val chainsLightFit = 96.0
                 val chainsLightOpacity = 0.96
-                val chainsLightRotation = 16.0
+                val chainsLightRotation = 9.6
                 val chainsBlendMode = BlendMode.LIGHTEN
                 chains2 = imageview(getRes("cb_chain_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
@@ -272,20 +272,20 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 change.text = p.getChangeString()
                 setChangeTextColor(p.getChange())
                 chains1.isVisible = p.getChain() > 0
-                chains2.isVisible = p.getChain() > 1
-                chains3.isVisible = p.getChain() > 2
-                chains4.isVisible = p.getChain() > 3
-                chains5.isVisible = p.getChain() > 4
-                chains6.isVisible = p.getChain() > 5
-                chains7.isVisible = p.getChain() > 6
-                chains8.isVisible = p.getChain() > 7
+                chains2.isVisible = p.getChain() > 10
+                chains3.isVisible = p.getChain() > 20
+                chains4.isVisible = p.getChain() > 30
+                chains5.isVisible = p.getChain() > 40
+                chains6.isVisible = p.getChain() > 50
+                chains7.isVisible = p.getChain() > 60
+                chains8.isVisible = p.getChain() > 70
 
 
-                chain.fitWidth = 52.0 * (1+p.getChain() * 0.064)
-                chain.fitHeight = 52.0 * (1+p.getChain() * 0.064)
+                chain.fitWidth = 57.0 * (1+p.getChain() * 0.033)
+                chain.fitHeight = 57.0 * (1+p.getChain() * 0.033)
 
-                chains1.fitWidth = 52.0 * (1+p.getChain() * 0.32)
-                chains1.fitHeight = 52.0 * (1+p.getChain() * 0.32)
+                chains1.fitWidth = 77.0 * (1+p.getChain() * 0.33)
+                chains1.fitHeight = 77.0 * (1+p.getChain() * 0.33)
 
                 wholeThing.isVisible = true
             } else {
