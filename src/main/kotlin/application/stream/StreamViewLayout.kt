@@ -240,7 +240,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                                 rating0 = imageview(getRes("gn_stream.png").toString()) {
                                     viewport = Rectangle2D(0.0, 256.0 + 20, 128.0, 64.0 - 20)
                                     translateX += 101
-                                    translateY += 81
+                                    translateY += 83
                                     fitWidth = 50.0
                                     fitHeight = 30.0 - 10
                                 }
@@ -301,7 +301,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                                 rating1 = imageview(getRes("gn_stream.png").toString()) {
                                     viewport = Rectangle2D(0.0, 256.0 + 20, 128.0, 64.0 - 20)
                                     translateX -= 95
-                                    translateY += 81
+                                    translateY += 83
                                     fitWidth = 50.0
                                     fitHeight = 30.0 - 10
                                 }

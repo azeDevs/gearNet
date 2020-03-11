@@ -267,8 +267,8 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains8.isVisible = p.getChain() > 7
 
 
-                chains1.fitWidth = 44.0 + ((8+p.getChain()) * p.getChain())
-                chains1.fitHeight = 44.0 + ((8+p.getChain()) * p.getChain())
+                chains1.fitWidth = 57.0 + ((8+p.getChain()) * p.getChain())
+                chains1.fitHeight = 57.0 + ((8+p.getChain()) * p.getChain())
 
                 wholeThing.isVisible = true
             } else {

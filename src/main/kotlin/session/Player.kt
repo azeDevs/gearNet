@@ -16,7 +16,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     private var bounty = 0
     private var change = 0
-    private var chain = 8 //Random.nextInt(9)
+    private var chain = 0 //Random.nextInt(9)
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
