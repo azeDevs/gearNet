@@ -1,7 +1,7 @@
 import application.ApplicationStyle
 import application.ApplicationView
-import application.stream.BigScoreStyle
 import application.stream.InMatchStyle
+import application.stream.ScoreStyle
 import application.tools.ToolsMatchStyle
 import application.tools.ToolsPlayerStyle
 import javafx.stage.Stage
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     launch<MyApp>(args)
 }
 
-class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
+class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, ScoreStyle::class, InMatchStyle::class) {
 
     companion object {
         const val SILENT_TWITCH = true

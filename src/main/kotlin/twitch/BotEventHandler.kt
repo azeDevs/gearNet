@@ -58,11 +58,15 @@ class BotEventHandler(private val s: Session) : BotApi {
                     log("${it.name} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC")) sendMessage("${it.name} joins azpngRC")
-                if (it.message.contains("azpngBC")) sendMessage("${it.name} joins azpngBC")
+                if (it.message.contains("azpngRC") && !s.viewers[it.twitchId]!!.isTeamR()) {
+                    s.viewers[it.twitchId]!!.setTeamR()
+                    sendMessage("${it.name} joins azpngRC")
+                }
+                if (it.message.contains("azpngBC") && !s.viewers[it.twitchId]!!.isTeamB()) {
+                    s.viewers[it.twitchId]!!.setTeamB()
+                    sendMessage("${it.name} joins azpngBC")
+                }
             }
-
-
         }
     }
 

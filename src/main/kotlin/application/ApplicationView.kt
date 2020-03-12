@@ -32,64 +32,50 @@ class ApplicationView : View() {
     private val playersGui: MutableList<ToolsPlayerView> = ArrayList()
     private val matchesGui: MutableList<ToolsMatchView> = ArrayList()
     private val session: Session by inject()
-    lateinit private var utilsGui: ToolsViewLayout
-    lateinit private var streamViewLayout: StreamViewLayout
-    lateinit private var consoleView: Label
-    lateinit private var lobbyTitle: Label
+    private lateinit var utilsGui: ToolsViewLayout
+    private lateinit var streamViewLayout: StreamViewLayout
+    private lateinit var consoleView: Label
+    private lateinit var lobbyTitle: Label
 
     private fun cycleDatabase() {
         GlobalScope.launch {
-                utilsGui.blinkDatabaseIndicator(session)
+            utilsGui.blinkDatabaseIndicator(session)
             delay(2048); cycleDatabase()
-        }
-    }
-
-    private fun cycleTwitch() {
-        GlobalScope.launch {
-            session.updateViewers()
-            delay(64); cycleTwitch()
         }
     }
 
     private fun cycleMemScan() {
         GlobalScope.launch {
-                utilsGui.blinkGuiltyGearIndicator(session)
-                if (session.api.isXrdApiConnected()) {
-                    session.updatePlayers()
-                    session.updateClientMatch()
-                }
-            delay(32); cycleMemScan()
-        }
-    }
-
-    private fun cycleUi() {
-        GlobalScope.launch {
-                streamViewLayout.animateTargets()
-                utilsGui.applyData(session)
-                updateConsole()
-                // redrawAppUi
-                utilsGui.blinkGearNetIndicator(session)
-                val uiUpdate: List<Player> = session.getPlayersList()
-                for (i in 0..3) matchesGui[i].applyMatch(session.matchHandler.lobbyMatches[i].second, session)
-                for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i], session)
-                else playersGui[i].applyData(Player(), session)
-                streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
-                updateTitle()
-            delay(24); cycleUi()
-        }
-    }
-
-    fun updateTitle() {
-        Platform.runLater {
-            when (session.sessionMode) {
-                LOBBY_MODE -> lobbyTitle.text = "LOBBY_MODE"
-                LOADING_MODE -> lobbyTitle.text = "LOADING_MODE"
-                MATCH_MODE -> lobbyTitle.text = "MATCH_MODE"
-                SLASH_MODE -> lobbyTitle.text = "SLASH_MODE"
-                VICTORY_MODE -> lobbyTitle.text = "VICTORY_MODE"
+            utilsGui.blinkGuiltyGearIndicator(session)
+            utilsGui.applyData(session)
+            updateConsole()
+            if (session.api.isXrdApiConnected()) {
+                session.updatePlayers()
+                session.updateClientMatch()
             }
+            session.updateViewers()
+            utilsGui.blinkGearNetIndicator(session)
+            val uiUpdate: List<Player> = session.getPlayersList()
+            for (i in 0..3) matchesGui[i].applyMatch(session.matchHandler.lobbyMatches[i].second, session)
+            for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i], session)
+            else playersGui[i].applyData(Player(), session)
+            streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
+            updateTitle()
+            delay(24)
+            cycleMemScan()
         }
     }
+
+    private fun updateTitle() = Platform.runLater {
+        when (session.sessionMode) {
+            LOBBY_MODE -> lobbyTitle.text = "LOBBY_MODE"
+            LOADING_MODE -> lobbyTitle.text = "LOADING_MODE"
+            MATCH_MODE -> lobbyTitle.text = "MATCH_MODE"
+            SLASH_MODE -> lobbyTitle.text = "SLASH_MODE"
+            VICTORY_MODE -> lobbyTitle.text = "VICTORY_MODE"
+        }
+    }
+
 
     init {
         with(root) {
@@ -168,8 +154,6 @@ class ApplicationView : View() {
 
             cycleDatabase()
             cycleMemScan()
-            cycleTwitch()
-            cycleUi()
         }
     }
 }

@@ -92,8 +92,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
             // Did player 2 win the match?
             if (getRounds(P2) == lobbyData.roundWins && winner == -1) {
                 winner = 1
-                log("M[$matchId]: Match CONCLUSION - Player 2 has taken the match ... (${getHandleString(P2)})")
                 session.setMode(VICTORY_MODE)
+                log("M[$matchId]: Match CONCLUSION - Player 2 has taken the match ... (${getHandleString(P2)})")
             }
 
             return true

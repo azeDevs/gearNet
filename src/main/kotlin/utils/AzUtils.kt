@@ -222,7 +222,7 @@ fun keepInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647, 
  * uhhh
  */
 fun isInRange(value:Int, minimum:Int = -2147483647, maximum:Int = 2147483647): Boolean = !(value > maximum || value < minimum)
-
+fun isWithin(value:Int, maximum:Int = 1): Boolean = isInRange(value, 0, maximum)
 
 
 /**

@@ -6,14 +6,17 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import tornadofx.*
 
-class BigScoreStyle : Stylesheet() {
+class ScoreStyle : Stylesheet() {
 
     companion object {
+        val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
         val fontRED = loadFont("/fonts/RED.ttf", 16.0)
 
         val bountyContainer by cssclass()
+
+        val viewerHandleText by cssclass()
         val bountyHandleText by cssclass()
         val bountyHandleShadow by cssclass()
         val bountyBountyText by cssclass()
@@ -33,7 +36,13 @@ class BigScoreStyle : Stylesheet() {
             fontFiraCodeMedium?.let { font = it }
             textFill = c("#78cbab")
             fontSize = 10.px
-
+            and(viewerHandleText) {
+                fontFiraCodeBold?.let { font = it }
+                fontSize = 22.px
+                maxWidth = 192.px
+                minWidth = 192.px
+                textFill = LinearGradient(0.0, -16.0, 0.0, 0.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.9, 0.9, 0.9)), Stop(0.45, c(1.0, 1.0, 1.0)), Stop(0.60, c(1.0, 0.9, 0.8)), Stop(1.0, c(0.9, 0.9, 0.9)))
+            }
             and(bountyHandleText) {
                 fontPaladins?.let { font = it }
                 fontSize = 20.px

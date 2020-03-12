@@ -21,15 +21,18 @@ import utils.getRes
 
 class StreamViewLayout(override val root: Parent) : Fragment() {
 
-    var showHud = true
+    private var showHud = true
     var lockHud = -1
 
     var streamView: StackPane
-    private val bountiesGui: MutableList<BigScoreView> = ArrayList()
+    private val bountiesGui: MutableList<PlayerScoreView> = ArrayList()
+    private val viewersGuiR: MutableList<ViewerScoreView> = ArrayList()
+    private val viewersGuiB: MutableList<ViewerScoreView> = ArrayList()
+    private val viewersGuiC: MutableList<ViewerScoreView> = ArrayList()
     private lateinit var lobbyView: StackPane
     private lateinit var matchView: StackPane
     private lateinit var slashView: StackPane
-    private lateinit var loadingView: StackPane
+    private lateinit var viewersView: StackPane
 
     private lateinit var bountyR: Label
     private lateinit var healthR: Label
@@ -47,12 +50,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var round1B: ImageView
     private lateinit var round2B: ImageView
 
-    fun animateTargets() {
-        bountiesGui.forEach { it.approachTarget() }
-    }
-
-    fun updateStreamLeaderboard(allPlayers: List<Player>, s: Session) {
-        val players = allPlayers
+    fun updateStreamLeaderboard(players: List<Player>, s: Session) {
         if (s.sessionMode == lockHud) {
             lobbyView.isVisible = showHud
             matchView.isVisible = !showHud
@@ -60,66 +58,65 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         else {
             lockHud = -1
             when (s.sessionMode) {
-
                 VICTORY_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(0.0) }
                     lobbyView.isVisible = true
                     matchView.isVisible = false
                     slashView.isVisible = false
-                    loadingView.isVisible = false
                     showHud = true
                 }
                 LOBBY_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(0.0) }
                     lobbyView.isVisible = true
                     matchView.isVisible = false
                     slashView.isVisible = false
-                    loadingView.isVisible = false
                     showHud = true
                 }
                 LOADING_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(-256.0) }
                     lobbyView.isVisible = false
                     matchView.isVisible = false
                     slashView.isVisible = false
-                    loadingView.isVisible = true
                     showHud = true
                 }
                 MATCH_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(2048.0) }
                     lobbyView.isVisible = false
                     matchView.isVisible = true
                     slashView.isVisible = false
-                    loadingView.isVisible = false
                     showHud = false
                 }
                 SLASH_MODE -> {
-//                    bountiesGui.forEach { it.setTarget(-256.0) }
                     lobbyView.isVisible = false
                     matchView.isVisible = false
                     slashView.isVisible = true
-                    loadingView.isVisible = false
                     showHud = false
                 }
-
             }
         }
 
         val p1 = players.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Player()
         val p2 = players.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Player()
         applyData(p1, p2, s)
-        for (i in 0..3) {
+        for (i in 0..7) {
             if (players.size > i) {
                 bountiesGui[i].applyData(players[i], s)
                 bountiesGui[i].setVisibility(showHud)
             }
         }
+        val viewerTeamC = s.viewers.values.filter { item -> item.getScore() > 0 }
+        val viewerTeamR = s.viewers.values.filter { item -> item.isTeamR() }
+        val viewerTeamB = s.viewers.values.filter { item -> item.isTeamB() }
+        for (i in 0..15) {
+            if (viewerTeamC.size > i) {
+                viewersGuiC[i].applyData(viewerTeamC[i])
+                viewersGuiC[i].setVisibility(showHud)
+            }
+        }
+        for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
+        for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
     }
 
-    fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
+    private fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
         if (p1.getSteamId() > 0L) {
             bountyR.text = p1.getBountyString()
-            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
+            if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
             else healthR.text = ""
             statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
             statusR.isVisible = true
@@ -140,7 +137,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         }
         if (p2.getSteamId() > 0L) {
             bountyB.text = p2.getBountyString()
-            if (s.sessionMode.equals(MATCH_MODE) && s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
+            if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
             else healthB.text = ""
             statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
             statusB.isVisible = true
@@ -190,8 +187,11 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                         fitWidth = 1920.0
                         fitHeight = 1080.0
                     }
-                    for (i in 0..3) {
-                        bountiesGui.add(BigScoreView(parent, i))
+                    for (i in 0..7) {
+                        bountiesGui.add(PlayerScoreView(parent, i))
+                    }
+                    for (i in 0..15) {
+                        viewersGuiC.add(ViewerScoreView(parent, i, 2))
                     }
                 }
 
@@ -311,6 +311,10 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                 }
 
                 slashView = stackpane {
+                    maxWidth = 1920.0
+                    minWidth = 1920.0
+                    maxHeight = 1080.0
+                    minHeight = 1080.0
                     imageview(getRes("barc_slash.png").toString()) {
                         viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
                         fitWidth = 1920.0
@@ -318,11 +322,10 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                     }
                 }
 
-                loadingView = stackpane {
-                    imageview(getRes("barc_loading.png").toString()) {
-                        viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
-                        fitWidth = 1920.0
-                        fitHeight = 1080.0
+                viewersView = stackpane {
+                    for (i in 0..15) {
+                        viewersGuiR.add(ViewerScoreView(parent, i, 0))
+                        viewersGuiB.add(ViewerScoreView(parent, i, 1))
                     }
                 }
 
