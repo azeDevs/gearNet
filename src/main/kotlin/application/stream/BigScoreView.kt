@@ -280,7 +280,6 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 chains7.isVisible = p.getChain() > 60
                 chains8.isVisible = p.getChain() > 70
 
-
                 chain.fitWidth = 57.0 * (1+p.getChain() * 0.033)
                 chain.fitHeight = 57.0 * (1+p.getChain() * 0.033)
 

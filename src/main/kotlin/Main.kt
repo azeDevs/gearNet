@@ -16,6 +16,7 @@ fun main(args: Array<String>) {
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchStyle::class, ToolsPlayerStyle::class, BigScoreStyle::class, InMatchStyle::class) {
 
     companion object {
+        const val SILENT_TWITCH = true
         const val SIMULATE_MODE = false
         const val TRACE_BORDERS = false
         const val GHOST_OPACITY = 0.64
@@ -27,10 +28,15 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ToolsMatchSty
     }
 
     override fun start(stage: Stage) {
-        super.start(stage)
-        stage.width  = 1296.0 // 1280
-        stage.height = 759.0  // 720
+        stage.width  = 1904.0 + 16 // 1600.0 + 16
+        stage.height = 1041.0 + 39 // 900.0 + 39
         stage.isResizable = false
+        stage.isFullScreen = true
+        super.start(stage)
+        stage.toBack()
+        stage.apply {
+
+        }
     }
 
 }

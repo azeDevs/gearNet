@@ -23,8 +23,6 @@ import kotlin.random.Random
 
 class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
 
-
-
     private var wholeThing: StackPane
     private lateinit var character: ImageView
     private lateinit var chains1: ImageView

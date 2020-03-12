@@ -6,25 +6,26 @@ package twitch
 interface BotApi {
 
     /**
-     * @return if bot is running and responsive
+     * @return if botApi is running and responsive
      */
     fun isConnected(): Boolean
 
     /**
-     * Send a bot message to Twitch chat
+     * Send a botApi message to Twitch chat
      */
     fun sendMessage(message:String)
 
     /**
      * @return a List of all Messages
      */
-    fun getMessages(): List<Message>
+    fun getViewerData(): List<ViewerData>
 
 }
 
-
-class Message(
-    val id: Long,
-    val name: String,
-    val text: String
-)
+data class ViewerData(
+    val twitchId:Long = -1,
+    val name:String = "",
+    val message:String = ""
+) {
+    fun isValid() = twitchId > 0
+}

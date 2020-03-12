@@ -46,7 +46,7 @@ class ApplicationView : View() {
 
     private fun cycleTwitch() {
         GlobalScope.launch {
-            session.updateBets()
+            session.updateViewers()
             delay(64); cycleTwitch()
         }
     }

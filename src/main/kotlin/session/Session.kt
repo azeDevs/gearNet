@@ -2,7 +2,8 @@ package session
 
 import memscan.PlayerData
 import tornadofx.Controller
-import twitch.BettingHandler
+import twitch.BotEventHandler
+import twitch.Viewer
 import utils.Duo
 import utils.getIdString
 import kotlin.math.max
@@ -18,17 +19,16 @@ class Session : Controller() {
         const val VICTORY_MODE = 4
     }
 
-    val api = ApiHandler() // 6sr270mlawxcas8bg8f9yi90lqympq
-
+    val api = ApiHandler()
+    val twitchHandler = BotEventHandler(this)
     val matchHandler = MatchHandler()
-    val bettingHandler = BettingHandler()
     val players: HashMap<Long, Player> = HashMap()
-
+    val viewers: HashMap<Long, Viewer> = HashMap()
 
     var randomValues = false
 
-    fun updateBets() {
-        bettingHandler.refreshGamblers()
+    fun updateViewers() {
+        twitchHandler.generateViewerEvents()
     }
 
     fun updatePlayers(): Boolean {
@@ -146,6 +146,9 @@ class Session : Controller() {
             VICTORY_MODE -> log("S: sessionMode = VICTORY_MODE")
         }
     }
+
+    fun getViewersList(): List<Viewer> = viewers.values.toList()
+        .sortedByDescending { item -> item.getScore() }
 
     fun getPlayersList(): List<Player> = players.values.toList()
         .sortedByDescending { item -> item.getRating() }
