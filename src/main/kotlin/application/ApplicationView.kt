@@ -143,15 +143,18 @@ class ApplicationView : View() {
 
                 }
 
-                vbox { streamViewLayout = StreamViewLayout(parent) }
+                vbox {
+                    translateY -= 15
+                    streamViewLayout = StreamViewLayout(parent)
+                }
 
                 button {
                     addClass(ApplicationStyle.toggleStreamButton)
                     translateY -= 15
-                    minWidth = 1240.0
-                    maxWidth = 1240.0
-                    minHeight = 680.0
-                    maxHeight = 680.0
+                    minWidth = 1920.0
+                    maxWidth = 1920.0
+                    minHeight = 1080.0
+                    maxHeight = 1080.0
                     shortpress {
                         if (streamViewLayout.streamView.isVisible) streamViewLayout.toggleScoreboardMode(session)
                     }

@@ -49,11 +49,6 @@ class ApplicationStyle : Stylesheet() {
 
         streamContainer {
             backgroundColor += c("#FF00FFff")
-            alignment = Pos.CENTER
-            maxWidth = 1280.px
-            minWidth = 1280.px
-            maxHeight = 720.px
-            minHeight = 720.px
         }
 
         if (TRACE_BORDERS) star {

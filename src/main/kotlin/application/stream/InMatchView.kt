@@ -247,26 +247,26 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
                 handle2.text = p.getNameString(); handle2.isVisible = true
-                riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
-                chain.viewport = p.getChainImage(); chain.isVisible = true
+                riskRating.viewport = p.getStatusImage(); riskRating.isVisible = true
+                chain.viewport = p.getRatingImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
 //                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
 //                else  bounty1.addClass(BigScoreStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
-                setChangeTextColor(p.getChange())
-                chains1.isVisible = p.getChain() > 0
-                chains2.isVisible = p.getChain() > 1
-                chains3.isVisible = p.getChain() > 2
-                chains4.isVisible = p.getChain() > 3
-                chains5.isVisible = p.getChain() > 4
-                chains6.isVisible = p.getChain() > 5
-                chains7.isVisible = p.getChain() > 6
-                chains8.isVisible = p.getChain() > 7
+                setChangeTextColor(p.getBountyChange())
+                chains1.isVisible = p.getRating() > 0
+                chains2.isVisible = p.getRating() > 1
+                chains3.isVisible = p.getRating() > 2
+                chains4.isVisible = p.getRating() > 3
+                chains5.isVisible = p.getRating() > 4
+                chains6.isVisible = p.getRating() > 5
+                chains7.isVisible = p.getRating() > 6
+                chains8.isVisible = p.getRating() > 7
 
 
-                chains1.fitWidth = 57.0 + ((8+p.getChain()) * p.getChain())
-                chains1.fitHeight = 57.0 + ((8+p.getChain()) * p.getChain())
+                chains1.fitWidth = 57.0 + ((8+p.getRating()) * p.getRating())
+                chains1.fitHeight = 57.0 + ((8+p.getRating()) * p.getRating())
 
                 wholeThing.isVisible = true
             } else {
@@ -302,8 +302,8 @@ class InMatchView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
         change.text = p.getChangeString(1f, changeInt)
-        riskRating.viewport = p.getRatingImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        chain.viewport = p.getChainImage(chainInt)
+        riskRating.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
+        chain.viewport = p.getRatingImage(chainInt)
         chains1.isVisible = chainInt > 0
         chains2.isVisible = chainInt > 1
         chains3.isVisible = chainInt > 2

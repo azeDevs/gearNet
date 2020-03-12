@@ -42,7 +42,7 @@ class MatchHandler {
                 resolveClientMatchResults(players)
             } else resolveLobbyMatchResults(players)
 
-            log("loserChain = ${players[loser.steamUserId]!!.getChain()} // winnerChain = ${players[winner.steamUserId]!!.getChain()}")
+            log("loserChain = ${players[loser.steamUserId]!!.getRating()} // winnerChain = ${players[winner.steamUserId]!!.getRating()}")
             players.values.forEach { p -> if (!p.hasPlayed()) p.incrementIdle(s) }
             log("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
             log("-----------------------------------------")
@@ -61,8 +61,8 @@ class MatchHandler {
 
         log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 
-        val bonusLoserPayout = (players[loser.steamUserId]!!.getChain() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getChain() * 100)
-        val bonusWinnerPayout = (players[winner.steamUserId]!!.getChain(1) * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getChain(1) * 1000)
+        val bonusLoserPayout = (players[loser.steamUserId]!!.getRating() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getRating() * 100)
+        val bonusWinnerPayout = (players[winner.steamUserId]!!.getRating(1) * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getRating(1) * 1000)
 
         log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
 
@@ -72,10 +72,10 @@ class MatchHandler {
 
         if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
             players[loser.steamUserId]!!.changeBounty(bonusLoserPayout - payout)
-            players[loser.steamUserId]!!.changeChain(-2)
+            players[loser.steamUserId]!!.changeRating(-2)
         }
         players[winner.steamUserId]!!.changeBounty(bonusWinnerPayout + payout)
-        players[winner.steamUserId]!!.changeChain(1)
+        players[winner.steamUserId]!!.changeRating(1)
 
     }
 
@@ -92,8 +92,8 @@ class MatchHandler {
 
         log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
 
-        val bonusLoserPayout = (players[loser.steamUserId]!!.getChain() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getChain() * 100)
-        val bonusWinnerPayout = (players[winner.steamUserId]!!.getChain() * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getChain() * 1000)
+        val bonusLoserPayout = (players[loser.steamUserId]!!.getRating() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesPlayed() + (players[loser.steamUserId]!!.getRating() * 100)
+        val bonusWinnerPayout = (players[winner.steamUserId]!!.getRating() * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesPlayed() + (players[winner.steamUserId]!!.getRating() * 1000)
 
         log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
 
@@ -103,9 +103,9 @@ class MatchHandler {
         log("loserPayout = $loserPayout // winnerPayout = $winnerPayout")
 
         players[loser.steamUserId]!!.changeBounty(loserPayout - winnerPayout)
-        players[loser.steamUserId]!!.changeChain(-2)
+        players[loser.steamUserId]!!.changeRating(-2)
         players[winner.steamUserId]!!.changeBounty(winnerPayout - loserPayout)
-        players[winner.steamUserId]!!.changeChain(1)
+        players[winner.steamUserId]!!.changeRating(1)
     }
 
 }

@@ -263,28 +263,28 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
                 character.viewport = getCharacterTrademark(p.getData().characterId)
                 handle1.text = p.getNameString(); handle1.isVisible = true
                 handle2.text = p.getNameString(); handle2.isVisible = true
-                riskRating.viewport = p.getRatingImage(); riskRating.isVisible = true
-                chain.viewport = p.getChainImage(); chain.isVisible = true
+                riskRating.viewport = p.getStatusImage(); riskRating.isVisible = true
+                chain.viewport = p.getRatingImage(); chain.isVisible = true
                 bounty1.text = p.getBountyString()
 //                if (p.getBounty() > 0) bounty1.addClass(BigScoreStyle.bountyBountyText)
 //                else bounty1.addClass(BigScoreStyle.bountyFreeText)
                 bounty2.text = p.getBountyString()
                 change.text = p.getChangeString()
-                setChangeTextColor(p.getChange())
-                chains1.isVisible = p.getChain() > 0
-                chains2.isVisible = p.getChain() > 10
-                chains3.isVisible = p.getChain() > 20
-                chains4.isVisible = p.getChain() > 30
-                chains5.isVisible = p.getChain() > 40
-                chains6.isVisible = p.getChain() > 50
-                chains7.isVisible = p.getChain() > 60
-                chains8.isVisible = p.getChain() > 70
+                setChangeTextColor(p.getBountyChange())
+                chains1.isVisible = p.getRating() > 0
+                chains2.isVisible = p.getRating() > 10
+                chains3.isVisible = p.getRating() > 20
+                chains4.isVisible = p.getRating() > 30
+                chains5.isVisible = p.getRating() > 40
+                chains6.isVisible = p.getRating() > 50
+                chains7.isVisible = p.getRating() > 60
+                chains8.isVisible = p.getRating() > 70
 
-                chain.fitWidth = 57.0 * (1+p.getChain() * 0.033)
-                chain.fitHeight = 57.0 * (1+p.getChain() * 0.033)
+                chain.fitWidth = 57.0 * (1+p.getRating() * 0.033)
+                chain.fitHeight = 57.0 * (1+p.getRating() * 0.033)
 
-                chains1.fitWidth = 77.0 * (1+p.getChain() * 0.33)
-                chains1.fitHeight = 77.0 * (1+p.getChain() * 0.33)
+                chains1.fitWidth = 77.0 * (1+p.getRating() * 0.33)
+                chains1.fitHeight = 77.0 * (1+p.getRating() * 0.33)
 
                 wholeThing.isVisible = true
             } else {
@@ -320,8 +320,8 @@ class BigScoreView(override val root: Parent, val scaleIndex:Int) : Fragment() {
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
         change.text = p.getChangeString(1f, changeInt)
-        riskRating.viewport = p.getRatingImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        chain.viewport = p.getChainImage(chainInt)
+        riskRating.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
+        chain.viewport = p.getRatingImage(chainInt)
         chains1.isVisible = chainInt > 0
         chains2.isVisible = chainInt > 1
         chains3.isVisible = chainInt > 2

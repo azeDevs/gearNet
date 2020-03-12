@@ -34,7 +34,7 @@ class BotEventHandler(private val s: Session) : BotApi {
 
     override fun sendMessage(message: String) {
         when (SILENT_TWITCH) {
-            true -> log("roboaze: $message")
+            true -> log("CHAT roboaze: $message")
             false -> twitchClient.chat.sendMessage("azeDevs", message)
         }
     }

@@ -131,18 +131,18 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
                 if (p.isIdle()) statusBar.maxWidth = 0.0
                 else statusBar.maxWidth = 335.0 * (p.getLoadPercent()*0.01)
 
-                status.text = p.getStatusString()
+                status.text = p.getIdleStateString()
 
                 bounty1.text = p.getBountyString()
                 if (p.isIdle()) bounty1.textFill = c("#a95d29")
                 else bounty1.textFill = c("#ffcc33")
                 bounty2.text = p.getBountyString()
 
-                chain1.text = p.getChainString()
-                chain2.text = p.getChainString()
+                chain1.text = p.getRatingString()
+                chain2.text = p.getRatingString()
 
-                if (p.getChange() > 0) change.textFill = c("#84c928")
-                else if (p.getChange() < 0) change.textFill = c("#d22e44")
+                if (p.getBountyChange() > 0) change.textFill = c("#84c928")
+                else if (p.getBountyChange() < 0) change.textFill = c("#d22e44")
                 else change.textFill = c("#521833")
                 change.text = p.getChangeString()
 

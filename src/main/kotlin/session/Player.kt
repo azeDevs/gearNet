@@ -16,7 +16,7 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     private var bounty = 0
     private var change = 0
-    private var chain = 0 //Random.nextInt(9)
+    private var rating = 1
     private var idle = 1
     private var data = Pair(playerData, playerData)
 
@@ -47,7 +47,7 @@ class Player(playerData: PlayerData = PlayerData()) {
     fun incrementIdle(s: Session) {
         changeBounty(0)
         if (--idle <= 0) {
-            if (changeChain(-1) <= 0) {
+            if (changeRating(-1) <= 0) {
                 present = false
                 idle = 0
             } else {
@@ -59,8 +59,8 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun getBounty() = bounty
 
-    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
-    else "${addCommas(max(getBounty()-getChange()+(getChange()*ramp).toInt(), getBounty()).toString())} W$"
+    fun getBountyFormatted(ramp:Float = 1f) = if (getBounty() > 0) "${addCommas(min(getBounty()-getBountyChange()+(getBountyChange()*ramp).toInt(), getBounty()).toString())} W$"
+    else "${addCommas(max(getBounty()-getBountyChange()+(getBountyChange()*ramp).toInt(), getBounty()).toString())} W$"
 
     fun getBountyString(ramp:Float = 1f) = if (getBounty() > 0) getBountyFormatted(if (change!=0) ramp else 1f) else "FREE"
 
@@ -72,18 +72,18 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (bounty < 10) bounty = 0
     }
 
-    fun getChain(modify:Int = 0) = chain + modify
+    fun getRating(modify:Int = 0) = rating + modify
 
-    fun getChainString():String = if (getChain()>=8) "★" else if (getChain()>0) getChain().toString() else ""
+    fun getRatingString():String = if (getRating()>=8) "★" else if (getRating()>0) getRating().toString() else ""
 
-    fun changeChain(amount:Int): Int {
-        chain += amount
-        if (chain < 0) chain = 0
-        if (chain > 8) chain = 8
-        return chain
+    fun changeRating(amount:Int): Int {
+        rating += amount
+        if (rating < 0) rating = 0
+        if (rating > 8) rating = 8
+        return rating
     }
 
-    fun getChange() = change
+    fun getBountyChange() = change
 
     fun getChangeString(ramp:Float = 1f, change:Int = this.change): String {
         if (change > 0) return "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
@@ -124,7 +124,7 @@ class Player(playerData: PlayerData = PlayerData()) {
         }
     }
 
-    fun getStatusString() = if (idle == 0) "Idle: ${idle}" else "Standby: ${idle} [${getLoadPercent()}%]"
+    fun getIdleStateString() = if (idle == 0) "Idle: ${idle}" else "Standby: ${idle} [${getLoadPercent()}%]"
 
     fun getLoadPercent() = getData().loadingPct
 
@@ -136,27 +136,12 @@ class Player(playerData: PlayerData = PlayerData()) {
 
     fun isWinner() = getData().matchesWon > oldData().matchesWon && hasPlayed()
 
-    fun getRating():Float {
-        if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getChain()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()
+    fun getStatus():Float {
+        if (getMatchesPlayed() > 0) return ((((getMatchesWon().toFloat() * 0.1) * getRating()) + getMatchesWon()) / (getMatchesPlayed().toFloat())).toFloat()
         else return 0F
     }
 
-    fun getRatingLetter(): String {
-        var grade = "-"
-        if (getMatchesWon() >= 1 && getRating() > 0.0f) grade  = "D"
-        if (getMatchesWon() >= 1 && getRating() >= 0.1f) grade  = "D+"
-        if (getMatchesWon() >= 2 && getRating() >= 0.2f) grade  = "C"
-        if (getMatchesWon() >= 3 && getRating() >= 0.3f) grade  = "C+"
-        if (getMatchesWon() >= 5 && getRating() >= 0.4f) grade  = "B"
-        if (getMatchesWon() >= 8 && getRating() >= 0.6f) grade  = "B+"
-        if (getMatchesWon() >= 13 && getRating() >= 1.0f) grade  = "A"
-        if (getMatchesWon() >= 21 && getRating() >= 1.2f) grade = "A+"
-        if (getMatchesWon() >= 34 && getRating() >= 1.4f) grade = "S"
-        if (getMatchesWon() >= 55 && getRating() >= 1.6f) grade = "S+"
-        return grade
-    }
-
-    fun getRatingImage(matchesWon:Int = getMatchesWon(), rating:Float = getRating()): Rectangle2D {
+    fun getStatusImage(matchesWon:Int = getMatchesWon(), rating:Float = getStatus()): Rectangle2D {
         var grade = Rectangle2D(0.0, 640.0, 128.0, 64.0)
         if (matchesWon >= 1 && rating > 0.0f) grade  = Rectangle2D(0.0, 0.0, 128.0, 64.0)  // D
         if (matchesWon >= 1 && rating >= 0.1f) grade = Rectangle2D(0.0, 64.0, 128.0, 64.0)  // D+
@@ -168,19 +153,22 @@ class Player(playerData: PlayerData = PlayerData()) {
         if (matchesWon >= 21 && rating >= 1.2f) grade = Rectangle2D(0.0, 448.0, 128.0, 64.0)  // A+
         if (matchesWon >= 34 && rating >= 1.4f) grade = Rectangle2D(0.0, 512.0, 128.0, 64.0)  // S
         if (matchesWon >= 55 && rating >= 1.6f) grade = Rectangle2D(0.0, 576.0, 128.0, 64.0)  // S+
+
+        grade  = Rectangle2D(0.0, 0.0, 128.0, 64.0)  // D
+
         return grade
     }
 
-    fun getChainImage(chain:Int = getChain()): Rectangle2D {
+    fun getRatingImage(rating:Int = getRating()): Rectangle2D {
         var grade = Rectangle2D(256.0, 448.0, 64.0, 64.0)
-        if (chain == 1) grade = Rectangle2D(128.0, 0.0, 64.0, 64.0)
-        if (chain == 2) grade = Rectangle2D(128.0, 64.0, 64.0, 64.0)
-        if (chain == 3) grade = Rectangle2D(128.0, 128.0, 64.0, 64.0)
-        if (chain == 4) grade = Rectangle2D(128.0, 192.0, 64.0, 64.0)
-        if (chain == 5) grade = Rectangle2D(128.0, 256.0, 64.0, 64.0)
-        if (chain == 6) grade = Rectangle2D(128.0, 320.0, 64.0, 64.0)
-        if (chain == 7) grade = Rectangle2D(128.0, 384.0, 64.0, 64.0)
-        if (chain == 8) grade = Rectangle2D(128.0, 448.0, 64.0, 64.0)
+        if (rating == 1) grade = Rectangle2D(128.0, 0.0, 64.0, 64.0)
+        if (rating == 2) grade = Rectangle2D(128.0, 64.0, 64.0, 64.0)
+        if (rating == 3) grade = Rectangle2D(128.0, 128.0, 64.0, 64.0)
+        if (rating == 4) grade = Rectangle2D(128.0, 192.0, 64.0, 64.0)
+        if (rating == 5) grade = Rectangle2D(128.0, 256.0, 64.0, 64.0)
+        if (rating == 6) grade = Rectangle2D(128.0, 320.0, 64.0, 64.0)
+        if (rating == 7) grade = Rectangle2D(128.0, 384.0, 64.0, 64.0)
+        if (rating == 8) grade = Rectangle2D(128.0, 448.0, 64.0, 64.0)
         return grade
     }
 

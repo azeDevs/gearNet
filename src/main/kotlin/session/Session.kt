@@ -151,7 +151,7 @@ class Session : Controller() {
         .sortedByDescending { item -> item.getScore() }
 
     fun getPlayersList(): List<Player> = players.values.toList()
-        .sortedByDescending { item -> item.getRating() }
+        .sortedByDescending { item -> item.getStatus() }
         .sortedByDescending { item -> item.getBounty() }
         .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
 
