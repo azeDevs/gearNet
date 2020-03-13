@@ -1,6 +1,5 @@
 package application.stream
 
-import MyApp.Companion.SIMULATE_MODE
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -8,6 +7,9 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import models.Viewer
 import tornadofx.*
 import utils.getRes
@@ -21,11 +23,12 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
     private lateinit var teamBackground: ImageView
     private lateinit var handle: Label
     private lateinit var score: Label
+    private lateinit var delta: Label
 
 
     init {
         with(root) {
-            wholeThing = stackpane { isVisible = SIMULATE_MODE
+            wholeThing = stackpane { isVisible = false
                 translateY += (scaleIndex*(60*scaleFactor))-320.0-scaleIndex
                 scaleX -= (scaleIndex*0.016)
                 scaleY -= (scaleIndex*0.016)
@@ -63,7 +66,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     }
                     scaleX *= scaleFactor
                     scaleY *= scaleFactor
-                    translateY -= (3.0 * scaleFactor)
+                    translateY -= (4.0 * scaleFactor)
                 }
 
                 score = label {
@@ -78,6 +81,18 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     translateY -= (5.0 * scaleFactor)
                 }
 
+                delta = label("TESTING") {
+                    addClass(ScoreStyle.bountyChangeText)
+                    when(teamColor) {
+                        0 -> translateX -= (128.0 *  scaleFactor)
+                        1 -> translateX += (128.0 *  scaleFactor)
+                        else -> translateX += (128.0 *  scaleFactor)
+                    }
+                    scaleX *= scaleFactor
+                    scaleY *= scaleFactor
+                    translateY -= (22.0 * scaleFactor)
+                }
+
             }
         }
     }
@@ -86,26 +101,41 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
 
     fun applyData(v: Viewer) = Platform.runLater {
         if (v.isValid() && !isWithin(teamColor)) {
+            // Do stuff for central Viewer Leaderboard
             handle.text = truncate(v.getName(), 11)
             handle.isVisible = true
             score.text = v.getScoreTotalString()
+            delta.text = v.getScoreDeltaString()
+            setChangeTextColor(v.getScoreDelta())
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamR() && teamColor == 0) {
+            // Do stuff for Viewer Atension, stage left (Red)
             handle.text = v.getName()
             handle.isVisible = true
             score.text = v.getScoreTotalString()
+//            delta.text = ""
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamB() && teamColor == 1) {
+            // Do stuff for Viewer Atension, stage right (Blue)
             handle.text = v.getName()
             handle.isVisible = true
             score.text = v.getScoreTotalString()
+//            delta.text = ""
             wholeThing.isVisible = true
         } else {
+            // Apply empty data
             handle.text = ""
             handle.isVisible = false
             score.text = "FREE"
-            wholeThing.isVisible = SIMULATE_MODE
+//            delta.text = ""
+            wholeThing.isVisible = false
         }
+    }
+
+    private fun setChangeTextColor(changeInt: Int) = when {
+        changeInt > 0 -> delta.textFill = LinearGradient(0.0, -20.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.2, 1.0, 0.6)), Stop(0.48, c(0.2, 1.0, 0.6)), Stop(0.58, c(0.0, 0.8, 0.4)), Stop(1.0, c(0.0, 0.8, 0.4))) // c("#17e07f")
+        changeInt < 0 -> delta.textFill = LinearGradient(0.0, -20.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(1.0, 0.4, 0.5)), Stop(0.48, c(1.0, 0.4, 0.5)), Stop(0.58, c(0.9, 0.1, 0.0)), Stop(1.0, c(0.9, 0.1, 0.0))) // c("#fd2832")
+        else -> delta.textFill = c("#4b3f3a")
     }
 
 }

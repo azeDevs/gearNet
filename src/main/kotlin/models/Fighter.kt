@@ -15,6 +15,7 @@ class Fighter(fighterData: FighterData = FighterData()) : Player(fighterData.ste
         if (isLoading()) setBystanding(playersActive)
         setMatchesWon(updatedData.matchesWon)
         setMatchesSum(updatedData.matchesSum)
+        setCharacterId(updatedData.characterId)
     }
 
     fun getCabinet() = getData().cabinetLoc.toInt()

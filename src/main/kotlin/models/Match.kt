@@ -32,7 +32,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
     private var tension = Duo(matchData.tension.first, matchData.tension.second)
     private var canBurst = Duo(matchData.canBurst.first, matchData.canBurst.second)
     private var stunProgress = Duo(matchData.stunProgress.first, matchData.stunProgress.second)
-    private var maxStun = Duo(matchData.maxStun.first, matchData.maxStun.second)
+    private var maxStun = Duo(matchData.stunMaximum.first, matchData.stunMaximum.second)
     private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
@@ -47,7 +47,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
 
             health.p1 = keepInRange(getData().health.first)//, 0, 420)
             stunProgress.p1 = keepInRange(getData().stunProgress.first)//, 0, 8000)
-            maxStun.p1 = keepInRange(getData().maxStun.first)//, 0, 8000)
+            maxStun.p1 = keepInRange(getData().stunMaximum.first)//, 0, 8000)
             tension.p1 = keepInRange(getData().tension.first)//, 0, 10000)
             guardGauge.p1 = keepInRange(getData().guardGauge.first)//, 0, 12800)
             rounds.p1 = updatedData.rounds.first
@@ -56,7 +56,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
 
             health.p2 = keepInRange(getData().health.second)//, 0, 420)
             stunProgress.p2 = keepInRange(getData().stunProgress.second)//, 0, 8000)
-            maxStun.p2 = keepInRange(getData().maxStun.second)//, 0, 8000)
+            maxStun.p2 = keepInRange(getData().stunMaximum.second)//, 0, 8000)
             tension.p2 = keepInRange(getData().tension.second)//, 0, 10000)
             guardGauge.p2 = keepInRange(getData().guardGauge.second)//, 0, 12800)
             rounds.p2 = updatedData.rounds.second

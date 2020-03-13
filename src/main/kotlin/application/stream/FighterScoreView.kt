@@ -1,6 +1,5 @@
 package application.stream
 
-import MyApp.Companion.SIMULATE_MODE
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -38,7 +37,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
     init {
         with(root) {
-            wholeThing = stackpane { isVisible = SIMULATE_MODE
+            wholeThing = stackpane { isVisible = false
                 addClass(ScoreStyle.bountyContainer)
                 translateX += 444
                 translateY -= 300
@@ -158,7 +157,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         change.text = ""
         chain.isVisible = false
         spirit.isVisible = false
-        wholeThing.isVisible = SIMULATE_MODE
+        wholeThing.isVisible = false
     }
 
     private fun applyPlayerData(p: Fighter) {

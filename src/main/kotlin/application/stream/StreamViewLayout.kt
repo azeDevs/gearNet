@@ -36,6 +36,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var slashView: StackPane
     private lateinit var viewersView: StackPane
 
+    private lateinit var atensionMeters: AtensionMetersView
+
+    private lateinit var stunGaugeR: StunGaugeView
     private lateinit var bountyR: Label
     private lateinit var healthR: Label
     private lateinit var statusR: ImageView
@@ -44,6 +47,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var round1R: ImageView
     private lateinit var round2R: ImageView
 
+    private lateinit var stunGaugeB: StunGaugeView
     private lateinit var bountyB: Label
     private lateinit var healthB: Label
     private lateinit var statusB: ImageView
@@ -120,8 +124,12 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
         if (p1.getId() > 0L) {
             bountyR.text = p1.getScoreTotalString()
-            if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
-            else healthR.text = ""
+            if (s.sessionMode == MATCH_MODE) {
+                if (s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
+                else healthR.text = ""
+                stunGaugeR.setVisibility(true)
+                stunGaugeR.applyData(s.matchHandler.clientMatch.getData())
+            }
             statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
             statusR.isVisible = true
             ratingR.viewport = p1.getRatingImage()
@@ -133,6 +141,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             else round2R.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         } else {
             bountyR.text = "FREE"
+            stunGaugeR.setVisibility(false)
             statusR.isVisible = false
             ratingR.isVisible = false
             spiritR.isVisible = false
@@ -141,8 +150,12 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
         }
         if (p2.getId() > 0L) {
             bountyB.text = p2.getScoreTotalString()
-            if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
-            else healthB.text = ""
+            if (s.sessionMode == MATCH_MODE) {
+                if (s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
+                else healthB.text = ""
+                stunGaugeB.setVisibility(true)
+                stunGaugeB.applyData(s.matchHandler.clientMatch.getData())
+            }
             statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
             statusB.isVisible = true
             ratingB.viewport = p2.getRatingImage()
@@ -181,11 +194,15 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                 translateY -= 10
                 addClass(ApplicationStyle.streamContainer)
 
+                atensionMeters = AtensionMetersView(parent)
+//                lobbyView = LobbyView(parent)
+
                 lobbyView = stackpane {
                     maxWidth = 1920.0
                     minWidth = 1920.0
                     maxHeight = 1080.0
                     minHeight = 1080.0
+
                     imageview(getRes("barc_lobby.png").toString()) {
                         viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
                         fitWidth = 1920.0
@@ -204,6 +221,10 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                     minWidth = 1920.0
                     maxHeight = 1080.0
                     minHeight = 1080.0
+
+                    stunGaugeR = StunGaugeView(parent, 0)
+                    stunGaugeB = StunGaugeView(parent, 1)
+
                     imageview(getRes("barc_match.png").toString()) {
                         viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
                         fitWidth = 1920.0

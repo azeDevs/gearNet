@@ -47,6 +47,8 @@ class BotEventHandler(private val s: Session) : BotApi {
         return outList
     }
 
+    fun addViewerData(viewerData:ViewerData) { viewerDatas.add(viewerData) }
+
     //fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
 
     fun generateViewerEvents() {

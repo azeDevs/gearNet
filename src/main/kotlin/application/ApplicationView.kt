@@ -17,15 +17,14 @@ import session.Session.Companion.LOBBY_MODE
 import session.Session.Companion.MATCH_MODE
 import session.Session.Companion.SLASH_MODE
 import session.Session.Companion.VICTORY_MODE
-import session.consoleLog
 import tornadofx.*
 
 class ApplicationView : View() {
 
     fun updateConsole() = Platform.runLater {
-        val sb = StringBuilder()
-        consoleLog.forEach { sb.append("\n${it}") }
-        consoleView.setText(sb.toString())
+//        val sb = StringBuilder()
+//        consoleLog.forEach { sb.append("\n${it}") }
+//        consoleView.setText(sb.toString())
     }
 
     override val root: Form = Form()
@@ -61,7 +60,7 @@ class ApplicationView : View() {
             else playersGui[i].applyData(Fighter(), session)
             streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
             updateTitle()
-            delay(24)
+            delay(8)
             cycleMemScan()
         }
     }

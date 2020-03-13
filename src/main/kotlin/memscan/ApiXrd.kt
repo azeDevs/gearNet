@@ -58,14 +58,14 @@ data class MatchData(
     val rounds: Pair<Int, Int> = Pair(-1,-1),
     val tension: Pair<Int, Int> = Pair(-1,-1),
     val stunProgress: Pair<Int, Int> = Pair(-1,-1),
-    val maxStun: Pair<Int, Int> = Pair(-1,-1),
+    val stunMaximum: Pair<Int, Int> = Pair(-1,-1),
     val canBurst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
 ) { fun equals(other: MatchData) = timer == other.timer &&
             health.first == other.health.first &&
             stunProgress.first == other.stunProgress.first &&
-            maxStun.first == other.maxStun.first &&
+            stunMaximum.first == other.stunMaximum.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
             canBurst.first == other.canBurst.first &&
@@ -77,7 +77,6 @@ data class MatchData(
             canBurst.second == other.canBurst.second &&
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
-
 }
 
 data class LobbyData(

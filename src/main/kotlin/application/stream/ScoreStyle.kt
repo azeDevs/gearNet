@@ -9,6 +9,7 @@ import tornadofx.*
 class ScoreStyle : Stylesheet() {
 
     companion object {
+        val fontXiaoWeiRegular = loadFont("/fonts/XiaoWei-Regular.ttf", 16.0)
         val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
@@ -17,6 +18,7 @@ class ScoreStyle : Stylesheet() {
         val bountyContainer by cssclass()
 
         val viewerHandleText by cssclass()
+        val pagesTurnedText by cssclass()
         val bountyHandleText by cssclass()
         val bountyHandleShadow by cssclass()
         val bountyBountyText by cssclass()
@@ -36,6 +38,13 @@ class ScoreStyle : Stylesheet() {
             fontFiraCodeMedium?.let { font = it }
             textFill = c("#78cbab")
             fontSize = 10.px
+            and(pagesTurnedText) {
+                fontXiaoWeiRegular?.let { font = it }
+                fontSize = 40.px
+                maxWidth = 256.px
+                minWidth = 256.px
+                textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.8, 0.8, 0.3)), Stop(0.48, c(0.9, 0.9, 0.4)), Stop(0.52, c(0.7, 0.5, 0.1)), Stop(1.0, c(0.9, 0.8, 0.2)))
+            }
             and(viewerHandleText) {
                 fontFiraCodeBold?.let { font = it }
                 fontSize = 22.px

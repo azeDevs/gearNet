@@ -1,14 +1,18 @@
 package session
 
+import MyApp.Companion.SIMULATE_MODE
 import memscan.FighterData
 import models.Fighter
 import models.Match
 import models.Viewer
 import tornadofx.Controller
 import twitch.BotEventHandler
+import twitch.ViewerData
 import utils.Duo
 import utils.getIdString
+import utils.getRandomName
 import kotlin.math.max
+import kotlin.random.Random
 
 
 class Session : Controller() {
@@ -31,20 +35,12 @@ class Session : Controller() {
 
     fun updateViewers() {
         twitchHandler.generateViewerEvents()
+        if (SIMULATE_MODE) when (Random.nextInt(333)) {
+            0 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngRC"))
+            1 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngBC"))
+            2 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), getRandomName()))
+        }
     }
-
-
-    /*
-        ±0 NEUTRAL   =              (0± bountyInflate %, 0± betOnPayout %, 0± betOffPayout %)
-        +1           = C            (+40 bountyInflate %, -8 betOnPayout %, +16 betOffPayout %)
-        +2           = C+           (+80 bountyInflate %, -16 betOnPayout %, +32 betOffPayout %)
-        +3           = B            (+160 bountyInflate %, -24 betOnPayout %, +64 betOffPayout %)
-        +4           = B+           (+320 bountyInflate %, -32 betOnPayout %, +128 betOffPayout %)
-        +5           = A            (+640 bountyInflate %, -40 betOnPayout %, +256 betOffPayout %)
-        +6           = A+           (+1280 bountyInflate %, -48 betOnPayout %, +512 betOffPayout %)
-        +7           = S            (+2560 bountyInflate %, -56 betOnPayout %, +1024 betOffPayout %)
-        +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
-     */
 
     fun updatePlayers(): Boolean {
         var somethingChanged = false
@@ -181,10 +177,10 @@ class Session : Controller() {
 
 }
 
-var consoleLog = arrayListOf("C: GearNet started")
+//var consoleLog = arrayListOf("C: GearNet started")
 fun log(text: String) {
-    if (consoleLog.size > 50) consoleLog.removeAt(0)
-    consoleLog.add(text)
+//    if (consoleLog.size > 50) consoleLog.removeAt(0)
+//    consoleLog.add(text)
     println(text)
 }
 

@@ -31,8 +31,8 @@ class MemRandomizer : XrdApi {
 
     init { randomEventLoop() }
     private fun randomEventLoop() {
-        GlobalScope.launch { val seed = Random.nextInt(8)
-            when (seed) {
+        GlobalScope.launch {
+            when (Random.nextInt(10)) {
                 // XrdLobby AI
                 0 -> { botJoinLobby() }
                 1 -> { botLeaveLobby() }
