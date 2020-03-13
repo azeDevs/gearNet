@@ -3,8 +3,8 @@ package memscan
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import models.Fighter
 import session.Character.getCharacterInitials
-import session.Player
 import session.log
 import utils.Duo
 import utils.getIdString
@@ -16,12 +16,12 @@ import kotlin.random.Random
 
 class MemRandomizer : XrdApi {
 
-    private val clientBot = PlayerData(1234567890L, "Randomizer Bot", 25, 0, 0, 0, 0, 0)
+    private val clientBot = FighterData(1234567890L, "Randomizer Bot", 25, 0, 0, 0, 0, 0)
     private val delay = 512L
     private var player1 = -1L
     private var player2 = -1L
     private val botMatch:MatchData = MatchData()
-    private val botLobby:MutableMap<Long, PlayerData> = mutableMapOf(Pair(clientBot.steamUserId, clientBot))
+    private val botLobby:MutableMap<Long, FighterData> = mutableMapOf(Pair(clientBot.steamUserId, clientBot))
 
     private fun advanceMatch() {
         // increment match timer
@@ -51,7 +51,7 @@ class MemRandomizer : XrdApi {
         if (botLobby.size >= 8) return
         val botId = Random.nextLong(1000000000, 9999999999)
         val displayName = getRandomName()
-        botLobby[botId] = PlayerData(botId, displayName, Random.nextInt(25).toByte(), 7, 0, 0, 0, 0)
+        botLobby[botId] = FighterData(botId, displayName, Random.nextInt(25).toByte(), 7, 0, 0, 0, 0)
         log("B: $displayName [${getIdString(botId)}] has joined the lobby")
     }
 
@@ -74,13 +74,15 @@ class MemRandomizer : XrdApi {
             if (botLobby.values.none { it.cabinetLoc == sightedBot.cabinetLoc && it.playerSide.toInt() == abs(sightedBot.playerSide.toInt() - 1) }) {
                 seat.p1 = sightedBot.cabinetLoc.toInt()
                 seat.p2 = abs(sightedBot.playerSide.toInt() - 1)
-                log("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Player(sightedBot).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString(0, seat.p2)}")
+                log("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Fighter(
+                    sightedBot
+                ).getCabinetString()}, spot ${Fighter(sightedBot).getPlaySideString(0, seat.p2)}")
             } else {
                 // TODO: MAKE THE BOT FIND ANY OPEN SEAT
             }
 
         }
-        val t = PlayerData(s.steamUserId, s.displayName, s.characterId, seat.p1.toByte(), seat.p2.toByte(), s.matchesWon, s.matchesSum, s.loadingPct)
+        val t = FighterData(s.steamUserId, s.displayName, s.characterId, seat.p1.toByte(), seat.p2.toByte(), s.matchesWon, s.matchesSum, s.loadingPct)
         botLobby[t.steamUserId] = t
     }
 
@@ -88,7 +90,7 @@ class MemRandomizer : XrdApi {
 
     private fun botChangeCharacter() {
         val s = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]
-        val t = PlayerData(s.steamUserId, s.displayName, Random.nextInt(25).toByte(), s.cabinetLoc, s.playerSide, s.matchesWon, s.matchesSum, s.loadingPct)
+        val t = FighterData(s.steamUserId, s.displayName, Random.nextInt(25).toByte(), s.cabinetLoc, s.playerSide, s.matchesWon, s.matchesSum, s.loadingPct)
         botLobby[t.steamUserId] = t
         log("B: ${s.displayName} [${getIdString(s.steamUserId)}] changed characters from ${getCharacterInitials(s.characterId)} to ${getCharacterInitials(t.characterId)}")
     }
@@ -114,9 +116,9 @@ class MemRandomizer : XrdApi {
     }
 
     private fun pickRandomBotFromLobby() = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]
-    private fun getClientBot():PlayerData = botLobby[0] ?: clientBot
-    private fun isClientBot(s: PlayerData) = s.steamUserId == getClientSteamId()
-    private fun isInMatch(s: PlayerData) = s.steamUserId == player1 || s.steamUserId == player2
+    private fun getClientBot():FighterData = botLobby[0] ?: clientBot
+    private fun isClientBot(s: FighterData) = s.steamUserId == getClientSteamId()
+    private fun isInMatch(s: FighterData) = s.steamUserId == player1 || s.steamUserId == player2
 
     override fun isConnected() = true
     override fun getClientSteamId() = getClientBot().steamUserId

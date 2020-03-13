@@ -70,11 +70,11 @@ class MemHandler : XrdApi {
         return bufferMem.getByteBuffer(0L, numBytes.toLong())
     }
 
-    override fun getPlayerData(): List<PlayerData> {
+    override fun getPlayerData(): List<FighterData> {
         if (!isConnected()) return ArrayList()
 
         val offs = longArrayOf(0x1C25AB4L, 0x44CL)
-        val pDatas = ArrayList<PlayerData>()
+        val pDatas = ArrayList<FighterData>()
         for (i in 0..7) {
             val bb = getByteBufferFromAddress(offs, 0x48) ?: return ArrayList()
             val dispbytes = ByteArray(0x24)
@@ -88,7 +88,7 @@ class MemHandler : XrdApi {
             bb.position(0xC)
             bb.get(dispbytes, 0, 0x24)
             val dispname = truncate(String(dispbytes).trim('\u0000'), 24)
-            val pd = PlayerData(steamid, dispname, charid, cabid, playerside, wins, totalmatch, loadpercent)
+            val pd = FighterData(steamid, dispname, charid, cabid, playerside, wins, totalmatch, loadpercent)
 
             offs[1] += 0x48L
             pDatas.add(pd)

@@ -9,8 +9,8 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
+import models.Fighter
 import session.Character.getCharacterTrademark
-import session.Player
 import session.Session
 import tornadofx.*
 import utils.addCommas
@@ -118,33 +118,33 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
         }
     } }
 
-    fun applyData(p: Player, session: Session) = Platform.runLater {
+    fun applyData(p: Fighter, session: Session) = Platform.runLater {
         if (session.randomValues) applyRandomData(p) else
-            if (p.getSteamId() > 0L) {
+            if (p.getId() > 0L) {
                 wholeThing.opacity = 1.0
                 character.viewport = getCharacterTrademark(p.getData().characterId)
 
-                handle.text = p.getNameString()
-                if (p.isIdle()) handle.textFill = c("#3befaa88")
+                handle.text = p.getName()
+                if (p.isAbsent()) handle.textFill = c("#3befaa88")
                 else handle.textFill = c("#3befaa")
 
-                if (p.isIdle()) statusBar.maxWidth = 0.0
+                if (p.isAbsent()) statusBar.maxWidth = 0.0
                 else statusBar.maxWidth = 335.0 * (p.getLoadPercent()*0.01)
 
-                status.text = p.getIdleStateString()
+                status.text = p.getBystandingString()
 
-                bounty1.text = p.getBountyString()
-                if (p.isIdle()) bounty1.textFill = c("#a95d29")
+                bounty1.text = p.getScoreTotalString()
+                if (p.isAbsent()) bounty1.textFill = c("#a95d29")
                 else bounty1.textFill = c("#ffcc33")
-                bounty2.text = p.getBountyString()
+                bounty2.text = p.getScoreTotalString()
 
                 chain1.text = p.getRatingString()
                 chain2.text = p.getRatingString()
 
-                if (p.getBountyChange() > 0) change.textFill = c("#84c928")
-                else if (p.getBountyChange() < 0) change.textFill = c("#d22e44")
+                if (p.getScoreDelta() > 0) change.textFill = c("#84c928")
+                else if (p.getScoreDelta() < 0) change.textFill = c("#d22e44")
                 else change.textFill = c("#521833")
-                change.text = p.getChangeString()
+                change.text = p.getScoreDeltaString()
 
                 record.text = p.getRecordString()
                 cabinet.text = p.getCabinetString()
@@ -167,7 +167,7 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
             }
     }
 
-    private fun applyRandomData(p: Player) {
+    private fun applyRandomData(p: Fighter) {
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val loadingInt = Random.nextInt(100)
         val changeInt = Random.nextInt(-444555, 666777)
@@ -186,7 +186,7 @@ class ToolsPlayerView(override val root: Parent) : Fragment() {
         if (changeInt > 0) change.textFill = c("#84c928")
         else if (changeInt < 0) change.textFill = c("#d22e44")
         else change.textFill = c("#e0af1a")
-        change.text = p.getChangeString(1f, changeInt)
+        change.text = p.getScoreDeltaString(1f, changeInt)
         record.text = "W:$winsInt  /  M:${winsInt + Random.nextInt(44)}"
         location.text = p.getPlaySideString(cabId, Random.nextInt(8))
         cabinet.text = p.getCabinetString(cabId)

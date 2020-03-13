@@ -1,9 +1,11 @@
 package session
 
-import memscan.PlayerData
+import memscan.FighterData
+import models.Fighter
+import models.Match
+import models.Viewer
 import tornadofx.Controller
 import twitch.BotEventHandler
-import twitch.Viewer
 import utils.Duo
 import utils.getIdString
 import kotlin.math.max
@@ -22,7 +24,7 @@ class Session : Controller() {
     val api = ApiHandler()
     val twitchHandler = BotEventHandler(this)
     val matchHandler = MatchHandler()
-    val players: HashMap<Long, Player> = HashMap()
+    val players: HashMap<Long, Fighter> = HashMap()
     val viewers: HashMap<Long, Viewer> = HashMap()
 
     var randomValues = false
@@ -55,13 +57,13 @@ class Session : Controller() {
 
             // Add player if they aren't already stored
             if (!players.containsKey(data.steamUserId)) {
-                players[data.steamUserId] = Player(data)
+                players[data.steamUserId] = Fighter(data)
                 somethingChanged = true
                 log("S: New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
             }
 
             // The present is now the past, and the future is now the present
-            val player = players[data.steamUserId] ?: Player()
+            val player = players[data.steamUserId] ?: Fighter()
             if (!player.getData().equals(data)) somethingChanged = true
             player.updatePlayerData(data, getActivePlayerCount())
 
@@ -73,31 +75,35 @@ class Session : Controller() {
         // New match underway?
         // TODO: MAKE CABINETS TO HOUSE THESE
         // NOTE: THIS IS WEHRE YOU LEFT OFF
-        val lobbyMatchPlayers = Duo(PlayerData(), PlayerData())
-        val clientMatchPlayers = Duo(PlayerData(), PlayerData())
+        val lobbyMatchPlayers = Duo(FighterData(), FighterData())
+        val clientMatchPlayers = Duo(FighterData(), FighterData())
 
         snap.getLoadingPlayers().forEach { data ->
 
             // XrdLobby Match stuff --------
             if (data.playerSide.toInt() == 0) lobbyMatchPlayers.p1 = data
-            else lobbyMatchPlayers.p1 = PlayerData()
+            else lobbyMatchPlayers.p1 = FighterData()
             if (data.playerSide.toInt() == 1) lobbyMatchPlayers.p2 = data
-            else lobbyMatchPlayers.p2 = PlayerData()
+            else lobbyMatchPlayers.p2 = FighterData()
 
             if (lobbyMatchPlayers.p1.steamUserId != -1L
                 && lobbyMatchPlayers.p2.steamUserId != -1L
                 && lobbyMatchPlayers.p1.cabinetLoc == lobbyMatchPlayers.p2.cabinetLoc) {
-                val newMatch = Match(matchHandler.archiveMatches.size.toLong(), lobbyMatchPlayers.p1.cabinetLoc, lobbyMatchPlayers)
+                val newMatch = Match(
+                    matchHandler.archiveMatches.size.toLong(),
+                    lobbyMatchPlayers.p1.cabinetLoc,
+                    lobbyMatchPlayers
+                )
                 matchHandler.lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
             }
 
             // Client Match stuff --------
-            if (data.cabinetLoc == getClient().getCabinet()
+            if (data.cabinetLoc == getClient().getCabinet().toByte()
                 && data.playerSide.toInt() == 0) clientMatchPlayers.p1 =
-                data else clientMatchPlayers.p1 = PlayerData()
-            if (data.cabinetLoc == getClient().getCabinet()
+                data else clientMatchPlayers.p1 = FighterData()
+            if (data.cabinetLoc == getClient().getCabinet().toByte()
                 && data.playerSide.toInt() == 1) clientMatchPlayers.p2 =
-                data else clientMatchPlayers.p2 = PlayerData()
+                data else clientMatchPlayers.p2 = FighterData()
 
             if (sessionMode == MATCH_MODE
                 && clientMatchPlayers.p1.steamUserId == -1L
@@ -116,7 +122,11 @@ class Session : Controller() {
                 && clientMatchPlayers.p1.steamUserId > 0L
                 && clientMatchPlayers.p2.steamUserId > 0L) {
                 matchHandler.clientMatch =
-                    Match(matchHandler.archiveMatches.size.toLong(), getClient().getCabinet(), clientMatchPlayers)
+                    Match(
+                        matchHandler.archiveMatches.size.toLong(),
+                        getClient().getCabinet().toByte(),
+                        clientMatchPlayers
+                    )
                 log("S: Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
                 somethingChanged = true
                 setMode(LOADING_MODE)
@@ -144,7 +154,7 @@ class Session : Controller() {
         return matchHandler.updateClientMatch(api.getMatchData(), this)
     }
 
-    fun getActivePlayerCount() = max(players.values.filter { !it.isIdle() }.size, 1)
+    fun getActivePlayerCount() = max(players.values.filter { !it.isAbsent() }.size, 1)
 
     var sessionMode: Int = 0
 
@@ -159,17 +169,14 @@ class Session : Controller() {
         }
     }
 
-    fun getViewersList(): List<Viewer> = viewers.values.toList()
-        .sortedByDescending { item -> item.getScore() }
+    fun getPlayersList(): List<Fighter> = players.values.toList()
+        .sortedByDescending { item -> item.getStatusFloat() }
+        .sortedByDescending { item -> item.getScoreTotal() }
+        .sortedByDescending { item -> if (!item.isAbsent()) 1 else 0 }
 
-    fun getPlayersList(): List<Player> = players.values.toList()
-        .sortedByDescending { item -> item.getStatus() }
-        .sortedByDescending { item -> item.getBounty() }
-        .sortedByDescending { item -> if (!item.isIdle()) 1 else 0 }
-
-    fun getClient(): Player {
-        if (players.isEmpty()) return Player()
-        return players.values.first { it.getSteamId() == api.getClientId() }
+    fun getClient(): Fighter {
+        if (players.isEmpty()) return Fighter()
+        return players.values.first { it.getId() == api.getClientId() }
     }
 
 }

@@ -7,10 +7,10 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
+import models.Match
 import session.Character.NULL
 import session.Character.getCharacterPortrait
 import session.Character.getCharacterTrademark
-import session.Match
 import session.Session
 import tornadofx.*
 import utils.Duo

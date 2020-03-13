@@ -23,7 +23,7 @@ class ApiHandler {
         val playerData = xrdApi.getPlayerData().filter { it.steamUserId != 0L }
         if (clientId == -1L && playerData.isNotEmpty()) {
             clientId = xrdApi.getClientSteamId()
-            log("C: GearNet client defined ${getIdString(clientId)} ... (${session.getClient().getNameString()})")
+            log("C: GearNet client defined ${getIdString(clientId)} ... (${session.getClient().getName()})")
         }
     }
 

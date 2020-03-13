@@ -10,7 +10,7 @@ import javafx.scene.control.Label
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import session.Player
+import models.Fighter
 import session.Session
 import session.Session.Companion.LOADING_MODE
 import session.Session.Companion.LOBBY_MODE
@@ -55,10 +55,10 @@ class ApplicationView : View() {
             }
             session.updateViewers()
             utilsGui.blinkGearNetIndicator(session)
-            val uiUpdate: List<Player> = session.getPlayersList()
+            val uiUpdate: List<Fighter> = session.getPlayersList()
             for (i in 0..3) matchesGui[i].applyMatch(session.matchHandler.lobbyMatches[i].second, session)
             for (i in 0..7) if (uiUpdate.size > i) playersGui[i].applyData(uiUpdate[i], session)
-            else playersGui[i].applyData(Player(), session)
+            else playersGui[i].applyData(Fighter(), session)
             streamViewLayout.updateStreamLeaderboard(uiUpdate, session)
             updateTitle()
             delay(24)

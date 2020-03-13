@@ -91,7 +91,7 @@ object Character {
             DI -> return "Dizzy"
             BA -> return "Baiken"
             AN -> return "Answer"
-            else -> return "???"
+            else -> return "Bystander"
         }
     }
 

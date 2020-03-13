@@ -1,5 +1,6 @@
 package application.stream
 
+import MyApp.Companion.SIMULATE_MODE
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -10,8 +11,8 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
+import models.Fighter
 import session.Character.getCharacterTrademark
-import session.Player
 import session.Session
 import tornadofx.*
 import utils.addCommas
@@ -19,7 +20,7 @@ import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
-class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment() {
+class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment() {
 
     private var wholeThing: StackPane
     private lateinit var character: ImageView
@@ -37,14 +38,15 @@ class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : F
 
     init {
         with(root) {
-            wholeThing = stackpane { isVisible = false
+            wholeThing = stackpane { isVisible = SIMULATE_MODE
                 addClass(ScoreStyle.bountyContainer)
                 translateX += 444
                 translateY -= 300
 
-                scaleX -= (scaleIndex*0.05)
-                scaleY -= (scaleIndex*0.05)
-                translateY += (scaleIndex*(120-scaleIndex*3.2))
+                scaleX -= (scaleIndex*0.056)
+                scaleY -= (scaleIndex*0.056)
+                translateY += (scaleIndex*(120-scaleIndex*3.3))
+                translateX -= (scaleIndex*9.6)
 
 
                 minWidth = 1024.0
@@ -138,10 +140,10 @@ class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : F
         wholeThing.isVisible = flag
     }
 
-    fun applyData(p: Player, s: Session) = Platform.runLater {
+    fun applyData(p: Fighter, s: Session) = Platform.runLater {
         when {
             s.randomValues -> applyRandomData(p)
-            p.getSteamId() > 0L -> applyPlayerData(p)
+            p.getId() > 0L -> applyPlayerData(p)
             else -> applyEmptyData()
         }
     }
@@ -156,19 +158,19 @@ class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : F
         change.text = ""
         chain.isVisible = false
         spirit.isVisible = false
-        wholeThing.isVisible = false
+        wholeThing.isVisible = SIMULATE_MODE
     }
 
-    private fun applyPlayerData(p: Player) {
+    private fun applyPlayerData(p: Fighter) {
         character.viewport = getCharacterTrademark(p.getData().characterId)
-        handle1.text = p.getNameString(); handle1.isVisible = true
-        handle2.text = p.getNameString(); handle2.isVisible = true
+        handle1.text = p.getName(); handle1.isVisible = true
+        handle2.text = p.getName(); handle2.isVisible = true
         riskRating.viewport = p.getStatusImage(); riskRating.isVisible = true
         chain.viewport = p.getRatingImage(); chain.isVisible = true
-        bounty1.text = p.getBountyString()
-        bounty2.text = p.getBountyString()
-        change.text = p.getChangeString()
-        setChangeTextColor(p.getBountyChange())
+        bounty1.text = p.getScoreTotalString()
+        bounty2.text = p.getScoreTotalString()
+        change.text = p.getScoreDeltaString()
+        setChangeTextColor(p.getScoreDelta())
         chain.fitWidth = 57.0 * (1 + p.getRating() * 0.033)
         chain.fitHeight = 57.0 * (1 + p.getRating() * 0.033)
         spirit.isVisible = p.getRating() > 0
@@ -178,7 +180,7 @@ class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : F
         wholeThing.isVisible = true
     }
 
-    private fun applyRandomData(p: Player) {
+    private fun applyRandomData(p: Fighter) {
         val chainInt = Random.nextInt(9)
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val changeInt = Random.nextInt(-444555, 666777)
@@ -189,7 +191,7 @@ class PlayerScoreView(override val root: Parent, private val scaleIndex:Int) : F
         bounty1.text = "$bountyStr W$"
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
-        change.text = p.getChangeString(1f, changeInt)
+        change.text = p.getScoreDeltaString(1f, changeInt)
         riskRating.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
         chain.viewport = p.getRatingImage(chainInt)
         spirit.isVisible = chainInt > 0

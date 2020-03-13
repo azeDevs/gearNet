@@ -1,5 +1,6 @@
 package application.stream
 
+import MyApp.Companion.SIMULATE_MODE
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -7,14 +8,15 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
+import models.Viewer
 import tornadofx.*
-import twitch.Viewer
 import utils.getRes
 import utils.isWithin
+import utils.truncate
 
 class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, private val teamColor:Int) : Fragment() {
 
-    private val scaleFactor: Float = if(isWithin(teamColor)) 0.75f else 0.75f
+    private val scaleFactor: Float = 0.77f
     private var wholeThing: StackPane
     private lateinit var teamBackground: ImageView
     private lateinit var handle: Label
@@ -23,8 +25,10 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
 
     init {
         with(root) {
-            wholeThing = stackpane { isVisible = false
-                translateY += (scaleIndex*(64*scaleFactor))-330.0
+            wholeThing = stackpane { isVisible = SIMULATE_MODE
+                translateY += (scaleIndex*(60*scaleFactor))-320.0-scaleIndex
+                scaleX -= (scaleIndex*0.016)
+                scaleY -= (scaleIndex*0.016)
 
                 when(teamColor) {
                     0 -> translateX -= 936.0
@@ -59,7 +63,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     }
                     scaleX *= scaleFactor
                     scaleY *= scaleFactor
-                    translateY -= (2.0 * scaleFactor)
+                    translateY -= (3.0 * scaleFactor)
                 }
 
                 score = label {
@@ -71,7 +75,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     }
                     scaleX *= scaleFactor
                     scaleY *= scaleFactor
-                    translateY -= (4.0 * scaleFactor)
+                    translateY -= (5.0 * scaleFactor)
                 }
 
             }
@@ -82,21 +86,25 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
 
     fun applyData(v: Viewer) = Platform.runLater {
         if (v.isValid() && !isWithin(teamColor)) {
-            handle.text = v.data.name; handle.isVisible = true
-            score.text = v.getScoreString()
+            handle.text = truncate(v.getName(), 11)
+            handle.isVisible = true
+            score.text = v.getScoreTotalString()
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamR() && teamColor == 0) {
-            handle.text = v.data.name; handle.isVisible = true
-            score.text = v.getScoreString()
+            handle.text = v.getName()
+            handle.isVisible = true
+            score.text = v.getScoreTotalString()
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamB() && teamColor == 1) {
-            handle.text = v.data.name; handle.isVisible = true
-            score.text = v.getScoreString()
+            handle.text = v.getName()
+            handle.isVisible = true
+            score.text = v.getScoreTotalString()
             wholeThing.isVisible = true
         } else {
-            handle.text = ""; handle.isVisible = false
+            handle.text = ""
+            handle.isVisible = false
             score.text = "FREE"
-            wholeThing.isVisible = false
+            wholeThing.isVisible = SIMULATE_MODE
         }
     }
 

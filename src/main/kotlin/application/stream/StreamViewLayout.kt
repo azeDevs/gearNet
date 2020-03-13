@@ -9,7 +9,8 @@ import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
-import session.Player
+import models.Fighter
+import models.Viewer
 import session.Session
 import session.Session.Companion.LOADING_MODE
 import session.Session.Companion.LOBBY_MODE
@@ -17,6 +18,7 @@ import session.Session.Companion.MATCH_MODE
 import session.Session.Companion.SLASH_MODE
 import session.Session.Companion.VICTORY_MODE
 import tornadofx.*
+import twitch.ViewerData
 import utils.getRes
 
 class StreamViewLayout(override val root: Parent) : Fragment() {
@@ -25,7 +27,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     var lockHud = -1
 
     var streamView: StackPane
-    private val bountiesGui: MutableList<PlayerScoreView> = ArrayList()
+    private val bountiesGui: MutableList<FighterScoreView> = ArrayList()
     private val viewersGuiR: MutableList<ViewerScoreView> = ArrayList()
     private val viewersGuiB: MutableList<ViewerScoreView> = ArrayList()
     private val viewersGuiC: MutableList<ViewerScoreView> = ArrayList()
@@ -50,7 +52,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var round1B: ImageView
     private lateinit var round2B: ImageView
 
-    fun updateStreamLeaderboard(players: List<Player>, s: Session) {
+    fun updateStreamLeaderboard(fighters: List<Fighter>, s: Session) {
         if (s.sessionMode == lockHud) {
             lobbyView.isVisible = showHud
             matchView.isVisible = !showHud
@@ -91,31 +93,33 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             }
         }
 
-        val p1 = players.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Player()
-        val p2 = players.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Player()
+        val p1 = fighters.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Fighter()
+        val p2 = fighters.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Fighter()
         applyData(p1, p2, s)
         for (i in 0..7) {
-            if (players.size > i) {
-                bountiesGui[i].applyData(players[i], s)
+            if (fighters.size > i) {
+                bountiesGui[i].applyData(fighters[i], s)
                 bountiesGui[i].setVisibility(showHud)
             }
         }
-        val viewerTeamC = s.viewers.values.filter { item -> item.getScore() > 0 }
-        val viewerTeamR = s.viewers.values.filter { item -> item.isTeamR() }
-        val viewerTeamB = s.viewers.values.filter { item -> item.isTeamB() }
+        val viewerTeamC = s.viewers.values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamR = s.viewers.values.filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamB = s.viewers.values.filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
         for (i in 0..15) {
             if (viewerTeamC.size > i) {
                 viewersGuiC[i].applyData(viewerTeamC[i])
                 viewersGuiC[i].setVisibility(showHud)
-            }
+            } else viewersGuiC[i].applyData(Viewer(ViewerData()))
         }
         for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
+        else viewersGuiR[i].applyData(Viewer(ViewerData()))
         for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
+        else viewersGuiB[i].applyData(Viewer(ViewerData()))
     }
 
-    private fun applyData(p1: Player, p2: Player, s: Session) = Platform.runLater {
-        if (p1.getSteamId() > 0L) {
-            bountyR.text = p1.getBountyString()
+    private fun applyData(p1: Fighter, p2: Fighter, s: Session) = Platform.runLater {
+        if (p1.getId() > 0L) {
+            bountyR.text = p1.getScoreTotalString()
             if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
             else healthR.text = ""
             statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
@@ -135,8 +139,8 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             round1R.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
             round2R.viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
         }
-        if (p2.getSteamId() > 0L) {
-            bountyB.text = p2.getBountyString()
+        if (p2.getId() > 0L) {
+            bountyB.text = p2.getScoreTotalString()
             if (s.sessionMode == MATCH_MODE && s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
             else healthB.text = ""
             statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
@@ -188,7 +192,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                         fitHeight = 1080.0
                     }
                     for (i in 0..7) {
-                        bountiesGui.add(PlayerScoreView(parent, i))
+                        bountiesGui.add(FighterScoreView(parent, i))
                     }
                     for (i in 0..15) {
                         viewersGuiC.add(ViewerScoreView(parent, i, 2))
