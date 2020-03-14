@@ -9,20 +9,19 @@ import javafx.scene.shape.Rectangle
 import memscan.MatchData
 import tornadofx.*
 import utils.getRes
-import kotlin.random.Random
 
 class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment() {
 
     private var wholeThing: StackPane
     private lateinit var backing: Rectangle
     private lateinit var progress: Rectangle
-    private var atensionProgress: Int = Random.nextInt(0, 10000)
+    private var atensionProgress: Int = 0 //Random.nextInt(0, 10000)
     private var atensionMaximum: Int = 10000
 
     private val genericHeight = 50.0
     private val maximumWidth = 610.0
     private val verticalPosition = 468.0
-    private val horizontalPosition = 1080.0
+    private val horizontalPosition = 1100.0
 
     init {
         with(root) {
@@ -96,7 +95,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                 }
 
                 imageview(getRes("barc_atlas.png").toString()) { // ROTAR
-                    translateY += verticalPosition - 8.0
+                    translateY += verticalPosition - 10.0
                     viewport = Rectangle2D(1344.0, 704.0, 192.0, 192.0)
                     when(teamColor) {
                         0 -> translateX += 128.0

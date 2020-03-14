@@ -23,7 +23,6 @@ class StunGaugeView(override val root: Parent, private val teamColor:Int) : Frag
     init {
         with(root) {
             wholeThing = stackpane {
-                toBack()
                 when(teamColor) {
                     0 -> {
                         alignment = Pos.CENTER_LEFT
@@ -37,14 +36,14 @@ class StunGaugeView(override val root: Parent, private val teamColor:Int) : Frag
                 backing = rectangle {
                     fill = c("#474234")
                     width = 170.0
-                    height = 10.0
-                    translateY -= 340
+                    height = 6.0
+                    translateY -= 344
                 }
                 progress = rectangle {
                     fill = c("#04d4f7")
                     width = 170.0
-                    height = 10.0
-                    translateY -= 340
+                    height = 3.0
+                    translateY -= 344
                 }
             }
         }

@@ -9,9 +9,7 @@ import utils.isInRange
 class MatchHandler {
 
     val archiveMatches: HashMap<Long, Match> = HashMap()
-    var lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L,
-        Match()
-    ),Pair(-1L, Match()),Pair(-1L, Match()))
+    var lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
     var clientMatch = Match()
 
     private var loser = FighterData()
@@ -89,13 +87,13 @@ class MatchHandler {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {
-                    if(it.value.isTeamR()) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(it.value.isTeamR() && !it.value.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(!it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
                     if(it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
                 1 -> {
-                    if(it.value.isTeamR()) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(it.value.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(it.value.isTeamR() && !it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(!it.value.isTeamR() && it.value.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
                     if(it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
             }

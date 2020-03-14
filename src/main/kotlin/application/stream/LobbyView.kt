@@ -22,11 +22,29 @@ class LobbyView(override val root: Parent) : Fragment() {
     init {
         with(root) {
             container = stackpane {
-                imageview(getRes("barc_lobby.png").toString()) {
-                    viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
-                    fitWidth = 1920.0
-                    fitHeight = 1080.0
+                translateY -= 10
+//                imageview(getRes("barc_lobby.png").toString()) {
+//                    viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
+//                    fitWidth = 1920.0
+//                    fitHeight = 1080.0
+//                    opacity = 0.5
+//                }
+
+                imageview(getRes("barc_atlas.png").toString()) { // UPPER GATE
+                    viewport = Rectangle2D(384.0, 1024.0, 1664.0, 256.0)
+                    fitWidth = 1664.0
+                    fitHeight = 256.0
+                    translateY -= 282
+                    translateX -= 2
                 }
+                imageview(getRes("barc_atlas.png").toString()) { // LOWER GATE
+                    viewport = Rectangle2D(384.0, 1280.0, 1664.0, 256.0)
+                    fitWidth = 1664.0
+                    fitHeight = 256.0
+                    translateY += 318
+                    translateX -= 2
+                }
+
                 for (i in 0..7) {
                     bountiesGui.add(FighterScoreView(parent, i))
                 }

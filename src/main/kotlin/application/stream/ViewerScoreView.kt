@@ -81,16 +81,16 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     translateY -= (5.0 * scaleFactor)
                 }
 
-                delta = label("TESTING") {
+                delta = label {
                     addClass(ScoreStyle.bountyChangeText)
-                    when(teamColor) {
-                        0 -> translateX -= (128.0 *  scaleFactor)
-                        1 -> translateX += (128.0 *  scaleFactor)
-                        else -> translateX += (128.0 *  scaleFactor)
-                    }
+//                    when(teamColor) {
+//                        0 -> translateX -= (128.0 *  scaleFactor)
+//                        1 -> translateX += (128.0 *  scaleFactor)
+//                        else -> translateX += (128.0 *  scaleFactor)
+//                    }
                     scaleX *= scaleFactor
                     scaleY *= scaleFactor
-                    translateY -= (22.0 * scaleFactor)
+                    translateY += (16.0 * scaleFactor)
                 }
 
             }
@@ -110,24 +110,24 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamR() && teamColor == 0) {
             // Do stuff for Viewer Atension, stage left (Red)
-            handle.text = v.getName()
+            handle.text = truncate(v.getName(), 11)
             handle.isVisible = true
             score.text = v.getScoreTotalString()
-//            delta.text = ""
+            delta.text = ""
             wholeThing.isVisible = true
         } else if (v.isValid() && v.isTeamB() && teamColor == 1) {
             // Do stuff for Viewer Atension, stage right (Blue)
-            handle.text = v.getName()
+            handle.text = truncate(v.getName(), 11)
             handle.isVisible = true
             score.text = v.getScoreTotalString()
-//            delta.text = ""
+            delta.text = ""
             wholeThing.isVisible = true
         } else {
             // Apply empty data
             handle.text = ""
             handle.isVisible = false
             score.text = "FREE"
-//            delta.text = ""
+            delta.text = ""
             wholeThing.isVisible = false
         }
     }

@@ -41,14 +41,47 @@ class MatchView(override val root: Parent) : Fragment() {
                 minWidth = 1920.0
                 maxHeight = 1080.0
                 minHeight = 1080.0
+                translateY -= 10
 
+                imageview(getRes("barc_atlas.png").toString()) { // RED SCORE
+                    viewport = Rectangle2D(896.0, 256.0, 640.0, 128.0)
+                    fitWidth = 640.0
+                    fitHeight = 128.0
+                    translateX -= 410
+                    translateY -= 311
+                    scaleX -= 0.42
+                    scaleY -= 0.42
+                }
+                imageview(getRes("barc_atlas.png").toString()) { // BLUE SCORE
+                    viewport = Rectangle2D(896.0, 256.0, 640.0, 128.0)
+                    fitWidth = 640.0
+                    fitHeight = 128.0
+                    translateX += 410
+                    translateY -= 311
+                    scaleX *= -1.0
+                    scaleX += 0.42
+                    scaleY -= 0.42
+                }
                 stunGaugeR = StunGaugeView(parent, 0)
                 stunGaugeB = StunGaugeView(parent, 1)
-
-                imageview(getRes("barc_match.png").toString()) {
-                    viewport = Rectangle2D(0.0, 0.0, 1920.0, 1080.0)
-                    fitWidth = 1920.0
-                    fitHeight = 1080.0
+                imageview(getRes("barc_atlas.png").toString()) { // RED TENSION
+                    viewport = Rectangle2D(1536.0, 320.0, 512.0, 128.0)
+                    fitWidth = 512.0
+                    fitHeight = 128.0
+                    translateX -= 532
+                    translateY += 370
+                    scaleX -= 0.21
+                    scaleY -= 0.21
+                }
+                imageview(getRes("barc_atlas.png").toString()) { // BLUE TENSION
+                    viewport = Rectangle2D(1536.0, 320.0, 512.0, 128.0)
+                    fitWidth = 512.0
+                    fitHeight = 128.0
+                    translateX += 532
+                    translateY += 370
+                    scaleX *= -1.0
+                    scaleX += 0.21
+                    scaleY -= 0.21
                 }
 
                 bountyR = label("FREE") { alignment = Pos.CENTER_LEFT
@@ -169,7 +202,7 @@ class MatchView(override val root: Parent) : Fragment() {
                 else healthR.text = ""
                 stunGaugeR.setVisibility(true)
                 stunGaugeR.applyData(s.matchHandler.clientMatch.getData())
-            }
+            } else stunGaugeR.setVisibility(false)
             statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
             statusR.isVisible = true
             ratingR.viewport = p1.getRatingImage()
@@ -195,7 +228,7 @@ class MatchView(override val root: Parent) : Fragment() {
                 else healthB.text = ""
                 stunGaugeB.setVisibility(true)
                 stunGaugeB.applyData(s.matchHandler.clientMatch.getData())
-            }
+            } else stunGaugeB.setVisibility(false)
             statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
             statusB.isVisible = true
             ratingB.viewport = p2.getRatingImage()

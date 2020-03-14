@@ -8,16 +8,15 @@ import utils.addCommas
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 abstract class Player(private val id:Long = -1, private val name:String = "") {
 
     private var characterId:Byte = -0x1
-    private var scoreTotal = Random.nextInt(0, 9999999)
-    private var scoreDelta = Random.nextInt(-99999, 99999)
+    private var scoreTotal = 0 //Random.nextInt(0, 9999999)
+    private var scoreDelta = 0 //Random.nextInt(-99999, 99999)
     private var bystanding = 1
     private var atension = 0
-    private var rating = Random.nextInt(0, 8)
+    private var rating = 0 //Random.nextInt(0, 8)
     private var matchesWon = 0
     private var matchesSum = 0
 

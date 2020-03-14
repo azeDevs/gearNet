@@ -21,6 +21,8 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
     private var roundStarted = false
     private val snaps = arrayListOf(matchData)
 
+
+
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
     private var handle = Duo(players.p1.displayName, players.p2.displayName)
