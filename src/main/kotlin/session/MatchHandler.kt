@@ -9,7 +9,7 @@ import utils.isInRange
 class MatchHandler {
 
     val archiveMatches: HashMap<Long, Match> = HashMap()
-    var lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
+    val lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
     var clientMatch = Match()
 
     private var loser = FighterData()
@@ -23,11 +23,11 @@ class MatchHandler {
     }
 
     fun resolveEveryone(players: HashMap<Long, Fighter>, s: Session, data: FighterData): Boolean {
-        val loserPlayer = players.values.firstOrNull { it.getId() == data.steamUserId && it.isLoser() } ?: Fighter()
-        val winnerPlayer = players.values.firstOrNull { it.getId() == data.steamUserId && it.isWinner() } ?: Fighter()
+        val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Fighter()
+        val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Fighter()
 
-        if (loserPlayer.getId() != -1L) loser = loserPlayer.getData()
-        if (winnerPlayer.getId() != -1L) winner = winnerPlayer.getData()
+        if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getData()
+        if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getData()
 
         if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
             log("----------------------------------------- WE HAVE A WINNER")

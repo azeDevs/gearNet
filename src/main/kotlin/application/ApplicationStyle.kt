@@ -8,7 +8,6 @@ import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.shape.StrokeType
 import tornadofx.*
-import utils.getRes
 
 class ApplicationStyle : Stylesheet() {
 
@@ -27,7 +26,7 @@ class ApplicationStyle : Stylesheet() {
 
     init {
         appContainer {
-            backgroundImage += getRes("gn_background.png")
+            backgroundColor += c("#FF00FFff")
             alignment = Pos.TOP_CENTER
         }
 

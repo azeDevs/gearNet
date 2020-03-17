@@ -9,42 +9,71 @@ import javafx.scene.shape.Rectangle
 import memscan.MatchData
 import tornadofx.*
 import utils.getRes
+import kotlin.random.Random
 
 class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment() {
 
-    private var wholeThing: StackPane
-    private lateinit var backing: Rectangle
-    private lateinit var progress: Rectangle
-    private var atensionProgress: Int = 0 //Random.nextInt(0, 10000)
-    private var atensionMaximum: Int = 10000
+    private var atensionVal: Int = Random.nextInt(0, 10000)
+    private var atensionMax: Int = 10000
+
+    private var container: StackPane
+    private lateinit var munityProgress: Rectangle
+    private lateinit var respectBacking: Rectangle
+    private lateinit var respectProgress: Rectangle
+    private lateinit var atensionBacking: Rectangle
+    private lateinit var atensionProgress: Rectangle
+
+//    val audioResourceURL = resources.url("sound.wav")
 
     private val genericHeight = 50.0
     private val maximumWidth = 610.0
-    private val verticalPosition = 468.0
-    private val horizontalPosition = 1100.0
+    private val horizontalPosition = 980.0
 
     init {
         with(root) {
-            wholeThing = stackpane {
+            container = stackpane {
+                translateY += 448
                 when(teamColor) {
                     0 -> {
                         alignment = Pos.CENTER_RIGHT
-                        translateX -= horizontalPosition
+                        translateX -= horizontalPosition + 72
                     }
                     1 -> {
                         alignment = Pos.CENTER_LEFT
-                        translateX += horizontalPosition
+                        translateX += horizontalPosition + 72
                     }
                 }
 
-                backing = rectangle {
+                respectBacking = rectangle {
+                    fill = c("#39322b")
+                    width = 210.0
+                    height = 10.0
+                    translateY -= 44
+                    when(teamColor) {
+                        0 -> translateX -= 384.0
+                        else -> translateX += 384.0
+                    }
+                }
+
+                respectProgress = rectangle {
+                    fill = c("#feffe4")
+                    width = 100.0
+                    height = 10.0
+                    translateY -= 44
+                    when(teamColor) {
+                        0 -> translateX -= 384.0
+                        else -> translateX += 384.0
+                    }
+                }
+
+                atensionBacking = rectangle {
                     fill = c("#2d2d23")
                     width = maximumWidth
                     height = genericHeight
-                    translateY += verticalPosition
+                    translateY += 16
                 }
 
-                progress = rectangle {
+                atensionProgress = rectangle {
                     when(teamColor) {
                         0 -> { // RED CREST
                             fill = when {
@@ -79,78 +108,42 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                     }
                     width = getPercentage(maximumWidth)
                     height = genericHeight
-                    translateY += verticalPosition
+                    translateY += 16
                 }
 
-                imageview(getRes("barc_atlas.png").toString()) { // HAMMER
-                    translateY += verticalPosition - 24.0
-                    viewport = Rectangle2D(1152.0, 704.0, 192.0, 192.0)
+                imageview(getRes("atlas.png").toString()) { // GAUGE
                     when(teamColor) {
-                        0 -> translateX += 96.0
+                        0 -> {
+                            viewport = Rectangle2D(640.0, 512.0, 704.0, 160.0)
+                            translateX += 72.0
+                        }
                         else -> {
-                            translateX -= 96.0
+                            viewport = Rectangle2D(1344.0, 512.0, 704.0, 160.0)
+                            translateX -= 72.0
+                        }
+                    }
+                }
+
+                imageview(getRes("atlas.png").toString()) { // HAMMER
+                    translateY -= 36
+                    viewport = Rectangle2D(640.0, 320.0, 192.0, 192.0)
+                    when(teamColor) {
+                        0 -> translateX += 74.0
+                        else -> {
+                            translateX -= 74.0
                             scaleX = -1.0
                         }
                     }
                 }
 
-                imageview(getRes("barc_atlas.png").toString()) { // ROTAR
-                    translateY += verticalPosition - 10.0
-                    viewport = Rectangle2D(1344.0, 704.0, 192.0, 192.0)
+                munityProgress = rectangle {
+                    fill = c("#2d2d23")
+                    width = 116.36 //124.0 (7.64 px/unit)
+                    height = 15.0
+                    translateY -= 25
                     when(teamColor) {
-                        0 -> translateX += 128.0
-                        else -> {
-                            translateX -= 128.0
-                            scaleX = -1.0
-                        }
-                    }
-                }
-
-                imageview(getRes("barc_atlas.png").toString()) { // GAUGE
-                    translateY += verticalPosition
-                    viewport = Rectangle2D(896.0, 576.0, 640.0, 128.0)
-                    when(teamColor) {
-                        0 -> translateX += 20.0
-                        else -> {
-                            translateX -= 20.0
-                            scaleX = -1.0
-                        }
-                    }
-                }
-
-                imageview(getRes("barc_atlas.png").toString()) { // RISK
-                    translateY += verticalPosition - 46
-                    viewport = Rectangle2D(896.0, 704.0, 256.0, 64.0)
-                    when(teamColor) {
-                        0 -> translateX += 64.0
-                        else -> {
-                            translateX -= 64.0
-                            scaleX = -1.0
-                        }
-                    }
-                }
-
-                imageview(getRes("barc_atlas.png").toString()) { // BOLT
-                    translateY += verticalPosition + 24
-                    viewport = Rectangle2D(960.0, 768.0, 192.0, 64.0)
-                    when(teamColor) {
-                        0 -> translateX += 80.0
-                        else -> {
-                            translateX -= 80.0
-                            scaleX = -1.0
-                        }
-                    }
-                }
-
-                imageview(getRes("barc_atlas.png").toString()) { // NUT
-                    translateY += verticalPosition - 4.0
-                    viewport = Rectangle2D(1024.0, 832.0, 128.0, 64.0)
-                    when(teamColor) {
-                        0 -> translateX += 100.0
-                        else -> {
-                            translateX -= 100.0
-                            scaleX = -1.0
-                        }
+                        0 -> translateX -= 23.0
+                        else -> translateX += 23.0
                     }
                 }
 
@@ -159,12 +152,12 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     }
 
     fun applyData(m: MatchData) = Platform.runLater {
-        atensionProgress = if (teamColor == 0) m.stunProgress.first else if (teamColor == 1) m.stunProgress.second else 0
-        atensionMaximum = if (teamColor == 0) m.stunMaximum.first else if (teamColor == 1) m.stunMaximum.second else 1
-        progress.width = getPercentage(maximumWidth)
+        atensionVal = if (teamColor == 0) m.stunProgress.first else if (teamColor == 1) m.stunProgress.second else 0
+        atensionMax = if (teamColor == 0) m.stunMaximum.first else if (teamColor == 1) m.stunMaximum.second else 1
+        atensionProgress.width = getPercentage(maximumWidth)
         when(teamColor) {
             0 -> { // RED CREST
-                progress.fill = when {
+                atensionProgress.fill = when {
                     getPercentage().toInt() == 100 -> c("#feffe4")
                     getPercentage().toInt() in 90..99 -> c("#fff49e")
                     getPercentage().toInt() in 80..89 -> c("#ffe692")
@@ -179,7 +172,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                 }
             }
             1 -> { // BLUE CREST
-                progress.fill = when {
+                atensionProgress.fill = when {
                     getPercentage().toInt() == 100 -> c("#feffe4")
                     getPercentage().toInt() in 90..99 -> c("#fdf4ae")
                     getPercentage().toInt() in 80..89 -> c("#f6e7b4")
@@ -194,9 +187,9 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                 }
             }
         }
-        wholeThing.isVisible = true
+        container.isVisible = true
     }
 
-    private fun getPercentage(modifier:Double = 100.0) = (atensionProgress.toDouble() / atensionMaximum) * modifier
+    private fun getPercentage(modifier:Double = 100.0) = (atensionVal.toDouble() / atensionMax) * modifier
 
 }

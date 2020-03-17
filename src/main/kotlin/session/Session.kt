@@ -1,18 +1,13 @@
 package session
 
-import MyApp.Companion.SIMULATE_MODE
 import memscan.FighterData
 import models.Fighter
 import models.Match
 import models.Viewer
 import tornadofx.Controller
-import twitch.BotEventHandler
-import twitch.ViewerData
 import utils.Duo
 import utils.getIdString
-import utils.getRandomName
 import kotlin.math.max
-import kotlin.random.Random
 
 
 class Session : Controller() {
@@ -25,24 +20,17 @@ class Session : Controller() {
         const val VICTORY_MODE = 4
     }
 
-    val api = ApiHandler()
-    val twitchHandler = BotEventHandler(this)
+    val api = ApiHandler(this)
     val matchHandler = MatchHandler()
     val players: HashMap<Long, Fighter> = HashMap()
     val viewers: HashMap<Long, Viewer> = HashMap()
 
+    val atension: Duo<Int> = Duo(0, 0)
+    val munity: Duo<Int> = Duo(0, 0)
+
     var randomValues = false
 
-    fun updateViewers() {
-        twitchHandler.generateViewerEvents()
-        if (SIMULATE_MODE) when (Random.nextInt(333)) {
-            0 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngRC"))
-            1 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngBC"))
-            2 -> twitchHandler.addViewerData(ViewerData(Random.nextLong(1000000000, 9999999999), getRandomName(), getRandomName()))
-        }
-    }
-
-    fun updatePlayers(): Boolean {
+    fun updateFighters(): Boolean {
         var somethingChanged = false
 
         // Define the GearNet client player
@@ -69,8 +57,6 @@ class Session : Controller() {
         }
 
         // New match underway?
-        // TODO: MAKE CABINETS TO HOUSE THESE
-        // NOTE: THIS IS WEHRE YOU LEFT OFF
         val lobbyMatchPlayers = Duo(FighterData(), FighterData())
         val clientMatchPlayers = Duo(FighterData(), FighterData())
 
@@ -146,7 +132,7 @@ class Session : Controller() {
         return somethingChanged
     }
 
-    fun updateClientMatch(): Boolean {
+    fun updateMatchInProgress(): Boolean {
         return matchHandler.updateClientMatch(api.getMatchData(), this)
     }
 
@@ -172,7 +158,7 @@ class Session : Controller() {
 
     fun getClient(): Fighter {
         if (players.isEmpty()) return Fighter()
-        return players.values.first { it.getId() == api.getClientId() }
+        return players.values.first { it.getPlayerId() == api.getClientId() }
     }
 
 }

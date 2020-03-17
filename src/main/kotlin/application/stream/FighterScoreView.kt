@@ -26,9 +26,9 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
     private lateinit var spirit: ImageView
     private lateinit var handle1: Label
     private lateinit var handle2: Label
-    private lateinit var riskRating: ImageView
+    private lateinit var status: ImageView
 
-    private lateinit var chain: ImageView
+    private lateinit var rating: ImageView
     private lateinit var bounty1: Label
     private lateinit var bounty2: Label
 
@@ -50,16 +50,16 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
                 minWidth = 1024.0
                 maxWidth = 1024.0
-                character = imageview(getRes("gn_atlas.png").toString()) {
-                    viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
+                character = imageview(getRes("atlas.png").toString()) {
+                    viewport = getCharacterTrademark()
                     translateX -= 209
                     translateY += 18
                     fitWidth = 64.0
                     fitHeight = 64.0
                 }
 
-                imageview(getRes("gn_stream.png").toString()) {
-                    viewport = Rectangle2D(256.0, 0.0, 768.0, 192.0)
+                imageview(getRes("atlas.png").toString()) {
+                    viewport = Rectangle2D(1280.0, 0.0, 768.0, 192.0)
                     translateX += 25
                     fitWidth = 592.0
                     fitHeight = 148.0
@@ -67,13 +67,11 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
                 change = label {
                     translateX += 252
-                    translateY -= 40
-                    rotate += 1
+                    translateY -= 38
                     addClass(ScoreStyle.bountyChangeText)
-//                    blendMode = BlendMode.HARD_LIGHT
                 }
 
-                spirit = imageview(getRes("cb_chain_red.gif").toString()) {
+                spirit = imageview(getRes("cb_spirit_red.gif").toString()) {
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
                     translateX += 252
                     translateY += 8
@@ -84,8 +82,8 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                     blendMode = BlendMode.LIGHTEN
                 }
 
-                chain = imageview(getRes("gn_stream.png").toString()) {
-                    viewport = Rectangle2D(128.0, 512.0, 64.0, 64.0)
+                rating = imageview(getRes("atlas.png").toString()) {
+                    viewport = Fighter().getRatingImage()
                     translateX += 252
                     translateY += 16
                     fitWidth = 52.0
@@ -123,7 +121,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                     }
                 }
 
-                riskRating = imageview(getRes("gn_stream.png").toString()) {
+                status = imageview(getRes("atlas.png").toString()) {
                     viewport = Rectangle2D(0.0, 256.0, 128.0, 64.0)
                     translateX += 134
                     translateY += 16
@@ -142,44 +140,44 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
     fun applyData(p: Fighter, s: Session) = Platform.runLater {
         when {
             s.randomValues -> applyRandomData(p)
-            p.getId() > 0L -> applyPlayerData(p)
+            p.getPlayerId() > 0L -> applyFighterData(p)
             else -> applyEmptyData()
         }
     }
 
     private fun applyEmptyData() {
-        character.viewport = Rectangle2D(576.0, 192.0, 64.0, 64.0)
+        character.viewport = getCharacterTrademark()
         handle1.text = ""; handle1.isVisible = false
         handle2.text = ""; handle2.isVisible = false
-        riskRating.isVisible = false
+        status.isVisible = false
         bounty1.text = ""
         bounty2.text = ""
         change.text = ""
-        chain.isVisible = false
+        rating.isVisible = false
         spirit.isVisible = false
         wholeThing.isVisible = false
     }
 
-    private fun applyPlayerData(p: Fighter) {
-        character.viewport = getCharacterTrademark(p.getData().characterId)
-        handle1.text = p.getName(); handle1.isVisible = true
-        handle2.text = p.getName(); handle2.isVisible = true
-        riskRating.viewport = p.getStatusImage(); riskRating.isVisible = true
-        chain.viewport = p.getRatingImage(); chain.isVisible = true
-        bounty1.text = p.getScoreTotalString()
-        bounty2.text = p.getScoreTotalString()
-        change.text = p.getScoreDeltaString()
-        setChangeTextColor(p.getScoreDelta())
-        chain.fitWidth = 57.0 * (1 + p.getRating() * 0.033)
-        chain.fitHeight = 57.0 * (1 + p.getRating() * 0.033)
-        spirit.isVisible = p.getRating() > 0
-        spirit.fitWidth = 77.0 * (1 + p.getRating() * 0.33)
-        spirit.fitHeight = 77.0 * (1 + p.getRating() * 0.33)
+    private fun applyFighterData(f: Fighter) {
+        character.viewport = getCharacterTrademark(f.getData().characterId)
+        handle1.text = f.getUserName(); handle1.isVisible = true
+        handle2.text = f.getUserName(); handle2.isVisible = true
+        status.viewport = f.getStatusImage(); status.isVisible = true
+        rating.viewport = f.getRatingImage(f.getPlaySide().toInt()); rating.isVisible = true
+        bounty1.text = f.getScoreTotalString()
+        bounty2.text = f.getScoreTotalString()
+        change.text = f.getScoreDeltaString()
+        setChangeTextColor(f.getScoreDelta())
+        rating.fitWidth = 57.0 * (1 + f.getRating() * 0.033)
+        rating.fitHeight = 57.0 * (1 + f.getRating() * 0.033)
+        spirit.isVisible = f.getRating() > 0
+        spirit.fitWidth = 77.0 * (1 + f.getRating() * 0.33)
+        spirit.fitHeight = 77.0 * (1 + f.getRating() * 0.33)
 
         wholeThing.isVisible = true
     }
 
-    private fun applyRandomData(p: Fighter) {
+    private fun applyRandomData(f: Fighter) {
         val chainInt = Random.nextInt(9)
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val changeInt = Random.nextInt(-444555, 666777)
@@ -190,9 +188,9 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         bounty1.text = "$bountyStr W$"
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
-        change.text = p.getScoreDeltaString(1f, changeInt)
-        riskRating.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        chain.viewport = p.getRatingImage(chainInt)
+        change.text = f.getScoreDeltaString(1f, changeInt)
+        status.viewport = f.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
+        rating.viewport = f.getRatingImage(f.getPlaySide().toInt())
         spirit.isVisible = chainInt > 0
         spirit.fitWidth = 44.0 + ((8+chainInt) * chainInt)
         spirit.fitHeight = 44.0 + ((8+chainInt) * chainInt)

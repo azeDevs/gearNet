@@ -12,12 +12,14 @@ import twitch.ViewerData
 class ViewersView(override val root: Parent) : Fragment() {
 
     private val container: StackPane
+    private lateinit var atensionMeters: AtensionMetersView
     private val viewersGuiR: MutableList<ViewerScoreView> = ArrayList()
     private val viewersGuiB: MutableList<ViewerScoreView> = ArrayList()
 
     init {
         with(root) {
             container = stackpane {
+                atensionMeters = AtensionMetersView(parent)
                 for (i in 0..15) {
                     viewersGuiR.add(ViewerScoreView(parent, i, 0))
                     viewersGuiB.add(ViewerScoreView(parent, i, 1))

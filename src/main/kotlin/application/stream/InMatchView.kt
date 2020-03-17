@@ -1,0 +1,191 @@
+package application.stream
+
+import javafx.application.Platform
+import javafx.geometry.Pos
+import javafx.geometry.Rectangle2D
+import javafx.scene.Parent
+import javafx.scene.control.Label
+import javafx.scene.effect.BlendMode
+import javafx.scene.image.ImageView
+import javafx.scene.layout.StackPane
+import models.Fighter
+import models.Player.Companion.PLAYER1
+import models.Player.Companion.PLAYER2
+import session.Session
+import tornadofx.*
+import utils.getRes
+
+class InMatchView(override val root: Parent) : Fragment() {
+
+    private val container: StackPane
+    private lateinit var stunGaugeR: StunGaugeView
+    private lateinit var bountyR: Label
+    private lateinit var healthR: Label
+    private lateinit var statusR: ImageView
+    private lateinit var spiritR: ImageView
+    private lateinit var ratingR: ImageView
+
+    private lateinit var stunGaugeB: StunGaugeView
+    private lateinit var bountyB: Label
+    private lateinit var healthB: Label
+    private lateinit var statusB: ImageView
+    private lateinit var spiritB: ImageView
+    private lateinit var ratingB: ImageView
+
+    init {
+        with(root) {
+            container = stackpane { // MatchView CONTAINER
+
+                imageview(getRes("atlas.png").toString()) { // BACKING RED
+                    viewport = Rectangle2D(1408.0, 196.0, 640.0, 128.0)
+                    fitWidth = 640.0
+                    fitHeight = 128.0
+                    translateX -= 640
+                    translateY -= 410
+                    scaleX *= -0.50
+                    scaleY *= 0.50
+                }
+                imageview(getRes("atlas.png").toString()) { // BACKING BLUE
+                    viewport = Rectangle2D(1408.0, 196.0, 640.0, 128.0)
+                    fitWidth = 640.0
+                    fitHeight = 128.0
+                    translateX += 640
+                    translateY -= 410
+                    scaleX *= 0.50
+                    scaleY *= 0.50
+                }
+
+                stunGaugeR = StunGaugeView(parent, 0) // STUN GAUGE RED
+                stunGaugeB = StunGaugeView(parent, 1) // STUN GAUGE BLUE
+
+                bountyR = label("FREE") { // BOUNTY RED
+                    alignment = Pos.CENTER_LEFT
+                    addClass(InMatchStyle.matchBountyText)
+                    translateX -= 636
+                    translateY -= 417
+                }
+                bountyB = label("FREE") { // BOUNTY BLUE
+                    alignment = Pos.CENTER_RIGHT
+                    addClass(InMatchStyle.matchBountyText)
+                    translateX += 636
+                    translateY -= 417
+                }
+
+                healthR = label("") { // HEALTH RED
+                    alignment = Pos.CENTER_LEFT
+                    addClass(InMatchStyle.matchHealthText)
+                    translateX -= 524
+                    translateY -= 362
+                    scaleX = 0.7
+                }
+                healthB = label("") { // HEALTH BLUE
+                    alignment = Pos.CENTER_RIGHT
+                    addClass(InMatchStyle.matchHealthText)
+                    translateX += 518
+                    translateY -= 362
+                    scaleX = 0.7
+                }
+
+                statusR = imageview(getRes("atlas.png").toString()) { // BOSS STATUS RED
+                    viewport = Rectangle2D(0.0, 0.0, 128.0, 64.0)
+                    translateX -= 346
+                    translateY -= 312
+                    fitWidth = 64.0
+                    fitHeight = 32.0
+                }
+                statusB = imageview(getRes("atlas.png").toString()) { // BOSS STATUS BLUE
+                    viewport = Rectangle2D(0.0, 0.0, 128.0, 64.0)
+                    translateX += 346
+                    translateY -= 312
+                    fitWidth = 64.0
+                    fitHeight = 32.0
+                }
+
+                spiritR = imageview(getRes("cb_spirit_red.gif").toString()) { // SPIRIT RED
+                    viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
+                    translateX -= 265
+                    translateY -= 316
+                    fitWidth = 77.0
+                    fitHeight = 77.0
+                    opacity = 0.96
+                    blendMode = BlendMode.ADD
+                }
+                spiritB = imageview(getRes("cb_spirit_blue.gif").toString()) { // SPIRIT BLUE
+                    viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
+                    translateX += 265
+                    translateY -= 316
+                    fitWidth = 77.0
+                    fitHeight = 77.0
+                    opacity = 0.96
+                    blendMode = BlendMode.ADD
+                }
+
+                ratingR = imageview(getRes("atlas.png").toString()) { // RISK RATING RED
+                    viewport = Rectangle2D(832.0, 704.0, 256.0, 64.0)
+                    translateX -= 268
+                    translateY -= 312
+                    fitWidth = 52.0
+                    fitHeight = 52.0
+                    opacity = 0.96
+                }
+                ratingB = imageview(getRes("atlas.png").toString()) { // RISK RATING BLUE
+                    viewport = Rectangle2D(1088.0, 704.0, 256.0, 64.0)
+                    translateX += 268
+                    translateY -= 312
+                    fitWidth = 52.0
+                    fitHeight = 52.0
+                    opacity = 0.96
+                }
+
+            }
+        }
+    }
+
+    fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
+
+    fun applyData(fighters: List<Fighter>, s: Session) = Platform.runLater {
+        val f1 = fighters.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Fighter()
+        val f2 = fighters.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Fighter()
+        if (f1.getPlayerId() > 0L) {
+            bountyR.text = f1.getScoreTotalString()
+            if (s.sessionMode == Session.MATCH_MODE) {
+                if (s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
+                else healthR.text = ""
+                stunGaugeR.setVisibility(true)
+                stunGaugeR.applyData(s.matchHandler.clientMatch.getData())
+            } else stunGaugeR.setVisibility(false)
+            statusR.viewport = Rectangle2D(f1.getStatusImage().minX, f1.getStatusImage().minY, f1.getStatusImage().width, f1.getStatusImage().height)
+            statusR.isVisible = true
+            ratingR.viewport = f1.getRatingImage(PLAYER1)
+            ratingR.isVisible = f1.getRating() > 0
+            spiritR.isVisible = f1.getRating() > 0
+        } else {
+            bountyR.text = "FREE"
+            stunGaugeR.setVisibility(false)
+            statusR.isVisible = false
+            ratingR.isVisible = false
+            spiritR.isVisible = false
+        }
+        if (f2.getPlayerId() > 0L) {
+            bountyB.text = f2.getScoreTotalString()
+            if (s.sessionMode == Session.MATCH_MODE) {
+                if (s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
+                else healthB.text = ""
+                stunGaugeB.setVisibility(true)
+                stunGaugeB.applyData(s.matchHandler.clientMatch.getData())
+            } else stunGaugeB.setVisibility(false)
+            statusB.viewport = Rectangle2D(f2.getStatusImage().minX, f2.getStatusImage().minY, f2.getStatusImage().width, f2.getStatusImage().height)
+            statusB.isVisible = true
+            ratingB.viewport = f2.getRatingImage(PLAYER2)
+            ratingB.isVisible = f2.getRating() > 0
+            spiritB.isVisible = f2.getRating() > 0
+        } else {
+            bountyB.text = "FREE"
+            stunGaugeB.setVisibility(false)
+            statusB.isVisible = false
+            ratingB.isVisible = false
+            spiritB.isVisible = false
+        }
+    }
+
+}

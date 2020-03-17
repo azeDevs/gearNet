@@ -3,6 +3,8 @@ package models
 import memscan.FighterData
 import memscan.LobbyData
 import memscan.MatchData
+import models.Player.Companion.PLAYER1
+import models.Player.Companion.PLAYER2
 import session.Session
 import session.Session.Companion.MATCH_MODE
 import session.Session.Companion.SLASH_MODE
@@ -12,16 +14,11 @@ import utils.Duo
 import utils.keepInRange
 
 
-class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val players: Duo<FighterData> = Duo(FighterData(), FighterData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
-
-    private val P1 = 0
-    private val P2 = 1
+class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private val players: Duo<FighterData> = Duo(FighterData(), FighterData()), matchData: MatchData = MatchData(), val lobbyData: LobbyData = LobbyData()) {
 
     private var winner = -1
     private var roundStarted = false
     private val snaps = arrayListOf(matchData)
-
-
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
@@ -66,53 +63,39 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
             strikeStun.p2 = getData().strikeStun.second
 
             // Has the round started?
-            if (!roundStarted && getHealth(P1) == 420 && getHealth(P2) == 420 && getWinner() == -1) {
+            if (!roundStarted && getHealth(PLAYER1) == 420 && getHealth(PLAYER2) == 420 && getWinner() == -1) {
                 roundStarted = true
                 session.setMode(MATCH_MODE)
-                log("M[$matchId]: Round Start - DUEL ${getRounds(P1) + getRounds(P2) + 1}, LET'S ROCK! ... ${lobbyData.roundWins} rounds to win")
+                log("Round Start, DUEL ${getRounds(PLAYER1) + getRounds(PLAYER2) + 1}, LET'S ROCK!")
             }
 
             // Has the round ended, and did player 1 win?
-            if (roundStarted && getWinner()==-1 && getHealth(P2) == 0 && getHealth(P1) != getHealth(P2) ) {
+            if (roundStarted && getWinner()==-1 && getHealth(PLAYER2) == 0 && getHealth(PLAYER1) != getHealth(PLAYER2) ) {
                 roundStarted = false
                 session.setMode(SLASH_MODE)
-                log(
-                    "M[$matchId]: Round Completed - Player 1 wins the round ... (${players.p1.displayName}) needs ${getRounds(
-                        P2
-                    )}/${lobbyData.roundWins} rounds to win"
-                )
+                log("Round ${getRounds(PLAYER2)}/${lobbyData.roundWins} End, PLAYER1 wins (${players.p1.displayName})")
             }
 
             // Has the round ended, and did player 2 win?
-            if (roundStarted && getWinner() ==-1 && getHealth(P1) == 0 && getHealth(P2) != getHealth(P1)) {
+            if (roundStarted && getWinner() ==-1 && getHealth(PLAYER1) == 0 && getHealth(PLAYER2) != getHealth(PLAYER1)) {
                 roundStarted = false
                 session.setMode(SLASH_MODE)
-                log(
-                    "M[$matchId]: Round Completed - Player 2 wins the round ... (${players.p2.displayName}) needs ${getRounds(
-                        P2
-                    )}/${lobbyData.roundWins} rounds to win"
-                )
+                log("Round ${getRounds(PLAYER2)}/${lobbyData.roundWins} End, PLAYER2 wins (${players.p2.displayName})")
             }
 
             // Did player 1 win the match?
-            if (getRounds(P1) == lobbyData.roundWins && winner == -1) {
+            if (getRounds(PLAYER1) == lobbyData.roundWins && winner == -1) {
                 winner = 0
                 session.setMode(VICTORY_MODE)
-                log(
-                    "M[$matchId]: Match CONCLUSION - Player 1 has taken the match ... (${getHandleString(
-                        P1
-                    )})"
-                )
+                log("Match End, PLAYER1 takes the match (${getHandleString(PLAYER1)})")
             }
 
             // Did player 2 win the match?
-            if (getRounds(P2) == lobbyData.roundWins && winner == -1) {
+            if (getRounds(PLAYER2) == lobbyData.roundWins && winner == -1) {
                 winner = 1
                 session.setMode(VICTORY_MODE)
                 log(
-                    "M[$matchId]: Match CONCLUSION - Player 2 has taken the match ... (${getHandleString(
-                        P2
-                    )})"
+                    "Match End, PLAYER2 takes the match (${getHandleString(PLAYER2)})"
                 )
             }
 
@@ -145,10 +128,10 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, val pla
     fun getCabinet():Byte = cabinetId
     fun getCabinetString(cabId:Int = getCabinet().toInt()): String {
         return when(cabId) {
-            0 -> "CABINET A"
-            1 -> "CABINET B"
-            2 -> "CABINET C"
-            3 -> "CABINET D"
+            0 -> "CABINET Α"
+            1 -> "CABINET Β"
+            2 -> "CABINET Γ"
+            3 -> "CABINET Δ"
             else -> "$cabId"
         }
     }
