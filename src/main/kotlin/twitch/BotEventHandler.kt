@@ -7,7 +7,6 @@ import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import models.Watcher
 import session.Session
-import session.log
 import utils.getTokenFromFile
 
 typealias CME = ChannelMessageEvent
@@ -35,7 +34,7 @@ class BotEventHandler(private val s: Session) : BotApi {
 
     override fun sendMessage(message: String) {
         when (SILENT_TWITCH) {
-            true -> log("CHAT roboaze: $message")
+            true -> println("CHAT roboaze: $message")
             false -> twitchClient.chat.sendMessage("azeDevs", message)
         }
     }
@@ -54,20 +53,20 @@ class BotEventHandler(private val s: Session) : BotApi {
     fun generateViewerEvents() {
         getViewerData().forEach {
             if (!it.message.isEmpty()) {
-                log("CHAT ${it.displayName}: ${it.message}")
+                println("CHAT ${it.displayName}: ${it.message}")
                 // ADD VIEWER IF THEY ARE NEW
                 if (!s.watchers.containsKey(it.twitchId)) {
                     s.watchers.put(it.twitchId, Watcher(it))
-                    log("${it.displayName} added to Viewers Map")
+                    println("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
                 if (it.message.contains("azpngRC") && !s.watchers[it.twitchId]!!.isTeamR()) {
                     s.watchers[it.twitchId]!!.setTeamR()
-                    sendMessage("${it.displayName} joins azpngRC")
+                    sendMessage("${it.displayName} joins red")
                 }
                 if (it.message.contains("azpngBC") && !s.watchers[it.twitchId]!!.isTeamB()) {
                     s.watchers[it.twitchId]!!.setTeamB()
-                    sendMessage("${it.displayName} joins azpngBC")
+                    sendMessage("${it.displayName} joins blue")
                 }
             }
         }

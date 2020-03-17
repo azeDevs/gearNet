@@ -1,5 +1,6 @@
 package application.stream
 
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -10,7 +11,7 @@ import tornadofx.imageview
 import tornadofx.stackpane
 import utils.getRes
 
-class AtensionMetersView(override val root: Parent) : Fragment() {
+class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
 
     private lateinit var atensionWheel: ImageView
     private lateinit var atensionGaugeR: AtensionGaugeView
@@ -31,14 +32,14 @@ class AtensionMetersView(override val root: Parent) : Fragment() {
         }
     }
 
-    fun applyData(s: Session) = Platform.runLater {
-        atensionGaugeR.applyData(s)
-        atensionGaugeB.applyData(s)
+    override fun updateAnimation(s: Session) {
+        atensionGaugeR.updateAnimation(s)
+        atensionGaugeB.updateAnimation(s)
     }
 
-    fun animateNextFrame() {
-        atensionGaugeR.animateNextFrame()
-        atensionGaugeB.animateNextFrame()
+    override fun applyData(s: Session) = Platform.runLater {
+        atensionGaugeR.applyData(s)
+        atensionGaugeB.applyData(s)
     }
 
 }

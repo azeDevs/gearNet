@@ -32,7 +32,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
     init {
         with(root) {
             container = stackpane {
-                isVisible = true
+                isVisible = false
                 scaleX *= scaleFactor
                 scaleY *= scaleFactor
                 translateY += (scaleIndex*52)-320.0-scaleIndex

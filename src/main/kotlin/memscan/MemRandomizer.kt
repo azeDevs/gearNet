@@ -5,7 +5,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import models.Fighter
 import session.Character.getCharacterInitials
-import session.log
 import utils.Duo
 import utils.getIdString
 import utils.getRandomName
@@ -52,14 +51,14 @@ class MemRandomizer : XrdApi {
         val botId = Random.nextLong(1000000000, 9999999999)
         val displayName = getRandomName()
         botLobby[botId] = FighterData(botId, displayName, Random.nextInt(25).toByte(), 7, 0, 0, 0, 0)
-        log("B: $displayName [${getIdString(botId)}] has joined the lobby")
+        println("B: $displayName [${getIdString(botId)}] has joined the lobby")
     }
 
     private fun botLeaveLobby() {
         val s = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]
         if (isClientBot(s) || isInMatch(s)) return
         botLobby.remove(s.steamUserId)
-        log("B: ${s.displayName} [${getIdString(s.steamUserId)}] has left the lobby")
+        println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has left the lobby")
     }
 
     private fun botChangeLocation() {
@@ -69,16 +68,16 @@ class MemRandomizer : XrdApi {
         val seatedBots = botLobby.values.filter { it.steamUserId != s.steamUserId && isInRange(it.cabinetLoc.toInt(), 0, 3) && isInRange(it.playerSide.toInt(), 0, 1) }.toList()
         if (seatedBots.isNotEmpty()) {
             val sightedBot = seatedBots[Random.nextInt(seatedBots.size)]
-            log("B: ${s.displayName} [${getIdString(s.steamUserId)}] has spotted a seated bot...${sightedBot.displayName} [${getIdString(sightedBot.steamUserId)}]")
+            println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has spotted a seated bot...${sightedBot.displayName} [${getIdString(sightedBot.steamUserId)}]")
 
             if (botLobby.values.none { it.cabinetLoc == sightedBot.cabinetLoc && it.playerSide.toInt() == abs(sightedBot.playerSide.toInt() - 1) }) {
                 seat.p1 = sightedBot.cabinetLoc.toInt()
                 seat.p2 = abs(sightedBot.playerSide.toInt() - 1)
-                log("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Fighter(
+                println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Fighter(
                     sightedBot
                 ).getCabinetString()}, spot ${Fighter(sightedBot).getPlaySideString(0, seat.p2)}")
             } else {
-                // TODO: MAKE THE BOT FIND ANY OPEN SEAT
+                println("TODO: Bot searched for open seats, but that hasn't been implemented yet")
             }
 
         }
@@ -92,7 +91,7 @@ class MemRandomizer : XrdApi {
         val s = botLobby.values.toList()[Random.nextInt(max(1, botLobby.size))]
         val t = FighterData(s.steamUserId, s.displayName, Random.nextInt(25).toByte(), s.cabinetLoc, s.playerSide, s.matchesWon, s.matchesSum, s.loadingPct)
         botLobby[t.steamUserId] = t
-        log("B: ${s.displayName} [${getIdString(s.steamUserId)}] changed characters from ${getCharacterInitials(s.characterId)} to ${getCharacterInitials(t.characterId)}")
+        println("B: ${s.displayName} [${getIdString(s.steamUserId)}] changed characters from ${getCharacterInitials(s.characterId)} to ${getCharacterInitials(t.characterId)}")
     }
 
     private fun botsLoadMatch() {

@@ -3,7 +3,6 @@ package models
 import javafx.geometry.Rectangle2D
 import session.Character
 import session.Session
-import session.log
 import utils.addCommas
 import kotlin.math.abs
 import kotlin.math.max
@@ -49,7 +48,7 @@ abstract class Player(private val playerId:Long = -1, private val userName:Strin
                 bystanding = 0
             } else {
                 bystanding = max(1,s.getActivePlayerCount())
-                log("P: ${getIdString(playerId)} is idle ... Standby reset to $bystanding and chain reduced by 1 ($userName)")
+                println("P: ${getIdString(playerId)} is idle ... Standby reset to $bystanding and chain reduced by 1 ($userName)")
             }
         }
     }

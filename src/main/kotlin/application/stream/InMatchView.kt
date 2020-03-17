@@ -1,5 +1,6 @@
 package application.stream
 
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -15,7 +16,7 @@ import session.Session
 import tornadofx.*
 import utils.getRes
 
-class InMatchView(override val root: Parent) : Fragment() {
+class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
     private val container: StackPane
     private lateinit var stunGaugeR: StunGaugeView
@@ -143,9 +144,9 @@ class InMatchView(override val root: Parent) : Fragment() {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    fun applyData(fighters: List<Fighter>, s: Session) = Platform.runLater {
-        val f1 = fighters.firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Fighter()
-        val f2 = fighters.firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Fighter()
+    override fun applyData(s: Session) = Platform.runLater {
+        val f1 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Fighter()
+        val f2 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Fighter()
         if (f1.getPlayerId() > 0L) {
             bountyR.text = f1.getScoreTotalString()
             if (s.sessionMode == Session.MATCH_MODE) {

@@ -1,5 +1,7 @@
 package application.stream
 
+import MyApp.Companion.SIMULATE_MODE
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -12,14 +14,13 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import models.Fighter
 import session.Character.getCharacterTrademark
-import session.Session
 import tornadofx.*
 import utils.addCommas
 import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
-class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment() {
+class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment(), ArcadeView {
 
     private var wholeThing: StackPane
     private lateinit var character: ImageView
@@ -138,10 +139,10 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         wholeThing.isVisible = flag
     }
 
-    fun applyData(p: Fighter, s: Session) = Platform.runLater {
+    override fun applyData(f: Fighter) = Platform.runLater {
         when {
-            s.randomValues -> applyRandomData(p)
-            p.getPlayerId() > 0L -> applyFighterData(p)
+            SIMULATE_MODE -> applyRandomData(f)
+            f.getPlayerId() > 0L -> applyFighterData(f)
             else -> applyEmptyData()
         }
     }

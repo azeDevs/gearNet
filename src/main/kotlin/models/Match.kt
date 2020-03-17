@@ -8,7 +8,6 @@ import session.Session
 import session.Session.Companion.MATCH_MODE
 import session.Session.Companion.SLASH_MODE
 import session.Session.Companion.VICTORY_MODE
-import session.log
 import utils.Duo
 import utils.keepInRange
 
@@ -70,35 +69,35 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
             if (!roundStarted && getHealth(PLAYER_1) == 420 && getHealth(PLAYER_2) == 420 && getWinner() == -1) {
                 roundStarted = true
                 session.setMode(MATCH_MODE)
-                log("Round Start, DUEL ${getRounds(PLAYER_1) + getRounds(PLAYER_2) + 1}, LET'S ROCK!")
+                println("Round Start, DUEL ${getRounds(PLAYER_1) + getRounds(PLAYER_2) + 1}, LET'S ROCK!")
             }
 
             // Has the round ended, and did player 1 win?
             if (roundStarted && getWinner()==-1 && getHealth(PLAYER_2) == 0 && getHealth(PLAYER_1) != getHealth(PLAYER_2) ) {
                 roundStarted = false
                 session.setMode(SLASH_MODE)
-                log("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_1 wins (${players.p1.displayName})")
+                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_1 wins (${players.p1.displayName})")
             }
 
             // Has the round ended, and did player 2 win?
             if (roundStarted && getWinner() ==-1 && getHealth(PLAYER_1) == 0 && getHealth(PLAYER_2) != getHealth(PLAYER_1)) {
                 roundStarted = false
                 session.setMode(SLASH_MODE)
-                log("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_2 wins (${players.p2.displayName})")
+                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_2 wins (${players.p2.displayName})")
             }
 
             // Did player 1 win the match?
             if (getRounds(PLAYER_1) == 2 && winner == -1) {
                 winner = 0
                 session.setMode(VICTORY_MODE)
-                log("Match End, PLAYER_1 takes the match (${getHandleString(PLAYER_1)})")
+                println("Match End, PLAYER_1 takes the match (${getHandleString(PLAYER_1)})")
             }
 
             // Did player 2 win the match?
             if (getRounds(PLAYER_2) == 2 && winner == -1) {
                 winner = 1
                 session.setMode(VICTORY_MODE)
-                log(
+                println(
                     "Match End, PLAYER_2 takes the match (${getHandleString(PLAYER_2)})"
                 )
             }

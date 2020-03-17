@@ -1,10 +1,10 @@
 package application.stream
 
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Fighter
 import models.Watcher
 import session.Session
 import tornadofx.Fragment
@@ -13,7 +13,7 @@ import tornadofx.stackpane
 import twitch.ViewerData
 import utils.getRes
 
-class LobbyView(override val root: Parent) : Fragment() {
+class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
     private val container: StackPane
     private val bountiesGui: MutableList<FighterScoreView> = ArrayList()
@@ -47,11 +47,11 @@ class LobbyView(override val root: Parent) : Fragment() {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    fun applyData(fighters: List<Fighter>, s: Session, showHud: Boolean) = Platform.runLater {
+    override fun applyData(s: Session) = Platform.runLater {
         for (i in 0..7) {
-            if (fighters.size > i) {
-                bountiesGui[i].applyData(fighters[i], s)
-                bountiesGui[i].setVisibility(showHud)
+            if (s.getPlayersList().size > i) {
+                bountiesGui[i].applyData(s, i)
+                bountiesGui[i].setVisibility(true)
             }
         }
         val viewerTeamC = s.watchers.values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
@@ -59,7 +59,7 @@ class LobbyView(override val root: Parent) : Fragment() {
         for (i in 0..15) {
             if (viewerTeamC.size > i) {
                 viewersGuiC[i].applyData(viewerTeamC[i])
-                viewersGuiC[i].setVisibility(showHud)
+                viewersGuiC[i].setVisibility(true)
             } else viewersGuiC[i].applyData(Watcher(ViewerData()))
         }
     }

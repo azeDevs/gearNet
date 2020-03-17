@@ -1,17 +1,31 @@
 package application
 
+import MyApp.Companion.DEBUGGER_MODE
+import application.debug.ArcadeView
+import application.debug.DebugViewLayout
+import application.stream.StreamViewLayout
 import javafx.scene.layout.StackPane
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import session.Session
-import tornadofx.*
+import tornadofx.View
+import tornadofx.stackpane
 
 class ApplicationView : View() {
 
     override val root: StackPane = StackPane()
     private val session: Session by inject()
-    private lateinit var streamViewLayout: StreamViewLayout
+    private lateinit var viewLayout: ArcadeView
+
+    init {
+        stackpane {
+            viewLayout = if(DEBUGGER_MODE) DebugViewLayout(parent) else StreamViewLayout(parent)
+        }
+        cycleGameloop()
+        cycleDatabase()
+        cycleAnimations()
+    }
 
     private fun cycleDatabase() {
         GlobalScope.launch {
@@ -21,17 +35,9 @@ class ApplicationView : View() {
         }
     }
 
-    private fun cycleLeaderboard() {
-        GlobalScope.launch {
-            streamViewLayout.updateStreamLeaderboard(session.getPlayersList(), session)
-            delay(64)
-            cycleLeaderboard()
-        }
-    }
-
     private fun cycleAnimations() {
         GlobalScope.launch {
-            streamViewLayout.animateNextFrame()
+            viewLayout.updateAnimation(session)
             delay(48)
             cycleAnimations()
         }
@@ -45,38 +51,12 @@ class ApplicationView : View() {
             }
             session.api.updateViewers()
             session.updatePlayerAtension()
+            viewLayout.applyData(session)
             delay(8)
             cycleGameloop()
         }
     }
 
-
-
-
-    init {
-        stackpane {
-            streamViewLayout = StreamViewLayout(parent)
-            button {
-                addClass(ApplicationStyle.toggleStreamButton)
-                minWidth = 1920.0
-                maxWidth = 1920.0
-                minHeight = 1080.0
-                maxHeight = 1080.0
-                shortpress {
-                    if (streamViewLayout.streamView.isVisible) streamViewLayout.toggleScoreboardMode(session)
-                }
-                longpress {
-                    streamViewLayout.toggleStreamerMode(session)
-                    streamViewLayout.lockHud = -1
-                }
-            }
-
-        }
-        cycleLeaderboard()
-        cycleAnimations()
-        cycleDatabase()
-        cycleGameloop()
-    }
 }
 
 

@@ -1,5 +1,6 @@
 package application.stream
 
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -12,7 +13,7 @@ import tornadofx.stackpane
 import twitch.ViewerData
 import utils.getRes
 
-class ViewersView(override val root: Parent) : Fragment() {
+class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
 
     private val container: StackPane
     private lateinit var atensionMeters: AtensionMetersView
@@ -54,11 +55,11 @@ class ViewersView(override val root: Parent) : Fragment() {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    fun animateNextFrame() {
-        atensionMeters.animateNextFrame()
+    override fun updateAnimation(s: Session) {
+        atensionMeters.updateAnimation(s)
     }
 
-    fun applyData(s: Session) = Platform.runLater {
+    override fun applyData(s: Session) = Platform.runLater {
         val viewerTeamR = s.watchers.values.filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
         val viewerTeamB = s.watchers.values.filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
         for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])

@@ -1,12 +1,10 @@
-package application
+package application.stream
 
-import application.stream.InMatchView
-import application.stream.LobbyView
-import application.stream.ViewersView
+import application.ApplicationStyle
+import application.debug.ArcadeView
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Fighter
 import session.Session
 import session.Session.Companion.LOADING_MODE
 import session.Session.Companion.LOBBY_MODE
@@ -19,28 +17,25 @@ import tornadofx.imageview
 import tornadofx.stackpane
 import utils.getRes
 
-class StreamViewLayout(override val root: Parent) : Fragment() {
+class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     private var showHud = true
-    var lockHud = -1
-
     var streamView: StackPane
 
     private lateinit var lobbyView: LobbyView
     private lateinit var inMatchView: InMatchView
     private lateinit var viewersView: ViewersView
 
-    fun animateNextFrame() {
-        viewersView.animateNextFrame()
+    override fun updateAnimation(s: Session) {
+        viewersView.updateAnimation(s)
     }
 
-    fun updateStreamLeaderboard(fighters: List<Fighter>, s: Session) {
-        if (s.sessionMode == lockHud) {
+    override fun applyData(s: Session) {
+        if (s.sessionMode == -1) {
             lobbyView.setVisibility(showHud)
             inMatchView.setVisibility(!showHud)
         }
         else {
-            lockHud = -1
             when (s.sessionMode) {
                 VICTORY_MODE -> {
                     lobbyView.setVisibility(true)
@@ -70,21 +65,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
             }
         }
 
-        inMatchView.applyData(fighters, s)
-        lobbyView.applyData(fighters, s, showHud)
+        inMatchView.applyData(s)
+        lobbyView.applyData(s)
         viewersView.applyData(s)
-    }
-
-    fun toggleScoreboardMode(session: Session) {
-        lockHud = session.sessionMode
-        showHud = !showHud
-        updateStreamLeaderboard(session.getPlayersList(), session)
-    }
-
-    fun toggleStreamerMode(session: Session) {
-        if (streamView.opacity.equals(0.01)) streamView.opacity = 1.0
-        else if (streamView.opacity.equals(1.0)) streamView.opacity = 0.01
-        updateStreamLeaderboard(session.getPlayersList(), session)
     }
 
     init {
@@ -95,15 +78,12 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                 inMatchView = InMatchView(parent)
                 viewersView = ViewersView(parent)
 
-
                 imageview(getRes("atlas.png").toString()) { // BARC TITLE
                     viewport = Rectangle2D(1088.0, 768.0, 448.0, 128.0)
                     fitWidth = 448.0
                     fitHeight = 128.0
                     translateY -= 488
                 }
-
-
             }
         }
     }

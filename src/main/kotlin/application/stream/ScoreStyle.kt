@@ -13,7 +13,6 @@ class ScoreStyle : Stylesheet() {
 
     companion object {
         val fontXiaoWeiRegular = loadFont("/fonts/XiaoWei-Regular.ttf", 16.0)
-        val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontFiraCodeMedium = loadFont("/fonts/FiraCode-Medium.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
         val fontRED = loadFont("/fonts/RED.ttf", 16.0)

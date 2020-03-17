@@ -1,5 +1,6 @@
 package application.stream
 
+import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -18,7 +19,7 @@ import session.Session
 import tornadofx.*
 import utils.getRes
 
-class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment() {
+class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment(), ArcadeView {
 
     private var animationFrame: Int = -1
 
@@ -177,7 +178,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         }
     }
 
-    fun applyData(s: Session) = Platform.runLater {
+    override fun applyData(s: Session) = Platform.runLater {
         var f = Fighter()
         when (teamColor) {
             PLAYER_1 -> f = s.getStagedFighers().first
@@ -192,6 +193,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
             munityProgress.width = getPercentage(MAX_MUNITY-f.getMunity(), MAX_MUNITY, munityMaxWidth)
             respectProgress.width = getPercentage(f.getRespect(), MAX_RESPECT, respectMaxWidth)
             atensionProgress.width = getPercentage(f.getAtension(), MAX_ATENSION, atensionMaxWidth)
+            if (f.getAtension() >= MAX_ATENSION) animationFrame = 0
             when (teamColor) {
                 0 -> { // RED CREST
                     atensionProgress.fill = when {
@@ -228,7 +230,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         }
     }
 
-    fun animateNextFrame() {
+    override fun updateAnimation(s: Session)  {
         when (animationFrame) {
             0 -> flintHammer.viewport = Rectangle2D(640.0, 320.0, 192.0, 192.0)
             1 -> flintHammer.viewport = Rectangle2D(832.0, 320.0, 192.0, 192.0)
@@ -237,11 +239,12 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
             4 -> flintHammer.viewport = Rectangle2D(1408.0, 320.0, 192.0, 192.0)
             5 -> flintHammer.viewport = Rectangle2D(1600.0, 320.0, 192.0, 192.0)
             6 -> flintHammer.viewport = Rectangle2D(1792.0, 320.0, 192.0, 192.0)
-            else -> animationFrame = -1
+            else -> {
+                flintHammer.viewport = Rectangle2D(640.0, 320.0, 192.0, 192.0)
+                animationFrame = -1
+            }
         }
         animationFrame++
-
-
     }
 
     private fun getPercentage(value:Int = 0, maximum:Int = 100, modifier:Double = 100.0) = (value.toDouble() / maximum) * modifier

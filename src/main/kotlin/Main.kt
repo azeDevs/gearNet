@@ -14,9 +14,10 @@ fun main(args: Array<String>) {
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class) {
 
     companion object {
-        const val SILENT_TWITCH = true
+        const val DEBUGGER_MODE = true
         const val SIMULATE_MODE = false
         const val TRACE_BORDERS = false
+        const val SILENT_TWITCH = true
         const val GHOST_OPACITY = 0.64
     }
 

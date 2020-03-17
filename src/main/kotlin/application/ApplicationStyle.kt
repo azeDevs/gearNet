@@ -1,8 +1,6 @@
 package application
 
-import MyApp.Companion.GHOST_OPACITY
 import MyApp.Companion.TRACE_BORDERS
-import javafx.geometry.Pos
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
@@ -12,40 +10,14 @@ import tornadofx.*
 class ApplicationStyle : Stylesheet() {
 
     companion object {
-        val fontFiraCodeRegular = loadFont("/fonts/FiraCode-Regular.ttf", 16.0)
-        val fontFiraCodeLight = loadFont("/fonts/FiraCode-Light.ttf", 16.0)
+        val fontFiraCodeBold = loadFont("/fonts/FiraCode-Bold.ttf", 16.0)
         val fontPaladins = loadFont("/fonts/Paladins-Regular.ttf", 16.0)
-
-        val utilsContainer by cssclass()
-        val appContainer by cssclass()
         val streamContainer by cssclass()
-        val lobbyName by cssclass()
-        val consoleField by cssclass()
-        val toggleStreamButton by cssclass()
+        val debugLabel by cssclass()
+        val debugList by cssclass()
     }
 
     init {
-        appContainer {
-            backgroundColor += c("#FF00FFff")
-            alignment = Pos.TOP_CENTER
-        }
-
-        utilsContainer {
-            opacity = GHOST_OPACITY
-            borderWidth += box(2.px)
-            borderColor += box(c("#34081c"))
-            borderStyle += BorderStrokeStyle(
-                StrokeType.INSIDE,
-                StrokeLineJoin.ROUND,
-                StrokeLineCap.SQUARE,
-                10.0,
-                0.0,
-                arrayListOf(1.0)
-            )
-            backgroundColor += c("#230412")
-            alignment = Pos.BOTTOM_LEFT
-        }
-
         streamContainer {
             backgroundColor += c("#FF00FFff")
         }
@@ -57,35 +29,30 @@ class ApplicationStyle : Stylesheet() {
             borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 5.0, 5.0, arrayListOf(1.0))
         }
 
-        button {
-            and(toggleStreamButton) {
-                opacity = GHOST_OPACITY
-                textFill = c("#52141f")
-                backgroundColor += c("#00000000")
-                alignment = Pos.BOTTOM_RIGHT
-            }
-        }
-
         label {
-            fontFiraCodeRegular?.let { font = it }
+            fontFiraCodeBold?.let { font = it }
             textFill = c("#cccccc")
-            fontSize = 14.px
+            fontSize = 16.px
 
-            and(consoleField) {
-                fontFiraCodeLight?.let { font = it }
-                alignment = Pos.BOTTOM_LEFT
-                textFill = c("#966674")
-                fontSize = 10.px
+            and(debugLabel) {
+                backgroundColor += c("#226644")
+                fontFiraCodeBold?.let { font = it }
+                fontSize = 30.px
+                maxWidth = 440.px
+                minWidth = 440.px
+                maxHeight = 48.px
+                minHeight = 48.px
+                padding = box(6.px)
+                textFill = c("#cdd8be")
             }
-
-            and(lobbyName) {
-                fontPaladins?.let { font = it }
-                fontSize = 18.px
-                maxWidth = 420.px
-                minWidth = 420.px
-                maxHeight = 32.px
-                minHeight = 32.px
-                alignment = Pos.CENTER
+            and(debugList) {
+                backgroundColor += c("#226644")
+                fontFiraCodeBold?.let { font = it }
+                fontSize = 20.px
+                maxWidth = 240.px
+                minWidth = 240.px
+                padding = box(6.px)
+                textFill = c("#cdd8be")
             }
         }
     }

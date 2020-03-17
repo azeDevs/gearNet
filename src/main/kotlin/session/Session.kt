@@ -17,12 +17,15 @@ import kotlin.math.max
 class Session : Controller() {
 
     companion object {
+        const val SLEEP_MODE = -1
         const val LOBBY_MODE = 0
-        const val LOADING_MODE = 1
-        const val MATCH_MODE = 2
-        const val SLASH_MODE = 3
-        const val VICTORY_MODE = 4
+        const val MATCH_MODE = 1
+        const val SLASH_MODE = 2
+        const val VICTORY_MODE = 3
+        const val LOADING_MODE = 4
     }
+
+    var sessionMode: Int = SLEEP_MODE
 
     val api = ApiHandler(this)
     val matchHandler = MatchHandler(this)
@@ -76,15 +79,14 @@ class Session : Controller() {
         var somethingChanged = false
 
         // Define the GearNet client player
-        api.defineClientId(this)
-
+        api.defineClientId()
         api.getFightersInLobby().forEach { data ->
 
             // Add player if they aren't already stored
             if (!fighters.containsKey(data.steamUserId)) {
                 fighters[data.steamUserId] = Fighter(data)
                 somethingChanged = true
-                log("New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
+                println("New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
             }
 
             // The present is now the past, and the future is now the present
@@ -150,7 +152,7 @@ class Session : Controller() {
                         getClient().getCabinet().toByte(),
                         clientMatchPlayers
                     )
-                log("Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
+                println("Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
                 somethingChanged = true
                 setMode(LOADING_MODE)
             }
@@ -179,16 +181,17 @@ class Session : Controller() {
 
     fun getActivePlayerCount() = max(fighters.values.filter { !it.isAbsent() }.size, 1)
 
-    var sessionMode: Int = 0
+
 
     fun setMode(mode: Int) {
         sessionMode = mode
         when (mode) {
-            LOBBY_MODE -> log("Mode = LOBBY")
-            LOADING_MODE -> log("Mode = LOADING")
-            MATCH_MODE -> log("Mode = MATCH")
-            SLASH_MODE -> log("Mode = SLASH")
-            VICTORY_MODE -> log("Mode = VICTORY")
+            SLEEP_MODE -> println("Mode = SLEEP")
+            LOBBY_MODE -> println("Mode = LOBBY")
+            MATCH_MODE -> println("Mode = MATCH")
+            SLASH_MODE -> println("Mode = SLASH")
+            VICTORY_MODE -> println("Mode = VICTORY")
+            LOADING_MODE -> println("Mode = LOADING")
         }
     }
 
@@ -200,6 +203,4 @@ class Session : Controller() {
     private fun getClient(): Fighter = if (fighters.isEmpty()) Fighter() else fighters.values.first { it.getPlayerId() == api.getClientId() }
 
 }
-
-fun log(text: String) = println(text)
 
