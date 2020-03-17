@@ -84,7 +84,7 @@ class MatchHandler(val s: Session) {
             +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
         */
 
-        s.watchers.forEach {
+        s.api.getWatchersMap().forEach {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {

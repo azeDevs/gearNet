@@ -15,7 +15,7 @@ typealias TCB = TwitchClientBuilder
 
 class BotEventHandler(private val s: Session) : BotApi {
 
-    private val viewerDatas: MutableList<ViewerData> = mutableListOf()
+    private val watcherData: MutableList<WatcherData> = mutableListOf()
     private val twitchClient: TwitchClient = TCB.builder()
         .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
         .withEnableChat(true)
@@ -26,7 +26,7 @@ class BotEventHandler(private val s: Session) : BotApi {
 
     init {
         twitchClient.chat.eventManager.onEvent(CME::class.java).subscribe {
-            viewerDatas.add(ViewerData(it.user.id, it.user.name, it.message))
+            watcherData.add(WatcherData(it.user.id, it.user.name, it.message))
         }
         twitchClient.chat.joinChannel("azeDevs")
         sendMessage("Hello World!")
@@ -39,33 +39,33 @@ class BotEventHandler(private val s: Session) : BotApi {
         }
     }
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
-    override fun getViewerData(): List<ViewerData> {
-        val outList: MutableList<ViewerData> = arrayListOf()
-        viewerDatas.forEach { outList.add(it) }
-        viewerDatas.clear()
+    override fun getViewerData(): List<WatcherData> {
+        val outList: MutableList<WatcherData> = arrayListOf()
+        watcherData.forEach { outList.add(it) }
+        watcherData.clear()
         return outList
     }
 
-    fun addViewerData(viewerData:ViewerData) { viewerDatas.add(viewerData) }
+    fun addWatcherData(watcherData:WatcherData) { this.watcherData.add(watcherData) }
 
     //fun getViewers() = twitchClient.messagingInterface.getChatters("azeDevs").execute().allViewers
 
-    fun generateViewerEvents() {
+    fun generateWatcherEvents() {
         getViewerData().forEach {
             if (!it.message.isEmpty()) {
                 println("CHAT ${it.displayName}: ${it.message}")
                 // ADD VIEWER IF THEY ARE NEW
-                if (!s.watchers.containsKey(it.twitchId)) {
-                    s.watchers.put(it.twitchId, Watcher(it))
+                if (!s.api.getWatchersMap().containsKey(it.twitchId)) {
+                    s.api.getWatchersMap().put(it.twitchId, Watcher(it))
                     println("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC") && !s.watchers[it.twitchId]!!.isTeamR()) {
-                    s.watchers[it.twitchId]!!.setTeamR()
+                if (it.message.contains("azpngRC") && !s.api.getWatchersMap()[it.twitchId]!!.isTeamR()) {
+                    s.api.getWatchersMap()[it.twitchId]!!.setTeamR()
                     sendMessage("${it.displayName} joins red")
                 }
-                if (it.message.contains("azpngBC") && !s.watchers[it.twitchId]!!.isTeamB()) {
-                    s.watchers[it.twitchId]!!.setTeamB()
+                if (it.message.contains("azpngBC") && !s.api.getWatchersMap()[it.twitchId]!!.isTeamB()) {
+                    s.api.getWatchersMap()[it.twitchId]!!.setTeamB()
                     sendMessage("${it.displayName} joins blue")
                 }
             }

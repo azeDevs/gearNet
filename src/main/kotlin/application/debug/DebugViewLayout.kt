@@ -37,7 +37,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     textAlignment = TextAlignment.LEFT
                     alignment = Pos.CENTER_LEFT
                     translateY -= 514
-                    translateX -= 520
+                    translateX += 520
                 }
 
                 fighter1 = label("Red") {
@@ -94,19 +94,16 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
             Session.VICTORY_MODE -> modeLabel.text = "VICTORY_MODE"
         }
 
-        if (s.getClientFighter().isValid()) clientFighter.text = "Client: [${s.getClientFighter().getLoadPercent()}] ${s.getClientFighter().getUserName()}"
-        else clientFighter.text = "Client: []"
-        if (s.getStagedFighers().first.isValid()) fighter1.text = "Red: [${s.getStagedFighers().first.getLoadPercent()}] ${s.getStagedFighers().first.getUserName()}"
-        else fighter1.text = "Red: []"
-        if (s.getStagedFighers().second.isValid()) fighter2.text = "Blue: [${s.getStagedFighers().first.getLoadPercent()}] ${s.getStagedFighers().second.getUserName()}"
-        else fighter2.text = "Blue: []"
+        clientFighter.text = "Client: ${s.getClientFighter().getDebugDataString(1)}"
+        fighter1.text = s.getStagedFighers().p1.getDebugDataString(1)
+        fighter2.text = s.getStagedFighers().p2.getDebugDataString(1)
 
         val fighterNames = StringBuilder("FIGHTERS:")
-        s.fighters.forEach { fighterNames.append("\n[${it.value.getLoadPercent()}] ${it.value.getUserName()}") }
+        s.api.getFightersMap().forEach { fighterNames.append("\n${it.value.getDebugDataString(1)}") }
         fightersList.text = fighterNames.toString()
 
         val watcherNames = StringBuilder("WATCHERS:")
-        s.watchers.forEach { watcherNames.append("\n${it.value.getUserName()}") }
+        s.api.getWatchersMap().forEach { watcherNames.append("\n${it.value.getUserName()}") }
         watchersList.text = watcherNames.toString()
 
     }

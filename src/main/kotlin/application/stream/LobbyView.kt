@@ -10,7 +10,7 @@ import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
-import twitch.ViewerData
+import twitch.WatcherData
 import utils.getRes
 
 class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
@@ -54,13 +54,13 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                 bountiesGui[i].setVisibility(true)
             }
         }
-        val viewerTeamC = s.watchers.values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamC = s.api.getWatchersMap().values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
 
         for (i in 0..15) {
             if (viewerTeamC.size > i) {
                 viewersGuiC[i].applyData(viewerTeamC[i])
                 viewersGuiC[i].setVisibility(true)
-            } else viewersGuiC[i].applyData(Watcher(ViewerData()))
+            } else viewersGuiC[i].applyData(Watcher(WatcherData()))
         }
     }
 

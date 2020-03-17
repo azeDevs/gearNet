@@ -49,7 +49,7 @@ class ApplicationView : View() {
                 session.updateFighters()
                 session.updateMatchInProgress()
             }
-            session.api.updateViewers()
+            session.api.updateWatchers()
             session.updatePlayerAtension()
             viewLayout.applyData(session)
             delay(8)

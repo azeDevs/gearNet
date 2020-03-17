@@ -18,11 +18,11 @@ interface BotApi {
     /**
      * @return a List of all Messages
      */
-    fun getViewerData(): List<ViewerData>
+    fun getViewerData(): List<WatcherData>
 
 }
 
-data class ViewerData(
+data class WatcherData(
     val twitchId:Long = -1,
     val displayName:String = "",
     val message:String = ""

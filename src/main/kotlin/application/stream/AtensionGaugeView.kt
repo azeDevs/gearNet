@@ -9,12 +9,9 @@ import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
-import models.Fighter
 import models.Player.Companion.MAX_ATENSION
 import models.Player.Companion.MAX_MUNITY
 import models.Player.Companion.MAX_RESPECT
-import models.Player.Companion.PLAYER_1
-import models.Player.Companion.PLAYER_2
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -179,11 +176,8 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     }
 
     override fun applyData(s: Session) = Platform.runLater {
-        var f = Fighter()
-        when (teamColor) {
-            PLAYER_1 -> f = s.getStagedFighers().first
-            PLAYER_2 -> f = s.getStagedFighers().second
-        }
+        val f = s.getStagedFighers().p(teamColor)
+
         if (!f.isValid()) bannerHandle.text = "-" else {
             container.isVisible = true
 

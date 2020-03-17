@@ -1,8 +1,8 @@
 package models
 
-import twitch.ViewerData
+import twitch.WatcherData
 
-class Watcher(viewerData: ViewerData) : Player(viewerData.twitchId, viewerData.displayName) {
+class Watcher(watcherData: WatcherData) : Player(watcherData.twitchId, watcherData.displayName) {
 
     private var teamR = false
     private var teamB = false
