@@ -9,8 +9,8 @@ import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import models.Fighter
-import models.Player.Companion.PLAYER1
-import models.Player.Companion.PLAYER2
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import session.Session
 import tornadofx.*
 import utils.getRes
@@ -36,27 +36,27 @@ class InMatchView(override val root: Parent) : Fragment() {
         with(root) {
             container = stackpane { // MatchView CONTAINER
 
+                stunGaugeR = StunGaugeView(parent, 0) // STUN GAUGE RED
+                stunGaugeB = StunGaugeView(parent, 1) // STUN GAUGE BLUE
+
                 imageview(getRes("atlas.png").toString()) { // BACKING RED
-                    viewport = Rectangle2D(1408.0, 196.0, 640.0, 128.0)
-                    fitWidth = 640.0
+                    viewport = Rectangle2D(1344.0, 196.0, 704.0, 128.0)
+                    fitWidth = 704.0
                     fitHeight = 128.0
-                    translateX -= 640
-                    translateY -= 410
-                    scaleX *= -0.50
-                    scaleY *= 0.50
-                }
-                imageview(getRes("atlas.png").toString()) { // BACKING BLUE
-                    viewport = Rectangle2D(1408.0, 196.0, 640.0, 128.0)
-                    fitWidth = 640.0
-                    fitHeight = 128.0
-                    translateX += 640
+                    translateX -= 620
                     translateY -= 410
                     scaleX *= 0.50
                     scaleY *= 0.50
                 }
-
-                stunGaugeR = StunGaugeView(parent, 0) // STUN GAUGE RED
-                stunGaugeB = StunGaugeView(parent, 1) // STUN GAUGE BLUE
+                imageview(getRes("atlas.png").toString()) { // BACKING BLUE
+                    viewport = Rectangle2D(1344.0, 196.0, 704.0, 128.0)
+                    fitWidth = 704.0
+                    fitHeight = 128.0
+                    translateX += 620
+                    translateY -= 410
+                    scaleX *= -0.50
+                    scaleY *= 0.50
+                }
 
                 bountyR = label("FREE") { // BOUNTY RED
                     alignment = Pos.CENTER_LEFT
@@ -72,6 +72,7 @@ class InMatchView(override val root: Parent) : Fragment() {
                 }
 
                 healthR = label("") { // HEALTH RED
+                    isVisible = false
                     alignment = Pos.CENTER_LEFT
                     addClass(InMatchStyle.matchHealthText)
                     translateX -= 524
@@ -79,6 +80,7 @@ class InMatchView(override val root: Parent) : Fragment() {
                     scaleX = 0.7
                 }
                 healthB = label("") { // HEALTH BLUE
+                    isVisible = false
                     alignment = Pos.CENTER_RIGHT
                     addClass(InMatchStyle.matchHealthText)
                     translateX += 518
@@ -88,23 +90,23 @@ class InMatchView(override val root: Parent) : Fragment() {
 
                 statusR = imageview(getRes("atlas.png").toString()) { // BOSS STATUS RED
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 64.0)
-                    translateX -= 346
-                    translateY -= 312
+                    translateX -= 548
+                    translateY -= 413
                     fitWidth = 64.0
                     fitHeight = 32.0
                 }
                 statusB = imageview(getRes("atlas.png").toString()) { // BOSS STATUS BLUE
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 64.0)
-                    translateX += 346
-                    translateY -= 312
+                    translateX += 548
+                    translateY -= 413
                     fitWidth = 64.0
                     fitHeight = 32.0
                 }
 
                 spiritR = imageview(getRes("cb_spirit_red.gif").toString()) { // SPIRIT RED
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
-                    translateX -= 265
-                    translateY -= 316
+                    translateX -= 548
+                    translateY -= 413
                     fitWidth = 77.0
                     fitHeight = 77.0
                     opacity = 0.96
@@ -112,8 +114,8 @@ class InMatchView(override val root: Parent) : Fragment() {
                 }
                 spiritB = imageview(getRes("cb_spirit_blue.gif").toString()) { // SPIRIT BLUE
                     viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
-                    translateX += 265
-                    translateY -= 316
+                    translateX += 548
+                    translateY -= 413
                     fitWidth = 77.0
                     fitHeight = 77.0
                     opacity = 0.96
@@ -122,19 +124,17 @@ class InMatchView(override val root: Parent) : Fragment() {
 
                 ratingR = imageview(getRes("atlas.png").toString()) { // RISK RATING RED
                     viewport = Rectangle2D(832.0, 704.0, 256.0, 64.0)
-                    translateX -= 268
-                    translateY -= 312
-                    fitWidth = 52.0
-                    fitHeight = 52.0
-                    opacity = 0.96
+                    translateX -= 548
+                    translateY -= 313
+                    fitWidth = 256.0
+                    fitHeight = 64.0
                 }
                 ratingB = imageview(getRes("atlas.png").toString()) { // RISK RATING BLUE
                     viewport = Rectangle2D(1088.0, 704.0, 256.0, 64.0)
-                    translateX += 268
-                    translateY -= 312
-                    fitWidth = 52.0
-                    fitHeight = 52.0
-                    opacity = 0.96
+                    translateX += 548
+                    translateY -= 313
+                    fitWidth = 256.0
+                    fitHeight = 64.0
                 }
 
             }
@@ -144,8 +144,8 @@ class InMatchView(override val root: Parent) : Fragment() {
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
     fun applyData(fighters: List<Fighter>, s: Session) = Platform.runLater {
-        val f1 = fighters.firstOrNull { it.getPlaySide().toInt() == 0 } ?: Fighter()
-        val f2 = fighters.firstOrNull { it.getPlaySide().toInt() == 1 } ?: Fighter()
+        val f1 = fighters.firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Fighter()
+        val f2 = fighters.firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Fighter()
         if (f1.getPlayerId() > 0L) {
             bountyR.text = f1.getScoreTotalString()
             if (s.sessionMode == Session.MATCH_MODE) {
@@ -156,7 +156,7 @@ class InMatchView(override val root: Parent) : Fragment() {
             } else stunGaugeR.setVisibility(false)
             statusR.viewport = Rectangle2D(f1.getStatusImage().minX, f1.getStatusImage().minY, f1.getStatusImage().width, f1.getStatusImage().height)
             statusR.isVisible = true
-            ratingR.viewport = f1.getRatingImage(PLAYER1)
+            ratingR.viewport = f1.getRatingImage(PLAYER_1)
             ratingR.isVisible = f1.getRating() > 0
             spiritR.isVisible = f1.getRating() > 0
         } else {
@@ -176,7 +176,7 @@ class InMatchView(override val root: Parent) : Fragment() {
             } else stunGaugeB.setVisibility(false)
             statusB.viewport = Rectangle2D(f2.getStatusImage().minX, f2.getStatusImage().minY, f2.getStatusImage().width, f2.getStatusImage().height)
             statusB.isVisible = true
-            ratingB.viewport = f2.getRatingImage(PLAYER2)
+            ratingB.viewport = f2.getRatingImage(PLAYER_2)
             ratingB.isVisible = f2.getRating() > 0
             spiritB.isVisible = f2.getRating() > 0
         } else {

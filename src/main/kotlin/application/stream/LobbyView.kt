@@ -5,7 +5,7 @@ import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
 import models.Fighter
-import models.Viewer
+import models.Watcher
 import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
@@ -54,13 +54,13 @@ class LobbyView(override val root: Parent) : Fragment() {
                 bountiesGui[i].setVisibility(showHud)
             }
         }
-        val viewerTeamC = s.viewers.values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamC = s.watchers.values.filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
 
         for (i in 0..15) {
             if (viewerTeamC.size > i) {
                 viewersGuiC[i].applyData(viewerTeamC[i])
                 viewersGuiC[i].setVisibility(showHud)
-            } else viewersGuiC[i].applyData(Viewer(ViewerData()))
+            } else viewersGuiC[i].applyData(Watcher(ViewerData()))
         }
     }
 

@@ -29,8 +29,8 @@ class Fighter(fighterData: FighterData = FighterData()) : Player(fighterData.ste
         }
     }
 
-    fun getPlaySide() = getData().playerSide
-    fun getPlaySideString(cabId:Int = getCabinet(), sideId:Int = getPlaySide().toInt()): String = if (cabId > 3) "Wandering"
+    fun getPlaySide() = getData().playerSide.toInt()
+    fun getPlaySideString(cabId:Int = getCabinet(), sideId:Int = getPlaySide()): String = if (cabId > 3) "Wandering"
         else when(sideId) {
             0 -> "Red Seat"
             1 -> "Blue Seat"
@@ -40,7 +40,7 @@ class Fighter(fighterData: FighterData = FighterData()) : Player(fighterData.ste
             5 -> "5th"
             6 -> "6th"
             7 -> "Spectating"
-            else -> "[${getPlaySide().toInt()}]"
+            else -> "[${getPlaySide()}]"
         }
 
 

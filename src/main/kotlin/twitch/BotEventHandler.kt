@@ -5,7 +5,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import models.Viewer
+import models.Watcher
 import session.Session
 import session.log
 import utils.getTokenFromFile
@@ -56,17 +56,17 @@ class BotEventHandler(private val s: Session) : BotApi {
             if (!it.message.isEmpty()) {
                 log("CHAT ${it.displayName}: ${it.message}")
                 // ADD VIEWER IF THEY ARE NEW
-                if (!s.viewers.containsKey(it.twitchId)) {
-                    s.viewers.put(it.twitchId, Viewer(it))
+                if (!s.watchers.containsKey(it.twitchId)) {
+                    s.watchers.put(it.twitchId, Watcher(it))
                     log("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC") && !s.viewers[it.twitchId]!!.isTeamR()) {
-                    s.viewers[it.twitchId]!!.setTeamR()
+                if (it.message.contains("azpngRC") && !s.watchers[it.twitchId]!!.isTeamR()) {
+                    s.watchers[it.twitchId]!!.setTeamR()
                     sendMessage("${it.displayName} joins azpngRC")
                 }
-                if (it.message.contains("azpngBC") && !s.viewers[it.twitchId]!!.isTeamB()) {
-                    s.viewers[it.twitchId]!!.setTeamB()
+                if (it.message.contains("azpngBC") && !s.watchers[it.twitchId]!!.isTeamB()) {
+                    s.watchers[it.twitchId]!!.setTeamB()
                     sendMessage("${it.displayName} joins azpngBC")
                 }
             }

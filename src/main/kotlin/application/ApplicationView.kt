@@ -1,6 +1,5 @@
 package application
 
-import application.stream.StreamViewLayout
 import javafx.scene.layout.StackPane
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -22,18 +21,36 @@ class ApplicationView : View() {
         }
     }
 
-    private fun cycleMemScan() {
+    private fun cycleLeaderboard() {
+        GlobalScope.launch {
+            streamViewLayout.updateStreamLeaderboard(session.getPlayersList(), session)
+            delay(64)
+            cycleLeaderboard()
+        }
+    }
+
+    private fun cycleAnimations() {
+        GlobalScope.launch {
+            streamViewLayout.animateNextFrame()
+            delay(48)
+            cycleAnimations()
+        }
+    }
+
+    private fun cycleGameloop() {
         GlobalScope.launch {
             if (session.api.isXrdApiConnected()) {
                 session.updateFighters()
                 session.updateMatchInProgress()
             }
             session.api.updateViewers()
-            streamViewLayout.updateStreamLeaderboard(session.getPlayersList(), session)
-            delay(16)
-            cycleMemScan()
+
+            delay(8)
+            cycleGameloop()
         }
     }
+
+
 
 
     init {
@@ -55,8 +72,10 @@ class ApplicationView : View() {
             }
 
         }
+        cycleLeaderboard()
+        cycleAnimations()
         cycleDatabase()
-        cycleMemScan()
+        cycleGameloop()
     }
 }
 

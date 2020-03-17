@@ -20,17 +20,12 @@ interface XrdApi {
     /**
      * @return a List of the Xrd lobby's active players and their data
      */
-    fun getPlayerData(): List<FighterData>
+    fun getFighterData(): List<FighterData>
 
     /**
      * @return data from current match
      */
     fun getMatchData(): MatchData
-
-    /**
-     * @return data from current lobby
-     */
-    fun getLobbyData(): LobbyData
 
 }
 
@@ -78,12 +73,6 @@ data class MatchData(
             strikeStun.second == other.strikeStun.second &&
             guardGauge.second == other.guardGauge.second
 }
-
-data class LobbyData(
-    val lobbyName: String = "",
-    val roundWins: Int = 2,
-    val openCabinets: Int = 4
-)
 
 
 

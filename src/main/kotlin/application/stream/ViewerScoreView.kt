@@ -10,9 +10,9 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import models.Player.Companion.PLAYER1
-import models.Player.Companion.PLAYER2
-import models.Viewer
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
+import models.Watcher
 import tornadofx.*
 import utils.getRes
 import utils.isWithin
@@ -35,19 +35,19 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                 isVisible = true
                 scaleX *= scaleFactor
                 scaleY *= scaleFactor
-                translateY += (scaleIndex*60)-320.0-scaleIndex
+                translateY += (scaleIndex*52)-320.0-scaleIndex
                 scaleX -= (scaleIndex*0.016)
                 scaleY -= (scaleIndex*0.016)
 
                 when(teamColor) {
-                    PLAYER1 -> translateX -= 930.0
-                    PLAYER2 -> translateX += 930.0
+                    PLAYER_1 -> translateX -= 930.0
+                    PLAYER_2 -> translateX += 930.0
                 }
 
                 teamBackground = imageview(getRes("atlas.png").toString()) {
                     viewport = when(teamColor) {
-                        PLAYER1 -> Rectangle2D(640.0, 64.0, 448.0, 64.0)
-                        PLAYER2 -> Rectangle2D(640.0, 196.0, 448.0, 64.0)
+                        PLAYER_1 -> Rectangle2D(640.0, 64.0, 448.0, 64.0)
+                        PLAYER_2 -> Rectangle2D(640.0, 196.0, 448.0, 64.0)
                         else -> Rectangle2D(640.0, 128.0, 448.0, 64.0)
                     }
                     fitWidth = 448.0
@@ -57,11 +57,11 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                 alias = label {
                     addClass(ScoreStyle.viewerHandleText)
                     when(teamColor) {
-                        PLAYER1 -> {
+                        PLAYER_1 -> {
                             translateX += (160.0)
                             alignment = Pos.CENTER_LEFT
                         }
-                        PLAYER2 -> {
+                        PLAYER_2 -> {
                             translateX -= (160.0)
                             alignment = Pos.CENTER_RIGHT
                         }
@@ -80,8 +80,8 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                 score = label {
                     addClass(InMatchStyle.matchBountyText)
                     when(teamColor) {
-                        PLAYER1 -> translateX -= (128.0)
-                        PLAYER2 -> translateX += (128.0)
+                        PLAYER_1 -> translateX -= (128.0)
+                        PLAYER_2 -> translateX += (128.0)
                         else -> translateX += (128.0)
                     }
                     translateY -= 5.0
@@ -96,7 +96,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
         }
     }
 
-    fun applyData(v: Viewer) = Platform.runLater {
+    fun applyData(v: Watcher) = Platform.runLater {
         if (v.isValid() && !isWithin(teamColor)) {
             // Do stuff for central Viewer Leaderboard
             alias.text = truncate(v.getUserName(), 11)
@@ -107,7 +107,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             delta.text = v.getScoreDeltaString()
             setChangeTextColor(v.getScoreDelta())
             container.isVisible = true
-        } else if (v.isValid() && v.isTeamR() && teamColor == PLAYER1) {
+        } else if (v.isValid() && v.isTeamR() && teamColor == PLAYER_1) {
             // Do stuff for Viewer Atension, stage left (Red)
             alias.text = truncate(v.getUserName(), 11)
             alias.isVisible = true
@@ -116,7 +116,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             score.text = v.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
-        } else if (v.isValid() && v.isTeamB() && teamColor == PLAYER2) {
+        } else if (v.isValid() && v.isTeamB() && teamColor == PLAYER_2) {
             // Do stuff for Viewer Atension, stage right (Blue)
             alias.text = truncate(v.getUserName(), 11)
             alias.isVisible = true

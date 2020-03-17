@@ -4,7 +4,7 @@ import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.image.ImageView
-import memscan.MatchData
+import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
@@ -19,11 +19,11 @@ class AtensionMetersView(override val root: Parent) : Fragment() {
     init {
         with(root) {
             stackpane {
-                translateY += 444
                 atensionWheel = imageview(getRes("atlas.png").toString()) { // WHEEL
                     viewport = Rectangle2D(832.0, 768.0, 256.0, 256.0)
-                    fitWidth = 222.0
-                    fitHeight = 222.0
+                    fitWidth = 200.0
+                    fitHeight = 200.0
+                    translateY += 444
                 }
                 atensionGaugeR = AtensionGaugeView(parent, 0)
                 atensionGaugeB = AtensionGaugeView(parent, 1)
@@ -31,9 +31,14 @@ class AtensionMetersView(override val root: Parent) : Fragment() {
         }
     }
 
-    fun applyData(m: MatchData) = Platform.runLater {
-        atensionGaugeR.applyData(m)
-        atensionGaugeB.applyData(m)
+    fun applyData(s: Session) = Platform.runLater {
+        atensionGaugeR.applyData(s.getStagedFighers().first)
+        atensionGaugeB.applyData(s.getStagedFighers().second)
+    }
+
+    fun animateNextFrame() {
+        atensionGaugeR.animateNextFrame()
+        atensionGaugeB.animateNextFrame()
     }
 
 }

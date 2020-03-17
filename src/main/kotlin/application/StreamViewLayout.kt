@@ -1,6 +1,8 @@
-package application.stream
+package application
 
-import application.ApplicationStyle
+import application.stream.InMatchView
+import application.stream.LobbyView
+import application.stream.ViewersView
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
@@ -28,6 +30,9 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
     private lateinit var inMatchView: InMatchView
     private lateinit var viewersView: ViewersView
 
+    fun animateNextFrame() {
+        viewersView.animateNextFrame()
+    }
 
     fun updateStreamLeaderboard(fighters: List<Fighter>, s: Session) {
         if (s.sessionMode == lockHud) {
@@ -97,24 +102,7 @@ class StreamViewLayout(override val root: Parent) : Fragment() {
                     fitHeight = 128.0
                     translateY -= 488
                 }
-                imageview(getRes("atlas.png").toString()) { // RED BANNER
-                    viewport = Rectangle2D(1536.0, 704.0, 256.0, 320.0)
-                    fitWidth = 256.0
-                    fitHeight = 320.0
-                    translateX -= 880
-                    translateY -= 400
-                    scaleX *= 0.88
-                    scaleY *= 0.88
-                }
-                imageview(getRes("atlas.png").toString()) { // BLUE BANNER
-                    viewport = Rectangle2D(1792.0, 704.0, 256.0, 320.0)
-                    fitWidth = 256.0
-                    fitHeight = 320.0
-                    translateX += 880
-                    translateY -= 400
-                    scaleX *= 0.88
-                    scaleY *= 0.88
-                }
+
 
             }
         }

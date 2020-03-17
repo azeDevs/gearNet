@@ -122,8 +122,7 @@ class MemRandomizer : XrdApi {
 
     override fun isConnected() = true
     override fun getClientSteamId() = getClientBot().steamUserId
-    override fun getPlayerData() = botLobby.values.toList()
+    override fun getFighterData() = botLobby.values.toList()
     override fun getMatchData() = botMatch
-    override fun getLobbyData() = LobbyData()
 
 }

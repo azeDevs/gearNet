@@ -6,7 +6,7 @@ import models.Fighter
 import models.Match
 import utils.isInRange
 
-class MatchHandler {
+class MatchHandler(val s: Session) {
 
     val archiveMatches: HashMap<Long, Match> = HashMap()
     val lobbyMatches = arrayListOf(Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()),Pair(-1L, Match()))
@@ -15,14 +15,14 @@ class MatchHandler {
     private var loser = FighterData()
     private var winner = FighterData()
 
-    fun updateClientMatch(matchData: MatchData, s: Session): Boolean {
+    fun updateClientMatch(matchData: MatchData): Boolean {
         val updatedMatchSnap = clientMatch.updateMatchSnap(matchData, s)
         for (i in 0..3) lobbyMatches[i] = Pair(-1L, Match())
         if (clientMatch.matchId != -1L) lobbyMatches[clientMatch.getCabinet().toInt()] = Pair(clientMatch.matchId, clientMatch)
         return updatedMatchSnap
     }
 
-    fun resolveEveryone(players: HashMap<Long, Fighter>, s: Session, data: FighterData): Boolean {
+    fun resolveEveryone(players: HashMap<Long, Fighter>, data: FighterData): Boolean {
         val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Fighter()
         val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Fighter()
 
@@ -30,15 +30,14 @@ class MatchHandler {
         if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getData()
 
         if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
-            log("----------------------------------------- WE HAVE A WINNER")
-            log("loserPlayer = ${loser.displayName} // winnerPlayer = ${winner.displayName}")
-
-            resolveLobbyMatchResults(players, s)
-
-            log("loserChain = ${players[loser.steamUserId]!!.getRating()} // winnerChain = ${players[winner.steamUserId]!!.getRating()}")
+            log("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
+            log("WINNER = ${winner.displayName} / LOSER = ${loser.displayName}")
+            log("WINNER Chain: ${players[winner.steamUserId]!!.getRating()}")
+            log(" LOSER Chain: ${players[loser.steamUserId]!!.getRating()}")
+            resolveLobbyMatchResults(players)
             players.values.forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(s) }
             log("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
-            log("-----------------------------------------")
+            log("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
 
             loser = FighterData()
             winner = FighterData()
@@ -47,22 +46,24 @@ class MatchHandler {
         return false
     }
 
-    private fun resolveLobbyMatchResults(players: HashMap<Long, Fighter>, s: Session) {
+    private fun resolveLobbyMatchResults(players: HashMap<Long, Fighter>) {
         val winnerSide = winner.playerSide.toInt()
         val loserBounty = players[loser.steamUserId]!!.getScoreTotal()
         val winnerBounty = players[winner.steamUserId]!!.getScoreTotal()
 
-        log("loserBounty = $loserBounty // winnerBounty = $winnerBounty")
+        log("WINNER Bounty: $winnerBounty")
+        log(" LOSER Bounty: $loserBounty")
 
         val bonusLoserPayout = (players[loser.steamUserId]!!.getRating() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesSum() + (players[loser.steamUserId]!!.getRating() * 100)
         val bonusWinnerPayout = ((players[winner.steamUserId]!!.getRating()+1) * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesSum() + ((players[winner.steamUserId]!!.getRating()+1) * 1000)
 
-        log("bonusLoserPayout = $bonusLoserPayout // bonusWinnerPayout = $bonusWinnerPayout")
+        log("WINNER Signing Bonus: $bonusWinnerPayout")
+        log(" LOSER Signing Bonus: $bonusLoserPayout")
 
         val riskModifier = 0.32 + (0.02 * players[loser.steamUserId]!!.getRating()) - (0.01 * players[winner.steamUserId]!!.getRating())
         val payout = (loserBounty * riskModifier).toInt()
 
-        log("payout = $payout")
+        log("RISK = $riskModifier / PAYOUT = $payout")
 
         if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
             players[loser.steamUserId]!!.changeScore(bonusLoserPayout - payout)
@@ -83,7 +84,7 @@ class MatchHandler {
             +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
         */
 
-        s.viewers.forEach {
+        s.watchers.forEach {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {
