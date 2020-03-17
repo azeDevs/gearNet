@@ -102,6 +102,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                         translateY += 3
                         translateX += 2
                         blendMode = BlendMode.HARD_LIGHT
+                        opacity = 0.01
                     }
                     handle1 = label { addClass(ScoreStyle.bountyHandleText) }
                 }

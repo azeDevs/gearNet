@@ -32,8 +32,8 @@ class AtensionMetersView(override val root: Parent) : Fragment() {
     }
 
     fun applyData(s: Session) = Platform.runLater {
-        atensionGaugeR.applyData(s.getStagedFighers().first)
-        atensionGaugeB.applyData(s.getStagedFighers().second)
+        atensionGaugeR.applyData(s)
+        atensionGaugeB.applyData(s)
     }
 
     fun animateNextFrame() {

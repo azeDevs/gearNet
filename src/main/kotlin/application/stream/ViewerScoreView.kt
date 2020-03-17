@@ -58,31 +58,31 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                     addClass(ScoreStyle.viewerHandleText)
                     when(teamColor) {
                         PLAYER_1 -> {
-                            translateX += (160.0)
+                            translateX += (120.0)
                             alignment = Pos.CENTER_LEFT
                         }
                         PLAYER_2 -> {
-                            translateX -= (160.0)
+                            translateX -= (124.0)
+                            translateY -= 4.0
                             alignment = Pos.CENTER_RIGHT
                         }
                         else -> {
-                            translateX -= (160.0)
+                            translateX -= (136.0)
                             alignment = Pos.CENTER_RIGHT
                         }
                     }
-                    translateY -= 4.0
+                    translateY -= 2.0
                 }
 
-                signs = label {
+                signs = label("88") {
                     addClass(ScoreStyle.signsTurnedText)
                 }
 
                 score = label {
                     addClass(InMatchStyle.matchBountyText)
                     when(teamColor) {
-                        PLAYER_1 -> translateX -= (128.0)
-                        PLAYER_2 -> translateX += (128.0)
-                        else -> translateX += (128.0)
+                        PLAYER_1 -> translateX -= (160.0)
+                        else -> translateX += (160.0)
                     }
                     translateY -= 5.0
                 }

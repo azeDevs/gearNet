@@ -17,7 +17,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
 
     private var winner = -1
     private var roundStarted = false
-    private val snaps = arrayListOf(matchData)
+    private val snaps = mutableListOf(matchData)
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
@@ -34,8 +34,13 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
     private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
-    fun getData() = snaps.last()
     fun allData() = snaps
+    fun getData() = snaps.last()
+    fun oldData(): MatchData = when (snaps.size) {
+        0 -> MatchData()
+        1 -> getData()
+        else -> snaps[snaps.size-2]
+    }
 
     fun updateMatchSnap(updatedData: MatchData, session: Session): Boolean {
         if (!getData().equals(updatedData)) {
@@ -103,6 +108,9 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
         } else return false
     }
 
+    fun isBeingDamaged(side:Int):Boolean = health.p(side) == Duo(oldData().health.first, oldData().health.second).p(side)
+
+    fun getFighterData(side:Int): FighterData = players.p(side)
     fun getWinner():Int = winner
     fun getTimer():Int = matchTimer
     fun getRounds(side:Int):Int = rounds.p(side)
@@ -113,7 +121,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
     fun getTension(side:Int):Int = tension.p(side)
     fun getRisc(side:Int):Int = guardGauge.p(side)
     fun getBurst(side:Int):Boolean = canBurst.p(side)
-    fun getHitStun(side:Int):Boolean = strikeStun.p(side)
+    fun getStrikeStun(side:Int):Boolean = strikeStun.p(side)
 
     fun getHandleString(side:Int):String = handle.p(side)
     fun getHealthString(side:Int):String = "HP: ${getHealth(side)} / 420"
@@ -121,7 +129,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
     fun getTensionString(side:Int):String = "Tension: ${getTension(side)} / 10000"
     fun getRiscString(side:Int):String = "   RISC: ${getRisc(side)} / 12800"
     fun getBurstString(side:Int):String = "  Burst: ${getBurst(side)}"
-    fun getHitStunString(side:Int):String = "  IsHit: ${getHitStun(side)}"
+    fun getStrikeStunString(side:Int):String = "  IsHit: ${getStrikeStun(side)}"
 
     fun getCabinet():Byte = cabinetId
     fun getCabinetString(cabId:Int = getCabinet().toInt()): String {

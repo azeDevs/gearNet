@@ -148,12 +148,9 @@ abstract class Player(private val playerId:Long = -1, private val userName:Strin
      *  Player Atension Stats
      */
 
-    private var munity = 8
-    private var respect = 80
-    private var atension = 800
-
-
-
+    private var munity = 0
+    private var respect = 0
+    private var atension = 0
 
     fun getMunity() = this.munity
     fun setMunity(value:Int) { munity = value }

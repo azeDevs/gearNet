@@ -43,22 +43,26 @@ class ScoreStyle : Stylesheet() {
             fontSize = 10.px
             and(signsTurnedText) {
                 fontXiaoWeiRegular?.let { font = it }
-                fontSize = 24.px
+                fontSize = 33.px
                 maxWidth = 256.px
                 minWidth = 256.px
-                textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.8, 0.8, 0.3)), Stop(0.48, c(0.9, 0.9, 0.4)), Stop(0.52, c(0.7, 0.5, 0.1)), Stop(1.0, c(0.9, 0.8, 0.2)))
-            }
-            and(viewerHandleText) {
-                fontXiaoWeiRegular?.let { font = it }
-                fontSize = 20.px
-                maxWidth = 192.px
-                minWidth = 192.px
                 textFill = c("#ffcf81")
                 fontWeight = FontWeight.BOLD
                 val ds = DropShadow(1.6, c("#272714"))
                 ds.offsetY = -1.6
                 effect = ds
-//                blendMode = BlendMode.HARD_LIGHT
+            }
+            and(viewerHandleText) {
+                fontPaladins?.let { font = it }
+                fontSize = 18.px
+                maxWidth = 192.px
+                minWidth = 192.px
+                scaleX = 0.64
+                textFill = LinearGradient(0.0, -16.0, 0.0, 0.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.9, 0.9, 0.9)), Stop(0.45, c(1.0, 1.0, 1.0)), Stop(0.60, c(1.0, 0.9, 0.8)), Stop(1.0, c(0.9, 0.9, 0.9)))
+                val ds = DropShadow(1.6, c("#272714"))
+                ds.offsetY = -1.6
+                effect = ds
+//                blendMode = BlendMode.COLOR_BURN
             }
             and(bountyHandleText) {
                 fontPaladins?.let { font = it }

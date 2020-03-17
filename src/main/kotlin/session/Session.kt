@@ -3,6 +3,8 @@ package session
 import memscan.FighterData
 import models.Fighter
 import models.Match
+import models.Player.Companion.MAX_ATENSION
+import models.Player.Companion.MAX_RESPECT
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import models.Watcher
@@ -28,6 +30,40 @@ class Session : Controller() {
     val watchers: HashMap<Long, Watcher> = HashMap()
     var randomValues = false
 
+    fun updatePlayerAtension() {
+        val f1 = fighters[matchHandler.clientMatch.getFighterData(PLAYER_1).steamUserId] ?: Fighter()
+        val f2 = fighters[matchHandler.clientMatch.getFighterData(PLAYER_2).steamUserId] ?: Fighter()
+
+        if (f1.isValid() && f2.isValid()) {
+            // Apply Munity
+            f1.setMunity(watchers.values.filter { item -> item.isTeamR() }.size)
+            f2.setMunity(watchers.values.filter { item -> item.isTeamB() }.size)
+
+            // Boost Respect when in strike-stun & taking no damage
+            if (matchHandler.clientMatch.getStrikeStun(PLAYER_1) && !matchHandler.clientMatch.isBeingDamaged(PLAYER_1)) {
+                if (f1.getRespect() >= MAX_RESPECT) f1.addAtension(-2)
+                else f1.addRespect(16+f1.getMunity()) }
+            if (matchHandler.clientMatch.getStrikeStun(PLAYER_2) && !matchHandler.clientMatch.isBeingDamaged(PLAYER_2)) {
+                if (f2.getRespect() >= MAX_RESPECT) f2.addAtension(-2)
+                else f2.addRespect(16+f2.getMunity()) }
+
+            // Boost Atension when putting opponent into strike-stun
+            if (matchHandler.clientMatch.getStrikeStun(PLAYER_1)) f2.addAtension(f2.getRespect() * (f2.getMunity()+1))
+            if (matchHandler.clientMatch.getStrikeStun(PLAYER_2)) f1.addAtension(f1.getRespect() * (f1.getMunity()+1))
+
+            // Resolve full Atension
+            if (f1.getAtension() >= MAX_ATENSION) {
+                f1.setAtension(0)
+                f1.setRespect(0)
+                f1.addSigns(1)
+            }
+            if (f2.getAtension() >= MAX_ATENSION) {
+                f2.setAtension(0)
+                f2.setRespect(0)
+                f2.addSigns(1)
+            }
+        }
+    }
 
     fun getClientFighter(): Fighter = fighters.values.firstOrNull { it.getPlayerId() == api.getClientId() } ?: Fighter()
     fun getStagedFighers(): Pair<Fighter, Fighter> {

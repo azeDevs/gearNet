@@ -44,7 +44,7 @@ class ApplicationView : View() {
                 session.updateMatchInProgress()
             }
             session.api.updateViewers()
-
+            session.updatePlayerAtension()
             delay(8)
             cycleGameloop()
         }

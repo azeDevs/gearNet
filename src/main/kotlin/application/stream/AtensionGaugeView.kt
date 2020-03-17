@@ -4,6 +4,7 @@ import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
+import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
@@ -11,6 +12,9 @@ import models.Fighter
 import models.Player.Companion.MAX_ATENSION
 import models.Player.Companion.MAX_MUNITY
 import models.Player.Companion.MAX_RESPECT
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
+import session.Session
 import tornadofx.*
 import utils.getRes
 
@@ -25,6 +29,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     private lateinit var respectProgress: Rectangle
     private lateinit var atensionBacking: Rectangle
     private lateinit var atensionProgress: Rectangle
+    private lateinit var bannerHandle: Label
 
 //    val audioResourceURL = resources.url("sound.wav")
 
@@ -158,13 +163,33 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                     }
                 }
 
+                bannerHandle = label {
+                    addClass(ScoreStyle.signsTurnedText)
+                    alignment = Pos.CENTER
+                    when(teamColor) {
+                        0 -> translateX -= 215.0
+                        else -> translateX += 215.0
+                    }
+                    translateY -= 820.0
+                }
+
             }
         }
     }
 
-    fun applyData(f: Fighter) = Platform.runLater {
-        if (f.getPlaySide() == teamColor) {
-            munityProgress.width = getPercentage(f.getMunity(), MAX_MUNITY, munityMaxWidth)
+    fun applyData(s: Session) = Platform.runLater {
+        var f = Fighter()
+        when (teamColor) {
+            PLAYER_1 -> f = s.getStagedFighers().first
+            PLAYER_2 -> f = s.getStagedFighers().second
+        }
+        if (!f.isValid()) bannerHandle.text = "-" else {
+            container.isVisible = true
+
+            if (s.matchHandler.clientMatch.getStrikeStun(teamColor)) bannerHandle.text = "X"
+            else bannerHandle.text = f.getUserName()
+
+            munityProgress.width = getPercentage(MAX_MUNITY-f.getMunity(), MAX_MUNITY, munityMaxWidth)
             respectProgress.width = getPercentage(f.getRespect(), MAX_RESPECT, respectMaxWidth)
             atensionProgress.width = getPercentage(f.getAtension(), MAX_ATENSION, atensionMaxWidth)
             when (teamColor) {
@@ -198,8 +223,8 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                         else -> c("#1759f3")
                     }
                 }
+
             }
-            container.isVisible = true
         }
     }
 
@@ -215,6 +240,8 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
             else -> animationFrame = -1
         }
         animationFrame++
+
+
     }
 
     private fun getPercentage(value:Int = 0, maximum:Int = 100, modifier:Double = 100.0) = (value.toDouble() / maximum) * modifier
