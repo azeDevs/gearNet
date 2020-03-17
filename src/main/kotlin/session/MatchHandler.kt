@@ -2,8 +2,8 @@ package session
 
 import memscan.FighterData
 import memscan.MatchData
-import models.Fighter
 import models.Match
+import models.Player
 import utils.isInRange
 
 class MatchHandler(val s: Session) {
@@ -22,9 +22,9 @@ class MatchHandler(val s: Session) {
         return updatedMatchSnap
     }
 
-    fun resolveEveryone(players: HashMap<Long, Fighter>, data: FighterData): Boolean {
-        val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Fighter()
-        val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Fighter()
+    fun resolveEveryone(players: HashMap<Long, Player>, data: FighterData): Boolean {
+        val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Player()
+        val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Player()
 
         if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getData()
         if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getData()
@@ -46,7 +46,7 @@ class MatchHandler(val s: Session) {
         return false
     }
 
-    private fun resolveLobbyMatchResults(players: HashMap<Long, Fighter>) {
+    private fun resolveLobbyMatchResults(players: HashMap<Long, Player>) {
         val winnerSide = winner.playerSide.toInt()
         val loserBounty = players[loser.steamUserId]!!.getScoreTotal()
         val winnerBounty = players[winner.steamUserId]!!.getScoreTotal()
@@ -84,22 +84,22 @@ class MatchHandler(val s: Session) {
             +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
         */
 
-        s.api.getWatchersMap().forEach {
+        s.api.getWatchers().forEach {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {
-                    if(it.value.isTeamR() && !it.value.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(!it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
+                    if(it.isTeamR() && !it.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(!it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
                 1 -> {
-                    if(it.value.isTeamR() && !it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(!it.value.isTeamR() && it.value.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(it.value.isTeamR() && it.value.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
+                    if(it.isTeamR() && !it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(!it.isTeamR() && it.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
             }
-            it.value.changeScore(scoreChange)
-            it.value.resetTeam()
+            it.changeScore(scoreChange)
+            it.resetTeam()
         }
 
 

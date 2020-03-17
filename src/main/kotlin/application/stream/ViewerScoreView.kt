@@ -10,9 +10,9 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
+import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
-import models.Watcher
 import tornadofx.*
 import utils.getRes
 import utils.isWithin
@@ -96,33 +96,33 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
         }
     }
 
-    fun applyData(v: Watcher) = Platform.runLater {
-        if (v.isValid() && !isWithin(teamColor)) {
+    fun applyData(p: Player) = Platform.runLater {
+        if (p.isValid() && !isWithin(teamColor)) {
             // Do stuff for central Viewer Leaderboard
-            alias.text = truncate(v.getUserName(), 11)
+            alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
-            signs.text = v.getSigns().toString()
-            signs.isVisible = v.getSigns() > 0
-            score.text = v.getScoreTotalString()
-            delta.text = v.getScoreDeltaString()
-            setChangeTextColor(v.getScoreDelta())
+            signs.text = p.getSigns().toString()
+            signs.isVisible = p.getSigns() > 0
+            score.text = p.getScoreTotalString()
+            delta.text = p.getScoreDeltaString()
+            setChangeTextColor(p.getScoreDelta())
             container.isVisible = true
-        } else if (v.isValid() && v.isTeamR() && teamColor == PLAYER_1) {
+        } else if (p.isValid() && p.isTeamR() && teamColor == PLAYER_1) {
             // Do stuff for Viewer Atension, stage left (Red)
-            alias.text = truncate(v.getUserName(), 11)
+            alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
-            signs.text = v.getSigns().toString()
-            signs.isVisible = v.getSigns() > 0
-            score.text = v.getScoreTotalString()
+            signs.text = p.getSigns().toString()
+            signs.isVisible = p.getSigns() > 0
+            score.text = p.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
-        } else if (v.isValid() && v.isTeamB() && teamColor == PLAYER_2) {
+        } else if (p.isValid() && p.isTeamB() && teamColor == PLAYER_2) {
             // Do stuff for Viewer Atension, stage right (Blue)
-            alias.text = truncate(v.getUserName(), 11)
+            alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
-            signs.text = v.getSigns().toString()
-            signs.isVisible = v.getSigns() > 0
-            score.text = v.getScoreTotalString()
+            signs.text = p.getSigns().toString()
+            signs.isVisible = p.getSigns() > 0
+            score.text = p.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
         } else {

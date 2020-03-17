@@ -5,12 +5,11 @@ import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Watcher
+import models.Player
 import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
-import twitch.WatcherData
 import utils.getRes
 
 class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
@@ -60,12 +59,12 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData(s: Session) = Platform.runLater {
-        val viewerTeamR = s.api.getWatchersMap().values.filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
-        val viewerTeamB = s.api.getWatchersMap().values.filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamR = s.api.getWatchers().filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamB = s.api.getWatchers().filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
         for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
-        else viewersGuiR[i].applyData(Watcher(WatcherData()))
+        else viewersGuiR[i].applyData(Player())
         for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
-        else viewersGuiB[i].applyData(Watcher(WatcherData()))
+        else viewersGuiB[i].applyData(Player())
         atensionMeters.applyData(s)
     }
 

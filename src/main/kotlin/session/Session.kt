@@ -1,8 +1,8 @@
 package session
 
 import memscan.FighterData
-import models.Fighter
 import models.Match
+import models.Player
 import models.Player.Companion.MAX_ATENSION
 import models.Player.Companion.MAX_RESPECT
 import models.Player.Companion.PLAYER_1
@@ -27,17 +27,15 @@ class Session : Controller() {
     var sessionMode: Int = SLEEP_MODE
 
     val api = ApiHandler(this)
-    val matchHandler = MatchHandler(this) // NOTE: THIS IS BEING REFACTORED TO WORK FROM ApiHandler
-    var randomValues = false
 
     fun updatePlayerAtension() {
-        val f1 = api.getFightersMap()[api.getClientMatch().getFighterData(PLAYER_1).steamUserId] ?: Fighter()
-        val f2 = api.getFightersMap()[api.getClientMatch().getFighterData(PLAYER_2).steamUserId] ?: Fighter()
+        val f1 = api.getPlayersMap()[api.getClientMatch().getFighterData(PLAYER_1).steamUserId] ?: Player()
+        val f2 = api.getPlayersMap()[api.getClientMatch().getFighterData(PLAYER_2).steamUserId] ?: Player()
 
         if (f1.isValid() && f2.isValid()) {
             // Apply Munity
-            f1.setMunity(api.getWatchersMap().values.filter { item -> item.isTeamR() }.size)
-            f2.setMunity(api.getWatchersMap().values.filter { item -> item.isTeamB() }.size)
+            f1.setMunity(api.getPlayersMap().values.filter { item -> item.isTeamR() }.size)
+            f2.setMunity(api.getPlayersMap().values.filter { item -> item.isTeamB() }.size)
 
             // Boost Respect when in strike-stun & taking no damage
             if (api.getClientMatch().getStrikeStun(PLAYER_1) && !api.getClientMatch().isBeingDamaged(PLAYER_1)) {
@@ -65,11 +63,11 @@ class Session : Controller() {
         }
     }
 
-    fun getClientFighter(): Fighter = api.getFightersMap().values.firstOrNull { it.getPlayerId() == api.getClientId() } ?: Fighter()
-    fun getStagedFighers(): Duo<Fighter> {
+    fun getClientFighter(): Player = api.getPlayersMap().values.firstOrNull { it.getPlayerId() == api.getClientId() } ?: Player()
+    fun getStagedFighers(): Duo<Player> {
         val stagingCabinet = if(getClientFighter().isOnCabinet()) getClientFighter().getCabinet() else 0
-        val f1 = api.getFightersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Fighter()
-        val f2 = api.getFightersMap().values.firstOrNull { it.getPlaySide() == PLAYER_2 && it.getCabinet() == stagingCabinet } ?: Fighter()
+        val f1 = api.getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val f2 = api.getPlayersMap().values.firstOrNull { it.getPlaySide() == PLAYER_2 && it.getCabinet() == stagingCabinet } ?: Player()
         return Duo(f1, f2)
     }
 
@@ -81,19 +79,19 @@ class Session : Controller() {
         api.getFightersInLobby().forEach { data ->
 
             // Add player if they aren't already stored
-            if (!api.getFightersMap().containsKey(data.steamUserId)) {
-                api.getFightersMap()[data.steamUserId] = Fighter(data)
+            if (!api.getPlayersMap().containsKey(data.steamUserId)) {
+                api.getPlayersMap()[data.steamUserId] = Player(data)
                 somethingChanged = true
                 println("New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
             }
 
             // The present is now the past, and the future is now the present
-            val player = api.getFightersMap()[data.steamUserId] ?: Fighter()
+            val player = api.getPlayersMap()[data.steamUserId] ?: Player()
             if (!player.getData().equals(data)) somethingChanged = true
             player.updatePlayerData(data, getActivePlayerCount())
 
             // Resolve if a game occured and what the reward will be
-            if (matchHandler.resolveEveryone(api.getFightersMap(), data)) somethingChanged = true
+            if (api.getMatchHandler().resolveEveryone(api.getPlayersMap(), data)) somethingChanged = true
 
         }
 
@@ -113,11 +111,11 @@ class Session : Controller() {
                 && lobbyMatchPlayers.p2.steamUserId != -1L
                 && lobbyMatchPlayers.p1.cabinetLoc == lobbyMatchPlayers.p2.cabinetLoc) {
                 val newMatch = Match(
-                    matchHandler.archiveMatches.size.toLong(),
+                    api.getMatchHandler().archiveMatches.size.toLong(),
                     lobbyMatchPlayers.p1.cabinetLoc,
                     lobbyMatchPlayers
                 )
-                matchHandler.lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
+                api.getMatchHandler().lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
             }
 
             // Client Match stuff --------
@@ -131,7 +129,7 @@ class Session : Controller() {
             if (sessionMode == MATCH_MODE
                 && clientMatchPlayers.p1.steamUserId == -1L
                 && clientMatchPlayers.p2.steamUserId == -1L) {
-                api.getFightersMap().values.forEach {
+                api.getPlayersMap().values.forEach {
                     if (it.getCabinet() == getClient().getCabinet()
                         && it.getPlaySide() == PLAYER_1)
                         clientMatchPlayers.p1 = it.getData()
@@ -146,11 +144,11 @@ class Session : Controller() {
                 && clientMatchPlayers.p2.steamUserId > 0L) {
                 api.getMatchHandler().clientMatch =
                     Match(
-                        matchHandler.archiveMatches.size.toLong(),
+                        api.getMatchHandler().archiveMatches.size.toLong(),
                         getClient().getCabinet().toByte(),
                         clientMatchPlayers
                     )
-                println("Generated Match ${getIdString(matchHandler.archiveMatches.size.toLong())}")
+                println("Generated Match ${getIdString(api.getMatchHandler().archiveMatches.size.toLong())}")
                 somethingChanged = true
                 setMode(LOADING_MODE)
             }
@@ -174,10 +172,10 @@ class Session : Controller() {
     }
 
     fun updateMatchInProgress(): Boolean {
-        return matchHandler.updateClientMatch(api.getMatchData())
+        return api.getMatchHandler().updateClientMatch(api.getMatchData())
     }
 
-    fun getActivePlayerCount() = max(api.getFightersMap().values.filter { !it.isAbsent() }.size, 1)
+    fun getActivePlayerCount() = max(api.getPlayersMap().values.filter { !it.isAbsent() }.size, 1)
 
 
 
@@ -193,12 +191,12 @@ class Session : Controller() {
         }
     }
 
-    fun getPlayersList(): List<Fighter> = api.getFightersMap().values.toList()
+    fun getPlayersList(): List<Player> = api.getPlayersMap().values.toList()
         .sortedByDescending { item -> item.getStatusFloat() }
         .sortedByDescending { item -> item.getScoreTotal() }
         .sortedByDescending { item -> if (!item.isAbsent()) 1 else 0 }
 
-    private fun getClient(): Fighter = if (api.getFightersMap().isEmpty()) Fighter() else api.getFightersMap().values.first { it.getPlayerId() == api.getClientId() }
+    private fun getClient(): Player = if (api.getPlayersMap().isEmpty()) Player() else api.getPlayersMap().values.first { it.getPlayerId() == api.getClientId() }
 
 }
 

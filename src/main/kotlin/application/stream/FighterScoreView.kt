@@ -12,7 +12,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
-import models.Fighter
+import models.Player
 import session.Character.getCharacterTrademark
 import tornadofx.*
 import utils.addCommas
@@ -84,7 +84,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                 }
 
                 rating = imageview(getRes("atlas.png").toString()) {
-                    viewport = Fighter().getRatingImage()
+                    viewport = Player().getRatingImage()
                     translateX += 252
                     translateY += 16
                     fitWidth = 52.0
@@ -139,10 +139,10 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         wholeThing.isVisible = flag
     }
 
-    override fun applyData(f: Fighter) = Platform.runLater {
+    override fun applyData(p: Player) = Platform.runLater {
         when {
-            SIMULATE_MODE -> applyRandomData(f)
-            f.getPlayerId() > 0L -> applyFighterData(f)
+            SIMULATE_MODE -> applyRandomData(p)
+            p.getPlayerId() > 0L -> applyFighterData(p)
             else -> applyEmptyData()
         }
     }
@@ -160,26 +160,26 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         wholeThing.isVisible = false
     }
 
-    private fun applyFighterData(f: Fighter) {
-        character.viewport = getCharacterTrademark(f.getData().characterId)
-        handle1.text = f.getUserName(); handle1.isVisible = true
-        handle2.text = f.getUserName(); handle2.isVisible = true
-        status.viewport = f.getStatusImage(); status.isVisible = true
-        rating.viewport = f.getRatingImage(f.getPlaySide()); rating.isVisible = true
-        bounty1.text = f.getScoreTotalString()
-        bounty2.text = f.getScoreTotalString()
-        change.text = f.getScoreDeltaString()
-        setChangeTextColor(f.getScoreDelta())
-        rating.fitWidth = 57.0 * (1 + f.getRating() * 0.033)
-        rating.fitHeight = 57.0 * (1 + f.getRating() * 0.033)
-        spirit.isVisible = f.getRating() > 0
-        spirit.fitWidth = 77.0 * (1 + f.getRating() * 0.33)
-        spirit.fitHeight = 77.0 * (1 + f.getRating() * 0.33)
+    private fun applyFighterData(p: Player) {
+        character.viewport = getCharacterTrademark(p.getData().characterId)
+        handle1.text = p.getUserName(); handle1.isVisible = true
+        handle2.text = p.getUserName(); handle2.isVisible = true
+        status.viewport = p.getStatusImage(); status.isVisible = true
+        rating.viewport = p.getRatingImage(p.getPlaySide()); rating.isVisible = true
+        bounty1.text = p.getScoreTotalString()
+        bounty2.text = p.getScoreTotalString()
+        change.text = p.getScoreDeltaString()
+        setChangeTextColor(p.getScoreDelta())
+        rating.fitWidth = 57.0 * (1 + p.getRating() * 0.033)
+        rating.fitHeight = 57.0 * (1 + p.getRating() * 0.033)
+        spirit.isVisible = p.getRating() > 0
+        spirit.fitWidth = 77.0 * (1 + p.getRating() * 0.33)
+        spirit.fitHeight = 77.0 * (1 + p.getRating() * 0.33)
 
         wholeThing.isVisible = true
     }
 
-    private fun applyRandomData(f: Fighter) {
+    private fun applyRandomData(p: Player) {
         val chainInt = Random.nextInt(9)
         val bountyStr = addCommas(Random.nextInt(1222333).toString())
         val changeInt = Random.nextInt(-444555, 666777)
@@ -190,9 +190,9 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         bounty1.text = "$bountyStr W$"
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
-        change.text = f.getScoreDeltaString(1f, changeInt)
-        status.viewport = f.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        rating.viewport = f.getRatingImage(f.getPlaySide())
+        change.text = p.getScoreDeltaString(1f, changeInt)
+        status.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
+        rating.viewport = p.getRatingImage(p.getPlaySide())
         spirit.isVisible = chainInt > 0
         spirit.fitWidth = 44.0 + ((8+chainInt) * chainInt)
         spirit.fitHeight = 44.0 + ((8+chainInt) * chainInt)

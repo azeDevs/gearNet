@@ -9,7 +9,7 @@ import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
-import models.Fighter
+import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import session.Session
@@ -145,15 +145,15 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
     override fun applyData(s: Session) = Platform.runLater {
-        val f1 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Fighter()
-        val f2 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Fighter()
+        val f1 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Player()
+        val f2 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Player()
         if (f1.getPlayerId() > 0L) {
             bountyR.text = f1.getScoreTotalString()
             if (s.sessionMode == Session.MATCH_MODE) {
-                if (s.matchHandler.clientMatch.getHealth(0) > 0) healthR.text = s.matchHandler.clientMatch.getHealth(0).toString()
+                if (s.api.getClientMatch().getHealth(0) > 0) healthR.text = s.api.getClientMatch().getHealth(0).toString()
                 else healthR.text = ""
                 stunGaugeR.setVisibility(true)
-                stunGaugeR.applyData(s.matchHandler.clientMatch.getData())
+                stunGaugeR.applyData(s.api.getClientMatch().getData())
             } else stunGaugeR.setVisibility(false)
             statusR.viewport = Rectangle2D(f1.getStatusImage().minX, f1.getStatusImage().minY, f1.getStatusImage().width, f1.getStatusImage().height)
             statusR.isVisible = true
@@ -170,10 +170,10 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
         if (f2.getPlayerId() > 0L) {
             bountyB.text = f2.getScoreTotalString()
             if (s.sessionMode == Session.MATCH_MODE) {
-                if (s.matchHandler.clientMatch.getHealth(1) > 0) healthB.text = s.matchHandler.clientMatch.getHealth(1).toString()
+                if (s.api.getClientMatch().getHealth(1) > 0) healthB.text = s.api.getClientMatch().getHealth(1).toString()
                 else healthB.text = ""
                 stunGaugeB.setVisibility(true)
-                stunGaugeB.applyData(s.matchHandler.clientMatch.getData())
+                stunGaugeB.applyData(s.api.getClientMatch().getData())
             } else stunGaugeB.setVisibility(false)
             statusB.viewport = Rectangle2D(f2.getStatusImage().minX, f2.getStatusImage().minY, f2.getStatusImage().width, f2.getStatusImage().height)
             statusB.isVisible = true

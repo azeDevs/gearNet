@@ -1,10 +1,10 @@
 package session
 
 import MyApp.Companion.SIMULATE_MODE
-import database.DataHandler
 import memscan.MemHandler
 import memscan.MemRandomizer
 import memscan.XrdApi
+import models.Player
 import session.Session.Companion.LOBBY_MODE
 import twitch.BotEventHandler
 import twitch.WatcherData
@@ -18,7 +18,7 @@ class ApiHandler(val session: Session) {
     private val xrdApi: XrdApi = if (SIMULATE_MODE) MemRandomizer() else MemHandler()
     private val matchHandler = MatchHandler(session)
     private val twitchHandler = BotEventHandler(session)
-    private val dataHandler: DataHandler = DataHandler()
+    private val players: HashMap<Long, Player> = HashMap()
 
     fun isXrdApiConnected() = xrdApi.isConnected()
 
@@ -32,14 +32,16 @@ class ApiHandler(val session: Session) {
         }
     }
 
-    fun getFightersMap() = dataHandler.fighters
-    fun getWatchersMap() = dataHandler.watchers
+    fun getPlayersMap() = players
+    fun getPlayers() = players.values
+    fun getFighters() = getPlayers().filter { !it.isWatcher() }
+    fun getWatchers() = getPlayers().filter { it.isWatcher() }
 
     fun getFightersInLobby() = xrdApi.getFighterData().filter { it.steamUserId != 0L }
     fun getFightersLoading() = xrdApi.getFighterData().filter { it.loadingPct in 1..99 }
     fun getMatchData() = xrdApi.getMatchData()
     fun getClientMatch() = matchHandler.clientMatch
-    fun getMatchHandler() =  matchHandler
+    fun getMatchHandler() = matchHandler
 
 
     fun updateWatchers() {

@@ -1,14 +1,34 @@
 package models
 
 import javafx.geometry.Rectangle2D
+import memscan.FighterData
 import session.Character
 import session.Session
+import twitch.WatcherData
 import utils.addCommas
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class Player(private val playerId:Long = -1, private val userName:String = "", private var characterId:Byte = -0x1) {
+open class Player(
+    private val playerId:Long = -1,
+    private val userName:String = "",
+    private var teamSeatId:Int = -1,
+    private var characterId:Byte = -0x1,
+    private var data:Pair<FighterData, FighterData> = Pair(FighterData(), FighterData())
+) {
+    constructor(fighterData: FighterData) : this(fighterData.steamUserId, fighterData.displayName, fighterData.playerSide.toInt(), fighterData.characterId, Pair(fighterData, fighterData))
+    constructor(watcherData: WatcherData) : this(watcherData.twitchId, watcherData.displayName)
+
+    fun oldData() = data.first
+    fun getData() = data.second
+    fun updatePlayerData(updatedData: FighterData, playersActive: Int) {
+        data = Pair(getData(), updatedData)
+        if (isLoading()) setBystanding(playersActive)
+        setMatchesWon(updatedData.matchesWon)
+        setMatchesSum(updatedData.matchesSum)
+        setCharacterId(updatedData.characterId)
+    }
 
     companion object {
         const val PLAYER_1 = 0
@@ -24,13 +44,45 @@ abstract class Player(private val playerId:Long = -1, private val userName:Strin
      *  Player Identification (Name/ID)
      */
     fun isValid() = playerId > 0
+    fun isWatcher() = getCharacterId() == Character.NULL
     fun getPlayerId() = this.playerId
     fun getIdString(id:Long) = if (id.toString().length > 8) "ID${id.toString().substring(id.toString().length-8, id.toString().length)}" else "ID${id}"
     fun getUserName() = this.userName
     fun getCharacterId() = this.characterId
     fun setCharacterId(id:Byte) { characterId = id }
-    fun getCharacterName() = Character.getCharacterName(this.characterId)
+    fun getCharacterString() = Character.getCharacterInitials(getCharacterId())
 
+    /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
+     *  Player Location (Cab/Seat/Team)
+     */
+    fun resetTeam() { teamSeatId = -1 }
+    fun setTeamR() { teamSeatId = 0 }
+    fun setTeamB() { teamSeatId = 1 }
+    fun isTeamR() = teamSeatId == 0
+    fun isTeamB() = teamSeatId == 1
+    fun isOnPlaySide(sideId:Int = -1) = if(getPlaySide() in 0..1) getData().playerSide.toInt() == sideId else getPlaySide() in 0..1
+    fun getPlaySide() = getData().playerSide.toInt()
+    fun getPlaySideString(cabId:Int = getCabinet(), sideId:Int = getPlaySide()): String = if (cabId > 3) "Wandering"
+    else when(sideId) {
+        0 -> "Red"
+        1 -> "Blue"
+        2 -> "Prospect"
+        3 -> "3rd"
+        4 -> "4th"
+        5 -> "5th"
+        6 -> "6th"
+        7 -> "Spectating"
+        else -> "[${getPlaySide()}]"
+    }
+    fun isOnCabinet(cabId:Int = -1) = if(cabId in 0..3) getData().cabinetLoc.toInt() == cabId else cabId in 0..3
+    fun getCabinet() = getData().cabinetLoc.toInt()
+    fun getCabinetString(cabId:Int = getCabinet()): String = when(cabId) {
+        0 -> "A"
+        1 -> "B"
+        2 -> "C"
+        3 -> "D"
+        else -> "F"
+    }
 
     /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
      *  Player Bystanding (Standby/Absent)
@@ -183,6 +235,24 @@ abstract class Player(private val playerId:Long = -1, private val userName:Strin
         if (matchesWon >= 21 && rating >= 1.4f) grade = Rectangle2D(0.0, 512.0, 128.0, 64.0)  // RED    S
         if (matchesWon >= 34 && rating >= 1.5f) grade = Rectangle2D(0.0, 576.0, 128.0, 64.0)  // RED    S+
         return grade
+    }
+
+    /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
+     *  Match Status
+     */
+    fun getLoadPercent() = getData().loadingPct
+    private fun isLoading() = getData().loadingPct in 1..99
+
+    fun hasPlayed() = getData().matchesSum > oldData().matchesSum
+    fun isLoser() = getData().matchesWon == oldData().matchesWon && hasPlayed()
+    fun isWinner() = getData().matchesWon > oldData().matchesWon && hasPlayed()
+
+    fun getDebugDataString(mask: Int = -1) = when {
+        !isValid() -> "-"
+        mask == 0 -> getUserName()
+        mask == 1 -> "${getCabinetString()+getPlaySide()}[${getLoadPercent()}] ${getUserName()}"
+        mask == 2 -> "${getCabinetString()+getPlaySide()}[${getLoadPercent()}] ${getUserName()} (${getCharacterString()})"
+        else -> "="
     }
 
 }

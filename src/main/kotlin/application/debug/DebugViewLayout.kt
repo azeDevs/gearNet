@@ -94,16 +94,16 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
             Session.VICTORY_MODE -> modeLabel.text = "VICTORY_MODE"
         }
 
-        clientFighter.text = "Client: ${s.getClientFighter().getDebugDataString(1)}"
-        fighter1.text = s.getStagedFighers().p1.getDebugDataString(1)
-        fighter2.text = s.getStagedFighers().p2.getDebugDataString(1)
+        clientFighter.text = "Client: ${s.getClientFighter().getDebugDataString(0)}"
+        fighter1.text = s.getStagedFighers().p1.getDebugDataString(2)
+        fighter2.text = s.getStagedFighers().p2.getDebugDataString(2)
 
         val fighterNames = StringBuilder("FIGHTERS:")
-        s.api.getFightersMap().forEach { fighterNames.append("\n${it.value.getDebugDataString(1)}") }
+        s.api.getFighters().forEach { fighterNames.append("\n${it.getDebugDataString(2)}") }
         fightersList.text = fighterNames.toString()
 
         val watcherNames = StringBuilder("WATCHERS:")
-        s.api.getWatchersMap().forEach { watcherNames.append("\n${it.value.getUserName()}") }
+        s.api.getWatchers().forEach { watcherNames.append("\n${it.getDebugDataString(2)}") }
         watchersList.text = watcherNames.toString()
 
     }

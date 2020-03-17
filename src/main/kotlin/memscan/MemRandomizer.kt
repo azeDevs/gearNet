@@ -3,7 +3,7 @@ package memscan
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import models.Fighter
+import models.Player
 import session.Character.getCharacterInitials
 import utils.Duo
 import utils.getIdString
@@ -73,9 +73,9 @@ class MemRandomizer : XrdApi {
             if (botLobby.values.none { it.cabinetLoc == sightedBot.cabinetLoc && it.playerSide.toInt() == abs(sightedBot.playerSide.toInt() - 1) }) {
                 seat.p1 = sightedBot.cabinetLoc.toInt()
                 seat.p2 = abs(sightedBot.playerSide.toInt() - 1)
-                println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Fighter(
+                println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Player(
                     sightedBot
-                ).getCabinetString()}, spot ${Fighter(sightedBot).getPlaySideString(0, seat.p2)}")
+                ).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString(0, seat.p2)}")
             } else {
                 println("TODO: Bot searched for open seats, but that hasn't been implemented yet")
             }
