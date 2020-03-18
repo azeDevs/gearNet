@@ -59,8 +59,8 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData(s: Session) = Platform.runLater {
-        val viewerTeamR = s.api.getWatchers().filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
-        val viewerTeamB = s.api.getWatchers().filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamR = s.getWatchers().filter { item -> item.isTeamR() }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamB = s.getWatchers().filter { item -> item.isTeamB() }.sortedByDescending { item -> item.getScoreTotal() }
         for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
         else viewersGuiR[i].applyData(Player())
         for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])

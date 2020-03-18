@@ -1,6 +1,5 @@
 package application.stream
 
-import MyApp.Companion.GHOST_OPACITY
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
@@ -57,7 +56,7 @@ class InMatchStyle : Stylesheet() {
                     Stop(0.55, c(0.4, 0.3, 0.1)),
                     Stop(1.0, c(0.4, 0.4, 0.8))
                 )
-                opacity = GHOST_OPACITY
+                opacity = 0.64
             }
 
         }

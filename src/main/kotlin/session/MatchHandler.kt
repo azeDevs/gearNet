@@ -26,8 +26,8 @@ class MatchHandler(val s: Session) {
         val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Player()
         val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Player()
 
-        if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getData()
-        if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getData()
+        if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getFighterData()
+        if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getFighterData()
 
         if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
@@ -84,7 +84,7 @@ class MatchHandler(val s: Session) {
             +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
         */
 
-        s.api.getWatchers().forEach {
+        s.getWatchers().forEach {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {

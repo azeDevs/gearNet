@@ -29,6 +29,7 @@ interface XrdApi {
 
 }
 
+@Suppress("CovariantEquals")
 data class FighterData(
     val steamUserId: Long = -1L,
     val displayName: String = "",
@@ -38,7 +39,8 @@ data class FighterData(
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
-) { fun equals(other: FighterData) = other.displayName.equals(displayName) &&
+) { fun isValid() = steamUserId > -1
+    fun equals(other: FighterData) = other.displayName.equals(displayName) &&
                 other.characterId == characterId &&
                 other.cabinetLoc == cabinetLoc &&
                 other.playerSide == playerSide &&
@@ -47,6 +49,7 @@ data class FighterData(
                 other.loadingPct == loadingPct
 }
 
+@Suppress("CovariantEquals")
 data class MatchData(
     val timer: Int = -1,
     val health: Pair<Int, Int> = Pair(-1,-1),
@@ -57,7 +60,8 @@ data class MatchData(
     val canBurst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
-) { fun equals(other: MatchData) = timer == other.timer &&
+) { fun isValid() = timer > -1
+    fun equals(other: MatchData) = timer == other.timer &&
             health.first == other.health.first &&
             stunProgress.first == other.stunProgress.first &&
             stunMaximum.first == other.stunMaximum.first &&

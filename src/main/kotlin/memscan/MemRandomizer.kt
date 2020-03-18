@@ -75,7 +75,7 @@ class MemRandomizer : XrdApi {
                 seat.p2 = abs(sightedBot.playerSide.toInt() - 1)
                 println("B: ${s.displayName} [${getIdString(s.steamUserId)}] has moved to cab ${Player(
                     sightedBot
-                ).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString(0, seat.p2)}")
+                ).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString()}")
             } else {
                 println("TODO: Bot searched for open seats, but that hasn't been implemented yet")
             }

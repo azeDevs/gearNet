@@ -1,6 +1,6 @@
 package application.stream
 
-import MyApp.Companion.SIMULATE_MODE
+import MyApp.Companion.SIMULATION_MODE
 import application.debug.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
@@ -141,7 +141,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
     override fun applyData(p: Player) = Platform.runLater {
         when {
-            SIMULATE_MODE -> applyRandomData(p)
+            SIMULATION_MODE -> applyRandomData(p)
             p.getPlayerId() > 0L -> applyFighterData(p)
             else -> applyEmptyData()
         }
@@ -161,7 +161,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
     }
 
     private fun applyFighterData(p: Player) {
-        character.viewport = getCharacterTrademark(p.getData().characterId)
+        character.viewport = getCharacterTrademark(p.getFighterData().characterId)
         handle1.text = p.getUserName(); handle1.isVisible = true
         handle2.text = p.getUserName(); handle2.isVisible = true
         status.viewport = p.getStatusImage(); status.isVisible = true

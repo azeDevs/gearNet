@@ -1,6 +1,6 @@
 package twitch
 
-import MyApp.Companion.SILENT_TWITCH
+import MyApp.Companion.TWITCH_CHAT_BOT
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
@@ -13,7 +13,7 @@ typealias CME = ChannelMessageEvent
 typealias OA2C = OAuth2Credential
 typealias TCB = TwitchClientBuilder
 
-class BotEventHandler(private val s: Session) : BotApi {
+class TwitchHandler(private val s: Session) : BotApi {
 
     private val watcherData: MutableList<WatcherData> = mutableListOf()
     private val twitchClient: TwitchClient = TCB.builder()
@@ -33,7 +33,7 @@ class BotEventHandler(private val s: Session) : BotApi {
     }
 
     override fun sendMessage(message: String) {
-        when (SILENT_TWITCH) {
+        when (TWITCH_CHAT_BOT) {
             true -> println("CHAT roboaze: $message")
             false -> twitchClient.chat.sendMessage("azeDevs", message)
         }
@@ -55,17 +55,17 @@ class BotEventHandler(private val s: Session) : BotApi {
             if (!it.message.isEmpty()) {
                 println("CHAT ${it.displayName}: ${it.message}")
                 // ADD VIEWER IF THEY ARE NEW
-                if (!s.api.getPlayersMap().containsKey(it.twitchId)) {
-                    s.api.getPlayersMap().put(it.twitchId, Player(it))
+                if (!s.getPlayersMap().containsKey(it.twitchId)) {
+                    s.getPlayersMap().put(it.twitchId, Player(it))
                     println("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC") && !s.api.getPlayersMap()[it.twitchId]!!.isTeamR()) {
-                    s.api.getPlayersMap()[it.twitchId]!!.setTeamR()
+                if (it.message.contains("azpngRC") && !s.getPlayersMap()[it.twitchId]!!.isTeamR()) {
+                    s.getPlayersMap()[it.twitchId]!!.setTeamR()
                     sendMessage("${it.displayName} joins red")
                 }
-                if (it.message.contains("azpngBC") && !s.api.getPlayersMap()[it.twitchId]!!.isTeamB()) {
-                    s.api.getPlayersMap()[it.twitchId]!!.setTeamB()
+                if (it.message.contains("azpngBC") && !s.getPlayersMap()[it.twitchId]!!.isTeamB()) {
+                    s.getPlayersMap()[it.twitchId]!!.setTeamB()
                     sendMessage("${it.displayName} joins blue")
                 }
             }

@@ -181,7 +181,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         if (!f.isValid()) bannerHandle.text = "-" else {
             container.isVisible = true
 
-            if (s.api.getClientMatch().getStrikeStun(teamColor)) bannerHandle.text = "X"
+            if (s.getClientMatch().getStrikeStun(teamColor)) bannerHandle.text = "X"
             else bannerHandle.text = f.getUserName()
 
             munityProgress.width = getPercentage(MAX_MUNITY-f.getMunity(), MAX_MUNITY, munityMaxWidth)

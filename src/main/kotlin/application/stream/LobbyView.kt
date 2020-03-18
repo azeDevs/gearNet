@@ -53,7 +53,7 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                 bountiesGui[i].setVisibility(true)
             }
         }
-        val viewerTeamC = s.api.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+        val viewerTeamC = s.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
 
         for (i in 0..15) {
             if (viewerTeamC.size > i) {

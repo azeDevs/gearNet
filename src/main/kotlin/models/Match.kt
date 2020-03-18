@@ -33,6 +33,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
     private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
+    fun isValid() = getData().isValid()
     fun allData() = snaps
     fun getData() = snaps.last()
     fun oldData(): MatchData = when (snaps.size) {
@@ -87,19 +88,17 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
             }
 
             // Did player 1 win the match?
-            if (getRounds(PLAYER_1) == 2 && winner == -1) {
+            if (getRounds(PLAYER_1) == 2 && getRounds(PLAYER_2) < 2 && winner == -1) {
                 winner = 0
                 session.setMode(VICTORY_MODE)
                 println("Match End, PLAYER_1 takes the match (${getHandleString(PLAYER_1)})")
             }
 
             // Did player 2 win the match?
-            if (getRounds(PLAYER_2) == 2 && winner == -1) {
+            if (getRounds(PLAYER_2) == 2 && getRounds(PLAYER_1) < 2 && winner == -1) {
                 winner = 1
                 session.setMode(VICTORY_MODE)
-                println(
-                    "Match End, PLAYER_2 takes the match (${getHandleString(PLAYER_2)})"
-                )
+                println("Match End, PLAYER_2 takes the match (${getHandleString(PLAYER_2)})")
             }
 
             return true

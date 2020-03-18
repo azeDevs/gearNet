@@ -1,6 +1,6 @@
 package application
 
-import MyApp.Companion.DEBUGGER_MODE
+import MyApp.Companion.GEARNET_ENABLED
 import application.debug.ArcadeView
 import application.debug.DebugViewLayout
 import application.stream.StreamViewLayout
@@ -20,7 +20,7 @@ class ApplicationView : View() {
 
     init {
         stackpane {
-            viewLayout = if(DEBUGGER_MODE) DebugViewLayout(parent) else StreamViewLayout(parent)
+            viewLayout = if(GEARNET_ENABLED) DebugViewLayout(parent) else StreamViewLayout(parent)
         }
         cycleGameloop()
         cycleDatabase()
@@ -38,6 +38,7 @@ class ApplicationView : View() {
     private fun cycleAnimations() {
         GlobalScope.launch {
             viewLayout.updateAnimation(session)
+            viewLayout.applyData(session)
             delay(48)
             cycleAnimations()
         }
@@ -45,14 +46,13 @@ class ApplicationView : View() {
 
     private fun cycleGameloop() {
         GlobalScope.launch {
-            if (session.api.isXrdApiConnected()) {
+            if (session.isXrdApiConnected()) {
                 session.updateFighters()
                 session.updateMatchInProgress()
             }
-            session.api.updateWatchers()
+            session.updateWatchers()
             session.updatePlayerAtension()
-            viewLayout.applyData(session)
-            delay(8)
+            delay(4)
             cycleGameloop()
         }
     }
