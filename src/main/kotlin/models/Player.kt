@@ -31,6 +31,10 @@ open class Player(
             PLAYER_2 -> setTeamB()
             else -> resetTeam()
         }
+        if (isBeingDamaged()) when(getPlaySide()) {
+            PLAYER_1 -> println("PLAYER_1 DAMAGED!")
+            PLAYER_2 -> println("PLAYER_2 DAMAGED!")
+        }
     }
 
     private var matchData:Pair<MatchData, MatchData> = Pair(MatchData(), MatchData())

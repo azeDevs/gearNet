@@ -40,7 +40,7 @@ data class FighterData(
     val matchesSum: Int = -1,
     val loadingPct: Int = -1
 ) { fun isValid() = steamUserId > -1
-    fun equals(other: FighterData) = other.displayName.equals(displayName) &&
+    fun equals(other: FighterData) = other.displayName == displayName &&
                 other.characterId == characterId &&
                 other.cabinetLoc == cabinetLoc &&
                 other.playerSide == playerSide &&

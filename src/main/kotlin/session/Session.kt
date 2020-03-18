@@ -200,7 +200,7 @@ class Session : Controller() {
                 setMode(LOADING_MODE)
             }
             // Set sessionMode to LOBBY_MODE?
-            if (!getClientMatch().isValid() && !isMode(LOBBY_MODE)) { //  && !isMode(LOADING_MODE) &&
+            if (!getClientMatch().isValid() && !isMode(LOBBY_MODE) && !isMode(LOADING_MODE)) {
                 getMatchHandler().clientMatch = Match()
                 somethingChanged = true
                 setMode(LOBBY_MODE)
