@@ -1,10 +1,14 @@
 package session
 
+import javafx.collections.ObservableMap
 import memscan.FighterData
 import memscan.MatchData
 import models.Match
 import models.Player
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import utils.isInRange
+import kotlin.math.max
 
 class MatchHandler(val s: Session) {
 
@@ -22,7 +26,7 @@ class MatchHandler(val s: Session) {
         return updatedMatchSnap
     }
 
-    fun resolveEveryone(players: HashMap<Long, Player>, data: FighterData): Boolean {
+    fun resolveEveryone(players: ObservableMap<Long, Player>, data: FighterData): Boolean {
         val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Player()
         val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Player()
 
@@ -35,7 +39,10 @@ class MatchHandler(val s: Session) {
             println("WINNER Chain: ${players[winner.steamUserId]!!.getRating()}")
             println(" LOSER Chain: ${players[loser.steamUserId]!!.getRating()}")
             resolveLobbyMatchResults(players)
-            players.values.forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(s) }
+
+
+            val activePlayerCount = max(players.values.filter { !it.isAbsent() }.size, 1)
+            players.values.forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(activePlayerCount) }
             println("Idle increment on ${players.values.filter { !it.hasPlayed() }.size} players")
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
 
@@ -46,7 +53,7 @@ class MatchHandler(val s: Session) {
         return false
     }
 
-    private fun resolveLobbyMatchResults(players: HashMap<Long, Player>) {
+    private fun resolveLobbyMatchResults(players: ObservableMap<Long, Player>) {
         val winnerSide = winner.playerSide.toInt()
         val loserBounty = players[loser.steamUserId]!!.getScoreTotal()
         val winnerBounty = players[winner.steamUserId]!!.getScoreTotal()
@@ -84,22 +91,23 @@ class MatchHandler(val s: Session) {
             +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
         */
 
-        s.getWatchers().forEach {
+
+        players.values.filter { it.isWatcher() }.forEach {
             var scoreChange = 0
             when(winnerSide) {
                 0 -> {
-                    if(it.isTeamR() && !it.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(!it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
+                    if(it.isTeam(PLAYER_1) && !it.isTeam(PLAYER_2)) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(!it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
                 1 -> {
-                    if(it.isTeamR() && !it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(!it.isTeamR() && it.isTeamB()) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(it.isTeamR() && it.isTeamB()) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
+                    if(it.isTeam(PLAYER_1) && !it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + payout)
+                    if(!it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange += ((100*riskModifier).toInt() + payout)
+                    if(it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
                 }
             }
             it.changeScore(scoreChange)
-            it.resetTeam()
+            it.setTeam()
         }
 
 

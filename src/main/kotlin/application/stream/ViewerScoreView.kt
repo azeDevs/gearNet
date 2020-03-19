@@ -107,7 +107,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             delta.text = p.getScoreDeltaString()
             setChangeTextColor(p.getScoreDelta())
             container.isVisible = true
-        } else if (p.isValid() && p.isTeamR() && teamColor == PLAYER_1) {
+        } else if (p.isValid() && p.isTeam(PLAYER_1) && teamColor == PLAYER_1) {
             // Do stuff for Viewer Atension, stage left (Red)
             alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
@@ -116,7 +116,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             score.text = p.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
-        } else if (p.isValid() && p.isTeamB() && teamColor == PLAYER_2) {
+        } else if (p.isValid() && p.isTeam(PLAYER_2) && teamColor == PLAYER_2) {
             // Do stuff for Viewer Atension, stage right (Blue)
             alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true

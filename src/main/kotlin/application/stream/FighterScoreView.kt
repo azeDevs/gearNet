@@ -190,7 +190,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         bounty1.text = "$bountyStr W$"
         bounty2.text = "$bountyStr W$"
         setChangeTextColor(changeInt)
-        change.text = p.getScoreDeltaString(1f, changeInt)
+        change.text = p.getScoreDeltaString(changeInt)
         status.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
         rating.viewport = p.getRatingImage(p.getPlaySide())
         spirit.isVisible = chainInt > 0

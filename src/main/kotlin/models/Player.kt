@@ -1,23 +1,34 @@
 package models
 
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Rectangle2D
 import memscan.FighterData
 import memscan.MatchData
 import session.Character
-import session.Session
 import twitch.WatcherData
 import utils.addCommas
-import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
-open class Player(
+class Player(
     private val playerId:Long = -1,
     private val userName:String = "",
     private var fighterData:Pair<FighterData, FighterData> = Pair(FighterData(), FighterData())
 ) {
     constructor(fighterData: FighterData) : this(fighterData.steamUserId, fighterData.displayName, Pair(fighterData, fighterData))
     constructor(watcherData: WatcherData) : this(watcherData.twitchId, watcherData.displayName)
+
+    val playerObjectProperty = SimpleObjectProperty(this)
+    val isValidProperty = SimpleBooleanProperty(this, "isPlayerValid", isValid())
+    val nameProperty = SimpleStringProperty(this, "name", getUserName())
+    val scoreTotalProperty = SimpleStringProperty(this, "scoreTotal", getScoreTotalString())
+//    val scoreDeltaProperty = SimpleStringProperty(this, "scoreDelta", getScoreDeltaString())
+//    val characterIdProperty = SimpleIntegerProperty(this, "characterId", getCharacterId().toInt())
+//    val playSideIdProperty = SimpleIntegerProperty(this, "playSideId", getPlaySide())
+//    val isWatcherProperty = SimpleBooleanProperty(this, "isWatcher", isWatcher())
+//    val isBeingDamagedProperty = SimpleBooleanProperty(this, "isBeingDamaged", isBeingDamaged())
+
 
     fun oldFighterData() = fighterData.first
     fun getFighterData() = fighterData.second
@@ -26,11 +37,6 @@ open class Player(
         if (isLoading()) setBystanding(playersActive)
         setMatchesWon(updatedData.matchesWon)
         setMatchesSum(updatedData.matchesSum)
-        when(updatedData.playerSide.toInt()) {
-            PLAYER_1 -> setTeamR()
-            PLAYER_2 -> setTeamB()
-            else -> resetTeam()
-        }
         if (isBeingDamaged()) when(getPlaySide()) {
             PLAYER_1 -> println("PLAYER_1 DAMAGED!")
             PLAYER_2 -> println("PLAYER_2 DAMAGED!")
@@ -38,13 +44,10 @@ open class Player(
     }
 
     private var matchData:Pair<MatchData, MatchData> = Pair(MatchData(), MatchData())
-    fun isStaged() = isTeamR() || isTeamB()
+    fun isStaged() = isOnPlaySide(PLAYER_1) || isOnPlaySide(PLAYER_2)
     fun oldMatchData() = matchData.first
     fun getMatchData() = matchData.second
-    fun updateMatchData(updatedData: MatchData) {
-        matchData = Pair(getMatchData(), updatedData)
-
-    }
+    fun updateMatchData(updatedData: MatchData) { matchData = Pair(getMatchData(), updatedData) }
 
     companion object {
         const val PLAYER_1 = 0
@@ -71,11 +74,12 @@ open class Player(
      */
     private var teamR = false
     private var teamB = false
-    fun resetTeam() { teamR = false; teamB = false }
-    fun setTeamR() { teamR = true }
-    fun setTeamB() { teamB = true }
-    fun isTeamR() = teamR && isOnCabinet()
-    fun isTeamB() = teamB && isOnCabinet()
+    fun setTeam(sideId:Int = -1) = when (sideId) {
+        PLAYER_1 -> { teamR = true }
+        PLAYER_2 -> { teamB = true }
+        else -> { teamR = false; teamB = false }
+    }
+    fun isTeam(sideId:Int) = (sideId == PLAYER_1 && teamR) || (sideId == PLAYER_2 && teamB)
     fun getTeamString() = if(teamR && teamB) "X"
         else if(teamR && !teamB) "R"
         else if(!teamR && teamB) "B"
@@ -124,13 +128,13 @@ open class Player(
         8 -> "θ"
         else -> "Absent"
     }
-    fun incrementBystanding(s: Session) {
+    fun incrementBystanding(activePlayerCount:Int) {
         changeScore(0)
         if (--bystanding <= 0) {
             if (changeRating(-1) <= 0) {
                 bystanding = 0
             } else {
-                bystanding = max(1,s.getActivePlayerCount())
+                bystanding = max(1,activePlayerCount)
                 println("P: ${getIdString(playerId)} is idle ... Standby reset to $bystanding and chain reduced by 1 ($userName)")
             }
         }
@@ -221,14 +225,14 @@ open class Player(
     fun getScoreTotal() = this.scoreTotal
     fun getScoreDelta() = this.scoreDelta
     fun changeScore(amount:Int) {
-        scoreDelta = amount
+        scoreDelta = if (scoreTotal + amount < 0) -scoreTotal else amount
         scoreTotal += amount
         if (scoreTotal < 10) scoreTotal = 0
     }
     fun getScoreTotalString() = if (scoreTotal > 0) "${addCommas("$scoreTotal")} W$" else "FREE"
-    fun getScoreDeltaString(ramp:Float = 1f, change:Int = scoreDelta) = when {
-        change > 0 -> "+${addCommas(min(change*ramp, change.toFloat()).toInt().toString())} W$"
-        change < 0 -> "-${addCommas(abs(max(change*ramp, change.toFloat()).toInt()).toString())} W$"
+    fun getScoreDeltaString(change:Int = scoreDelta) = when {
+        change > 0 -> "+${addCommas(change.toString())}"
+        change < 0 -> "-${addCommas(change.toString())}"
         else -> ""
     }
 

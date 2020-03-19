@@ -1,6 +1,7 @@
 package session
 
 import MyApp.Companion.SIMULATION_MODE
+import javafx.collections.ObservableMap
 import memscan.FighterData
 import memscan.MemHandler
 import memscan.MemRandomizer
@@ -12,6 +13,7 @@ import models.Player.Companion.MAX_RESPECT
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import tornadofx.Controller
+import tornadofx.observableMapOf
 import twitch.TwitchHandler
 import twitch.WatcherData
 import utils.Duo
@@ -24,7 +26,7 @@ import kotlin.random.Random
 class Session : Controller() {
 
     companion object {
-        const val SLEEP_MODE = -1
+        const val OFFLINE_MODE = -1
         const val LOBBY_MODE = 0
         const val MATCH_MODE = 1
         const val SLASH_MODE = 2
@@ -32,12 +34,12 @@ class Session : Controller() {
         const val LOADING_MODE = 4
     }
 
-    private var sessionMode: Int = SLEEP_MODE
+    private var sessionMode: Int = OFFLINE_MODE
     private var clientId: Long = -1
     private val xrdApi: XrdApi = if (SIMULATION_MODE) MemRandomizer() else MemHandler()
     private val matchHandler = MatchHandler(this)
     private val twitchHandler = TwitchHandler(this)
-    private val players: HashMap<Long, Player> = HashMap()
+    private val players: ObservableMap<Long, Player> = observableMapOf()
 
     fun getTwitchHandler() = twitchHandler
     fun isXrdApiConnected() = xrdApi.isConnected()
@@ -47,7 +49,7 @@ class Session : Controller() {
         val playerData = xrdApi.getFighterData().filter { it.steamUserId != 0L }
         if (clientId == -1L && playerData.isNotEmpty()) {
             clientId = xrdApi.getClientSteamId()
-            println("GearNet client defined ${getIdString(clientId)}")
+            println("Client defined ${getIdString(clientId)}")
             setMode(LOBBY_MODE)
         }
     }
@@ -56,8 +58,8 @@ class Session : Controller() {
     fun getPlayers() = players.values
     fun getFighters() = getPlayers().filter { !it.isWatcher() }
     fun getWatchers() = getPlayers().filter { it.isWatcher() }
-    fun getTeamRed() = getPlayers().filter { it.isTeamR() }
-    fun getTeamBlue() = getPlayers().filter { it.isTeamB() }
+    fun getTeamRed() = getPlayers().filter { it.isTeam(PLAYER_1) }
+    fun getTeamBlue() = getPlayers().filter { it.isTeam(PLAYER_2) }
 
     fun getFightersInLobby() = xrdApi.getFighterData().filter { it.steamUserId != 0L }
     fun getFightersLoading() = xrdApi.getFighterData().filter { it.loadingPct in 1..99 }
@@ -71,8 +73,8 @@ class Session : Controller() {
 
         if (f1.isValid() && f2.isValid()) {
             // Apply Munity
-            f1.setMunity(getPlayersMap().values.filter { item -> item.isTeamR() }.size)
-            f2.setMunity(getPlayersMap().values.filter { item -> item.isTeamB() }.size)
+            f1.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_1) }.size)
+            f2.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_2) }.size)
 
             // Boost Respect when in strike-stun & taking no damage
             if (getClientMatch().getStrikeStun(PLAYER_1) && !getClientMatch().isBeingDamaged(PLAYER_1)) {
@@ -128,7 +130,7 @@ class Session : Controller() {
             if (!getPlayersMap().containsKey(data.steamUserId)) {
                 getPlayersMap()[data.steamUserId] = Player(data)
                 somethingChanged = true
-                println("New player ${getIdString(data.steamUserId)} found ... (${data.displayName})")
+                println("Fighter ❝${data.displayName}❞ added to Players (${getIdString(data.steamUserId)})")
             }
 
             // The present is now the past, and the future is now the present
@@ -136,8 +138,6 @@ class Session : Controller() {
             if (!player.getFighterData().equals(data)) somethingChanged = true
             player.updateFighterData(data, getActivePlayerCount())
             if (player.isStaged()) player.updateMatchData(getClientMatch().getData())
-
-
 
             // Resolve if a game occured and what the reward will be
             if (getMatchHandler().resolveEveryone(getPlayersMap(), data)) somethingChanged = true
@@ -164,6 +164,7 @@ class Session : Controller() {
                     lobbyMatchPlayers.p1.cabinetLoc,
                     lobbyMatchPlayers
                 )
+                println("Lobby Match created for ❝${lobbyMatchPlayers.p1.displayName}❞ vs ❝${lobbyMatchPlayers.p2.displayName}❞")
                 getMatchHandler().lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
             }
 
@@ -195,7 +196,7 @@ class Session : Controller() {
                         getClient().getCabinet().toByte(),
                         clientMatchPlayers
                     )
-                println("Generated Match ${getIdString(getMatchHandler().archiveMatches.size.toLong())}")
+                println("Client Match created for ❝${lobbyMatchPlayers.p1.displayName}❞ vs ❝${lobbyMatchPlayers.p2.displayName}❞")
                 somethingChanged = true
                 setMode(LOADING_MODE)
             }
@@ -206,15 +207,14 @@ class Session : Controller() {
                 setMode(LOBBY_MODE)
             }
             // Set sessionMode to SLEEP_MODE?
-            if (!isXrdApiConnected()) setMode(SLEEP_MODE)
+            if (!isXrdApiConnected()) setMode(OFFLINE_MODE)
 
         }
 
+        // updateMatchInProgress
+        getMatchHandler().updateClientMatch(getMatchData())
+        updatePlayerAtension()
         return somethingChanged
-    }
-
-    fun updateMatchInProgress(): Boolean {
-        return getMatchHandler().updateClientMatch(getMatchData())
     }
 
     fun getActivePlayerCount() = max(getPlayersMap().values.filter { !it.isAbsent() }.size, 1)
@@ -225,7 +225,7 @@ class Session : Controller() {
     fun setMode(mode: Int) {
         sessionMode = mode
         when (mode) {
-            SLEEP_MODE -> println("Mode = SLEEP")
+            OFFLINE_MODE -> println("Mode = SLEEP")
             LOBBY_MODE -> println("Mode = LOBBY")
             MATCH_MODE -> println("Mode = MATCH")
             SLASH_MODE -> println("Mode = SLASH")
@@ -238,6 +238,7 @@ class Session : Controller() {
         .sortedByDescending { item -> item.getStatusFloat() }
         .sortedByDescending { item -> item.getScoreTotal() }
         .sortedByDescending { item -> if (!item.isAbsent()) 1 else 0 }
+
 
     private fun getClient(): Player = if (getPlayersMap().isEmpty()) Player() else getPlayersMap().values.first { it.getPlayerId() == getClientId() }
 

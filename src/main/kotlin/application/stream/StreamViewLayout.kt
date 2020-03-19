@@ -9,8 +9,8 @@ import session.Session
 import session.Session.Companion.LOADING_MODE
 import session.Session.Companion.LOBBY_MODE
 import session.Session.Companion.MATCH_MODE
+import session.Session.Companion.OFFLINE_MODE
 import session.Session.Companion.SLASH_MODE
-import session.Session.Companion.SLEEP_MODE
 import session.Session.Companion.VICTORY_MODE
 import tornadofx.Fragment
 import tornadofx.addClass
@@ -33,7 +33,7 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData(s: Session) {
         when (s.getMode()) {
-            SLEEP_MODE -> {
+            OFFLINE_MODE -> {
                 lobbyView.setVisibility(showHud)
                 inMatchView.setVisibility(!showHud)
             }

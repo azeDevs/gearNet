@@ -10,14 +10,15 @@ import session.Session
 import session.Session.Companion.LOADING_MODE
 import session.Session.Companion.LOBBY_MODE
 import session.Session.Companion.MATCH_MODE
+import session.Session.Companion.OFFLINE_MODE
 import session.Session.Companion.SLASH_MODE
-import session.Session.Companion.SLEEP_MODE
 import session.Session.Companion.VICTORY_MODE
 import tornadofx.*
 
 class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     private var container: StackPane
+    private val session: Session by inject()
 
     private lateinit var modeLabel: Label
     private lateinit var timeLabel: Label
@@ -34,12 +35,22 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var watchersList: Label
     private lateinit var fightersList: Label
 
+    private lateinit var gearnetPlayerListView: GearnetPlayerListView
+//    private lateinit var playerList: PlayerList
+//    private lateinit var playerEditor: PlayerEditor
+
     init {
         with(root) {
             container = stackpane {
                 addClass(DebugStyle.debugContainer)
 
-                apiConnections = label("APIS...") {
+                modeLabel = label("OFFLINE_MODE") {
+                    addClass(DebugStyle.debugTextYellow)
+                    alignment = Pos.CENTER
+                    translateY += 388
+                }
+
+                apiConnections = label("GuiltyGear NA / RoboTwitch NA") {
                     addClass(DebugStyle.debugListGeneric)
                     textAlignment = TextAlignment.RIGHT
                     alignment = Pos.CENTER_RIGHT
@@ -47,7 +58,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     translateX -= 420
                 }
 
-                clientFighter = label("CLIENT...") {
+                clientFighter = label("Host Client: NA") {
                     addClass(DebugStyle.debugListGeneric)
                     textAlignment = TextAlignment.LEFT
                     alignment = Pos.CENTER_LEFT
@@ -55,13 +66,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     translateX += 420
                 }
 
-                modeLabel = label("MODE") {
-                    addClass(DebugStyle.debugTextYellow)
-                    alignment = Pos.CENTER
-                    translateY += 390
-                }
-
-                timeLabel = label("TIME") {
+                timeLabel = label("TIMER\nNA") {
                     addClass(DebugStyle.tempListGeneric)
                     textAlignment = TextAlignment.CENTER
                     alignment = Pos.CENTER
@@ -72,7 +77,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     addClass(DebugStyle.debugTextRed)
                     textAlignment = TextAlignment.LEFT
                     alignment = Pos.CENTER_LEFT
-                    translateY += 390
+                    translateY += 388
                     translateX -= 400
                 }
 
@@ -80,15 +85,15 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     addClass(DebugStyle.debugTextBlue)
                     textAlignment = TextAlignment.RIGHT
                     alignment = Pos.CENTER_RIGHT
-                    translateY += 390
+                    translateY += 388
                     translateX += 400
                 }
 
                 vbox {
                     alignment = Pos.BOTTOM_LEFT
-                    translateY -= 170
-                    translateX += 256
-                    fighterRstats = label("RED FIGHT RECORD...") {
+                    translateY -= 38
+                    translateX += 8
+                    fighterRstats = label("RED FIGHTER RECORD...") {
                         addClass(DebugStyle.debugListRed)
                         alignment = Pos.BOTTOM_LEFT
                         textAlignment = TextAlignment.LEFT
@@ -97,9 +102,9 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
                 vbox {
                     alignment = Pos.BOTTOM_RIGHT
-                    translateY -= 170
-                    translateX -= 256
-                    fighterBstats = label("BLUE FIGHT RECORD...") {
+                    translateY -= 38
+                    translateX -= 8
+                    fighterBstats = label("BLUE FIGHTER RECORD...") {
                         addClass(DebugStyle.debugListBlue)
                         alignment = Pos.BOTTOM_RIGHT
                         textAlignment = TextAlignment.RIGHT
@@ -110,7 +115,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.BOTTOM_LEFT
                     translateY -= 170
                     translateX += 508
-                    matchRstats = label("RED MATCH...") {
+                    matchRstats = label("RED MATCH STATS...") {
                         addClass(DebugStyle.tempListRed)
                         alignment = Pos.BOTTOM_LEFT
                         textAlignment = TextAlignment.LEFT
@@ -121,7 +126,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.BOTTOM_RIGHT
                     translateY -= 170
                     translateX -= 508
-                    matchBstats = label("BLUE MATCH...") {
+                    matchBstats = label("BLUE MATCH STATS...") {
                         addClass(DebugStyle.tempListBlue)
                         alignment = Pos.BOTTOM_RIGHT
                         textAlignment = TextAlignment.RIGHT
@@ -132,7 +137,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.TOP_LEFT
                     translateY += 8
                     translateX += 8
-                    fightersList = label("FIGHTERS LIST...") {
+                    fightersList = label("ALL FIGHTERS LIST...") {
                         addClass(DebugStyle.debugListGeneric)
                         alignment = Pos.TOP_LEFT
                         textAlignment = TextAlignment.LEFT
@@ -143,7 +148,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.TOP_RIGHT
                     translateY += 8
                     translateX -= 8
-                    watchersList = label("WATCHERS LIST...") {
+                    watchersList = label("ALL WATCHERS LIST...") {
                         addClass(DebugStyle.debugListGeneric)
                         alignment = Pos.TOP_RIGHT
                         textAlignment = TextAlignment.RIGHT
@@ -154,7 +159,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.BOTTOM_LEFT
                     translateY -= 170
                     translateX += 8
-                    teamRPlayers = label("RED LIST...") {
+                    teamRPlayers = label("RED AMUNITY LIST...") {
                         addClass(DebugStyle.tempListRed)
                         alignment = Pos.BOTTOM_LEFT
                         textAlignment = TextAlignment.LEFT
@@ -165,12 +170,14 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.BOTTOM_RIGHT
                     translateY -= 170
                     translateX -= 8
-                    teamBPlayers = label("BLUE LIST...") {
+                    teamBPlayers = label("BLUE AMUNITY LIST...") {
                         addClass(DebugStyle.tempListBlue)
                         alignment = Pos.BOTTOM_RIGHT
                         textAlignment = TextAlignment.RIGHT
                     }
                 }
+
+                gearnetPlayerListView = GearnetPlayerListView(parent)
 
             }
         }
@@ -180,11 +187,12 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     // FIXME: LOADING_MODE SWITCHES INCONSISTENTLY
     // FIXME: VICTORY_MODE DOESN'T SWITCH BACK TO LOBBY_MODE AFTER A MATCH HAS ENDED
     // FIXME: AUTO-TEAM ASSIGNMENT FOR FIGHTERS IS ADVERSELY AFFECTING BOUNTY RESULTS
+    // FIXME: SLEEP_MODE DOESN'T TRIGGER WHEN Xrd IS CLOSED
 
     override fun applyData(s: Session) = Platform.runLater {
 
         when (s.getMode()) {
-            SLEEP_MODE -> modeLabel.text = "SLEEP_MODE"
+            OFFLINE_MODE -> modeLabel.text = "OFFLINE_MODE"
             LOBBY_MODE -> modeLabel.text = "LOBBY_MODE"
             MATCH_MODE -> modeLabel.text = "MATCH_MODE"
             SLASH_MODE -> modeLabel.text = "SLASH_MODE"
@@ -192,11 +200,11 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
             VICTORY_MODE -> modeLabel.text = "VICTORY_MODE"
         }
 
-//        timeLabel.isVisible = s.getClientMatch().isValid()
+        timeLabel.isVisible = s.getClientMatch().isValid()
         timeLabel.text = "TIMER\n${s.getClientMatch().getTimer()}"
 
-        apiConnections.text = "Guilty Gear Xrd ${if(s.isXrdApiConnected()) "OK" else "NA"} / Twitch ${if (s.getTwitchHandler().isConnected()) "OK" else "NA"}"
-        clientFighter.text = "Client: ${s.getClientFighter().getDebugDataString(0)}"
+        apiConnections.text = "GuiltyGear ${if(s.isXrdApiConnected()) "OK" else "NA"} / RoboTwitch ${if (s.getTwitchHandler().isConnected()) "OK" else "NA"}"
+        clientFighter.text = "Host Client: ${s.getClientFighter().getDebugDataString(0)}"
         fighterRidentification.text = s.getStagedFighers().p1.getDebugDataString(2)
         fighterBidentification.text = s.getStagedFighers().p2.getDebugDataString(2)
 

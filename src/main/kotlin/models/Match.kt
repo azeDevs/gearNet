@@ -33,7 +33,7 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
     private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
-    fun isValid() = getData().isValid()
+    fun isValid() = getData().isValid() //&& players.p1.isValid() && players.p2.isValid()
     fun allData() = snaps
     fun getData() = snaps.last()
     fun oldData(): MatchData = when (snaps.size) {

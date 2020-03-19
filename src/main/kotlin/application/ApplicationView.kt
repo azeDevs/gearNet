@@ -23,7 +23,7 @@ class ApplicationView : View() {
             viewLayout = if(GEARNET_ENABLED) DebugViewLayout(parent) else StreamViewLayout(parent)
         }
         cycleGameloop()
-        cycleDatabase()
+//        cycleDatabase()
         cycleAnimations()
     }
 
@@ -46,13 +46,10 @@ class ApplicationView : View() {
 
     private fun cycleGameloop() {
         GlobalScope.launch {
-            if (session.isXrdApiConnected()) {
-                session.updateFighters()
-                session.updateMatchInProgress()
-            }
+            session.updateFighters()
             session.updateWatchers()
-            session.updatePlayerAtension()
-            delay(4)
+//            if (session.isXrdApiConnected()) session.updateFighters()
+//            delay(4)
             cycleGameloop()
         }
     }

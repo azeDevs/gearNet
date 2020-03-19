@@ -15,11 +15,11 @@ fun main(args: Array<String>) {
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class, DebugStyle::class) {
 
     companion object {
-        const val VERSION = "0.7.1"
         const val GEARNET_ENABLED = true
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
         const val TWITCH_CHAT_BOT = true
+        const val VERSION = "0.7.1"
     }
 
     override fun onBeforeShow(view: UIComponent) {

@@ -18,6 +18,7 @@ class DebugStyle : Stylesheet() {
         val debugListGeneric by cssclass()
         val debugListRed by cssclass()
         val debugListBlue by cssclass()
+        val debugListYellow by cssclass()
         val tempListGeneric by cssclass()
         val tempListRed by cssclass()
         val tempListBlue by cssclass()
@@ -62,8 +63,8 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkGreen
                 borderColor += box(debugSimpGreen)
                 textFill = debugLiteGreen
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
                 padding = box(8.px)
                 borderWidth += box(2.px)
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
@@ -72,8 +73,8 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkRed
                 borderColor += box(debugSimpRed)
                 textFill = debugLiteRed
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
                 padding = box(8.px)
                 borderWidth += box(2.px)
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
@@ -82,8 +83,18 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkBlue
                 borderColor += box(debugSimpBlue)
                 textFill = debugLiteBlue
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
+                padding = box(8.px)
+                borderWidth += box(2.px)
+                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
+            }
+            and(debugListYellow) {
+                backgroundColor += debugSimpYellow
+                borderColor += box(debugLiteYellow)
+                textFill = c("#000000") //debugLiteYellow
+                maxWidth = 160.px
+                minWidth = 160.px
                 padding = box(8.px)
                 borderWidth += box(2.px)
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
@@ -92,8 +103,8 @@ class DebugStyle : Stylesheet() {
             and(tempListGeneric) {
                 borderColor += box(debugSimpGreen)
                 textFill = debugLiteGreen
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
                 padding = box(8.px)
                 effect = DropShadow(BlurType.ONE_PASS_BOX, c("#226644"), 4.0, 400.0, 0.0, 0.0)
                 borderWidth += box(2.px)
@@ -102,8 +113,8 @@ class DebugStyle : Stylesheet() {
             and(tempListRed) {
                 borderColor += box(debugSimpRed)
                 textFill = debugLiteRed
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
                 padding = box(8.px)
                 effect = DropShadow(BlurType.ONE_PASS_BOX, c("#5f1f1f"), 4.0, 400.0, 0.0, 0.0)
                 borderWidth += box(2.px)
@@ -112,8 +123,8 @@ class DebugStyle : Stylesheet() {
             and(tempListBlue) {
                 borderColor += box(debugSimpBlue)
                 textFill = debugLiteBlue
-                maxWidth = 240.px
-                minWidth = 240.px
+                maxWidth = 208.px
+                minWidth = 208.px
                 padding = box(8.px)
                 effect = DropShadow(BlurType.ONE_PASS_BOX, c("#262f68"), 4.0, 400.0, 0.0, 0.0)
                 borderWidth += box(2.px)
@@ -125,8 +136,8 @@ class DebugStyle : Stylesheet() {
                 borderColor += box(debugSimpGreen)
                 textFill = debugLiteGreen
                 fontSize = 20.px
-                maxWidth = 380.px
-                minWidth = 380.px
+                maxWidth = 360.px
+                minWidth = 360.px
                 maxHeight = 48.px
                 minHeight = 48.px
                 padding = box(8.px)
@@ -138,8 +149,8 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkRed
                 borderColor += box(debugSimpRed)
                 fontSize = 20.px
-                maxWidth = 380.px
-                minWidth = 380.px
+                maxWidth = 360.px
+                minWidth = 360.px
                 maxHeight = 48.px
                 minHeight = 48.px
                 padding = box(8.px)
@@ -151,8 +162,8 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkBlue
                 borderColor += box(debugSimpBlue)
                 fontSize = 20.px
-                maxWidth = 380.px
-                minWidth = 380.px
+                maxWidth = 360.px
+                minWidth = 360.px
                 maxHeight = 48.px
                 minHeight = 48.px
                 padding = box(8.px)
@@ -160,12 +171,12 @@ class DebugStyle : Stylesheet() {
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
             }
             and(debugTextYellow) {
-                textFill = debugLiteYellow
-                backgroundColor += debugDarkYellow
-                borderColor += box(debugSimpYellow)
+                textFill = c("#000000")//debugLiteYellow
+                backgroundColor += debugSimpYellow
+                borderColor += box(debugLiteYellow)
                 fontSize = 20.px
-                maxWidth = 380.px
-                minWidth = 380.px
+                maxWidth = 360.px
+                minWidth = 360.px
                 maxHeight = 48.px
                 minHeight = 48.px
                 padding = box(8.px)

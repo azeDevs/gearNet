@@ -6,6 +6,8 @@ import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import models.Player
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import session.Session
 import utils.getTokenFromFile
 
@@ -60,12 +62,12 @@ class TwitchHandler(private val s: Session) : BotApi {
                     println("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC") && !s.getPlayersMap()[it.twitchId]!!.isTeamR()) {
-                    s.getPlayersMap()[it.twitchId]!!.setTeamR()
+                if (it.message.contains("azpngRC") && !s.getPlayersMap()[it.twitchId]!!.isTeam(PLAYER_1)) {
+                    s.getPlayersMap()[it.twitchId]!!.setTeam(PLAYER_1)
                     sendMessage("${it.displayName} joins red")
                 }
-                if (it.message.contains("azpngBC") && !s.getPlayersMap()[it.twitchId]!!.isTeamB()) {
-                    s.getPlayersMap()[it.twitchId]!!.setTeamB()
+                if (it.message.contains("azpngBC") && !s.getPlayersMap()[it.twitchId]!!.isTeam(PLAYER_2)) {
+                    s.getPlayersMap()[it.twitchId]!!.setTeam(PLAYER_2)
                     sendMessage("${it.displayName} joins blue")
                 }
             }
