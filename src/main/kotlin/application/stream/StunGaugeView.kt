@@ -5,7 +5,7 @@ import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
-import memscan.MatchData
+import session.Session
 import tornadofx.Fragment
 import tornadofx.c
 import tornadofx.rectangle
@@ -13,6 +13,7 @@ import tornadofx.stackpane
 
 class StunGaugeView(override val root: Parent, private val teamColor:Int) : Fragment() {
 
+    private val s: Session by inject()
     private var container: StackPane
     private lateinit var backing: Rectangle
     private lateinit var progress: Rectangle
@@ -49,11 +50,11 @@ class StunGaugeView(override val root: Parent, private val teamColor:Int) : Frag
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    fun applyData(m: MatchData) = Platform.runLater {
-        val stunProgress = if (teamColor == 0) m.stunProgress.first else if (teamColor == 1) m.stunProgress.second else 0
-        val stunMaximum = if (teamColor == 0) m.stunMaximum.first else if (teamColor == 1) m.stunMaximum.second else 1
-        progress.width = (stunProgress.toDouble() / stunMaximum) * stunGaugeMaxWidth
-        container.isVisible = true
+    fun applyData() = Platform.runLater {
+//        val stunProgress = if (teamColor == 0) m.stunProgress.first else if (teamColor == 1) m.stunProgress.second else 0
+//        val stunMaximum = if (teamColor == 0) m.stunMaximum.first else if (teamColor == 1) m.stunMaximum.second else 1
+//        progress.width = (stunProgress.toDouble() / stunMaximum) * stunGaugeMaxWidth
+//        container.isVisible = true
     }
 
 }

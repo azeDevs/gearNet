@@ -13,6 +13,7 @@ import utils.getRes
 
 class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val s: Session by inject()
     private lateinit var atensionWheel: ImageView
     private lateinit var atensionGaugeR: AtensionGaugeView
     private lateinit var atensionGaugeB: AtensionGaugeView
@@ -32,14 +33,14 @@ class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
         }
     }
 
-    override fun updateAnimation(s: Session) {
-        atensionGaugeR.updateAnimation(s)
-        atensionGaugeB.updateAnimation(s)
+    override fun updateAnimation() {
+        atensionGaugeR.updateAnimation()
+        atensionGaugeB.updateAnimation()
     }
 
-    override fun applyData(s: Session) = Platform.runLater {
-        atensionGaugeR.applyData(s)
-        atensionGaugeB.applyData(s)
+    override fun applyData() = Platform.runLater {
+        atensionGaugeR.applyData()
+        atensionGaugeB.applyData()
     }
 
 }

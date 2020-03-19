@@ -16,17 +16,17 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
 
     // Gotten from MatchData, else gotten from LobbyData (LOBBY QUALITY DATA)
     private var character = Duo(players.p1.characterId.toInt(), players.p2.characterId.toInt())
-    private var handle = Duo(players.p1.displayName, players.p2.displayName)
+    private var handle = Duo(players.p1.userName, players.p2.userName)
     private var rounds = Duo(matchData.rounds.first, matchData.rounds.second)
     private var health = Duo(matchData.health.first, matchData.health.second)
 
     // Gotten from MatchData, else considered useless (MATCH QUALITY DATA)
     private var matchTimer = matchData.timer
     private var tension = Duo(matchData.tension.first, matchData.tension.second)
-    private var canBurst = Duo(matchData.canBurst.first, matchData.canBurst.second)
-    private var stunProgress = Duo(matchData.stunProgress.first, matchData.stunProgress.second)
+    private var canBurst = Duo(matchData.burst.first, matchData.burst.second)
+    private var stunProgress = Duo(matchData.stunCurrent.first, matchData.stunCurrent.second)
     private var maxStun = Duo(matchData.stunMaximum.first, matchData.stunMaximum.second)
-    private var strikeStun = Duo(matchData.strikeStun.first, matchData.strikeStun.second)
+    private var strikeStun = Duo(matchData.struck.first, matchData.struck.second)
     private var guardGauge = Duo(matchData.guardGauge.first, matchData.guardGauge.second)
 
     fun isValid() = getData().isValid() //&& players.p1.isValid() && players.p2.isValid()
@@ -45,22 +45,22 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
             matchTimer = updatedData.timer
 
             health.p1 = keepInRange(getData().health.first)//, 0, 420)
-            stunProgress.p1 = keepInRange(getData().stunProgress.first)//, 0, 8000)
+            stunProgress.p1 = keepInRange(getData().stunCurrent.first)//, 0, 8000)
             maxStun.p1 = keepInRange(getData().stunMaximum.first)//, 0, 8000)
             tension.p1 = keepInRange(getData().tension.first)//, 0, 10000)
             guardGauge.p1 = keepInRange(getData().guardGauge.first)//, 0, 12800)
             rounds.p1 = updatedData.rounds.first
-            canBurst.p1 = getData().canBurst.first
-            strikeStun.p1 = getData().strikeStun.first
+            canBurst.p1 = getData().burst.first
+            strikeStun.p1 = getData().struck.first
 
             health.p2 = keepInRange(getData().health.second)//, 0, 420)
-            stunProgress.p2 = keepInRange(getData().stunProgress.second)//, 0, 8000)
+            stunProgress.p2 = keepInRange(getData().stunCurrent.second)//, 0, 8000)
             maxStun.p2 = keepInRange(getData().stunMaximum.second)//, 0, 8000)
             tension.p2 = keepInRange(getData().tension.second)//, 0, 10000)
             guardGauge.p2 = keepInRange(getData().guardGauge.second)//, 0, 12800)
             rounds.p2 = updatedData.rounds.second
-            canBurst.p2 = getData().canBurst.second
-            strikeStun.p2 = getData().strikeStun.second
+            canBurst.p2 = getData().burst.second
+            strikeStun.p2 = getData().struck.second
 
             // Has the round started?
             if (!roundStarted && getHealth(PLAYER_1) == 420 && getHealth(PLAYER_2) == 420 && getWinner() == -1) {
@@ -73,14 +73,14 @@ class Match (val matchId: Long = -1, private val cabinetId: Byte = -0x1, private
             if (roundStarted && getWinner()==-1 && getHealth(PLAYER_2) == 0 && getHealth(PLAYER_1) != getHealth(PLAYER_2) ) {
                 roundStarted = false
 //                session.setMode(SLASH_MODE)
-                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_1 wins (${players.p1.displayName})")
+                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_1 wins (${players.p1.userName})")
             }
 
             // Has the round ended, and did player 2 win?
             if (roundStarted && getWinner() ==-1 && getHealth(PLAYER_1) == 0 && getHealth(PLAYER_2) != getHealth(PLAYER_1)) {
                 roundStarted = false
 //                session.setMode(SLASH_MODE)
-                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_2 wins (${players.p2.displayName})")
+                println("Round ${getRounds(PLAYER_2)}/2 End, PLAYER_2 wins (${players.p2.userName})")
             }
 
             // Did player 1 win the match?

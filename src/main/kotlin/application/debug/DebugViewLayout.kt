@@ -18,7 +18,7 @@ import tornadofx.*
 class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     private var container: StackPane
-    private val session: Session by inject()
+    private val s: Session by inject()
 
     private lateinit var modeLabel: Label
     private lateinit var timeLabel: Label
@@ -189,7 +189,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     // FIXME: AUTO-TEAM ASSIGNMENT FOR FIGHTERS IS ADVERSELY AFFECTING BOUNTY RESULTS
     // FIXME: SLEEP_MODE DOESN'T TRIGGER WHEN Xrd IS CLOSED
 
-    override fun applyData(s: Session) = Platform.runLater {
+    override fun applyData() = Platform.runLater {
 
         when (s.getMode()) {
             OFFLINE_MODE -> modeLabel.text = "OFFLINE_MODE"

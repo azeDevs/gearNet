@@ -20,6 +20,7 @@ import utils.getRes
 
 class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val s: Session by inject()
     private var showHud = true
     var streamView: StackPane
 
@@ -27,11 +28,11 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var inMatchView: InMatchView
     private lateinit var viewersView: ViewersView
 
-    override fun updateAnimation(s: Session) {
-        viewersView.updateAnimation(s)
+    override fun updateAnimation() {
+        viewersView.updateAnimation()
     }
 
-    override fun applyData(s: Session) {
+    override fun applyData() {
         when (s.getMode()) {
             OFFLINE_MODE -> {
                 lobbyView.setVisibility(showHud)
@@ -64,9 +65,9 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
             }
         }
 
-        inMatchView.applyData(s)
-        lobbyView.applyData(s)
-        viewersView.applyData(s)
+        inMatchView.applyData()
+        lobbyView.applyData()
+        viewersView.applyData()
     }
 
     init {

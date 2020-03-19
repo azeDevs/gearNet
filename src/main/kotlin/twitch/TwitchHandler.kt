@@ -35,10 +35,8 @@ class TwitchHandler(private val s: Session) : BotApi {
     }
 
     override fun sendMessage(message: String) {
-        when (TWITCH_CHAT_BOT) {
-            true -> println("CHAT roboaze: $message")
-            false -> twitchClient.chat.sendMessage("azeDevs", message)
-        }
+        logChat("roboaze", message)
+        if (TWITCH_CHAT_BOT) twitchClient.chat.sendMessage("azeDevs", message)
     }
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
     override fun getViewerData(): List<WatcherData> {
@@ -54,8 +52,8 @@ class TwitchHandler(private val s: Session) : BotApi {
 
     fun generateWatcherEvents() {
         getViewerData().forEach {
-            if (!it.message.isEmpty()) {
-                println("CHAT ${it.displayName}: ${it.message}")
+            if (it.message.isNotEmpty()) {
+                logChat(it.displayName, it.message)
                 // ADD VIEWER IF THEY ARE NEW
                 if (!s.getPlayersMap().containsKey(it.twitchId)) {
                     s.getPlayersMap().put(it.twitchId, Player(it))
@@ -73,5 +71,7 @@ class TwitchHandler(private val s: Session) : BotApi {
             }
         }
     }
+
+    fun logChat(displayName:String, message:String) = println("\uD83D\uDCAC $displayName: $message")
 
 }

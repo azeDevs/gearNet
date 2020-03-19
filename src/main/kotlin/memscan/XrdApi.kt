@@ -31,22 +31,24 @@ interface XrdApi {
 
 @Suppress("CovariantEquals")
 data class FighterData(
-    val steamUserId: Long = -1L,
-    val displayName: String = "",
+    val steamId: Long = -1L,
+    val userName: String = "",
     val characterId: Byte = -0x1,
-    val cabinetLoc: Byte = -0x1,
-    val playerSide: Byte = -0x1,
+    val cabinetId: Byte = -0x1,
+    val seatingId: Byte = -0x1,
     val matchesWon: Int = -1,
     val matchesSum: Int = -1,
-    val loadingPct: Int = -1
-) { fun isValid() = steamUserId > -1
-    fun equals(other: FighterData) = other.displayName == displayName &&
+    val loadPercent: Int = -1
+) { fun isValid() = steamId > 0
+    fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
+    fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
+    fun equals(other: FighterData) = other.userName == userName &&
                 other.characterId == characterId &&
-                other.cabinetLoc == cabinetLoc &&
-                other.playerSide == playerSide &&
+                other.cabinetId == cabinetId &&
+                other.seatingId == seatingId &&
                 other.matchesWon == matchesWon &&
                 other.matchesSum == matchesSum &&
-                other.loadingPct == loadingPct
+                other.loadPercent == loadPercent
 }
 
 @Suppress("CovariantEquals")
@@ -55,26 +57,26 @@ data class MatchData(
     val health: Pair<Int, Int> = Pair(-1,-1),
     val rounds: Pair<Int, Int> = Pair(-1,-1),
     val tension: Pair<Int, Int> = Pair(-1,-1),
-    val stunProgress: Pair<Int, Int> = Pair(-1,-1),
+    val stunCurrent: Pair<Int, Int> = Pair(-1,-1),
     val stunMaximum: Pair<Int, Int> = Pair(-1,-1),
-    val canBurst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
-    val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
+    val burst: Pair<Boolean, Boolean> = Pair(first = false, second = false),
+    val struck: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
 ) { fun isValid() = timer > -1
     fun equals(other: MatchData) = timer == other.timer &&
             health.first == other.health.first &&
-            stunProgress.first == other.stunProgress.first &&
+            stunCurrent.first == other.stunCurrent.first &&
             stunMaximum.first == other.stunMaximum.first &&
             rounds.first == other.rounds.first &&
             tension.first == other.tension.first &&
-            canBurst.first == other.canBurst.first &&
-            strikeStun.first == other.strikeStun.first &&
+            burst.first == other.burst.first &&
+            struck.first == other.struck.first &&
             guardGauge.first == other.guardGauge.first &&
             health.second == other.health.second &&
             rounds.second == other.rounds.second &&
             tension.second == other.tension.second &&
-            canBurst.second == other.canBurst.second &&
-            strikeStun.second == other.strikeStun.second &&
+            burst.second == other.burst.second &&
+            struck.second == other.struck.second &&
             guardGauge.second == other.guardGauge.second
 }
 

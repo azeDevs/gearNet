@@ -14,6 +14,7 @@ import utils.getRes
 
 class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val s: Session by inject()
     private val container: StackPane
     private val bountiesGui: MutableList<FighterScoreView> = ArrayList()
     private val viewersGuiC: MutableList<ViewerScoreView> = ArrayList()
@@ -46,13 +47,13 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    override fun applyData(s: Session) = Platform.runLater {
-        for (i in 0..7) {
-            if (s.getPlayersList().size > i) {
-                bountiesGui[i].applyData(s, i)
-                bountiesGui[i].setVisibility(true)
-            }
-        }
+    override fun applyData() = Platform.runLater {
+//        for (i in 0..7) {
+//            if (s.getPlayersList().size > i) {
+//                bountiesGui[i].applyData(s, i)
+//                bountiesGui[i].setVisibility(true)
+//            }
+//        }
         val viewerTeamC = s.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
 
         for (i in 0..15) {

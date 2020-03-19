@@ -16,6 +16,7 @@ import utils.getRes
 
 class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val s: Session by inject()
     private val container: StackPane
     private lateinit var atensionMeters: AtensionMetersView
     private val viewersGuiR: MutableList<ViewerScoreView> = ArrayList()
@@ -56,18 +57,18 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    override fun updateAnimation(s: Session) {
-        atensionMeters.updateAnimation(s)
+    override fun updateAnimation() {
+        atensionMeters.updateAnimation()
     }
 
-    override fun applyData(s: Session) = Platform.runLater {
+    override fun applyData() = Platform.runLater {
         val viewerTeamR = s.getWatchers().filter { item -> item.isTeam(PLAYER_1) }.sortedByDescending { item -> item.getScoreTotal() }
         val viewerTeamB = s.getWatchers().filter { item -> item.isTeam(PLAYER_2) }.sortedByDescending { item -> item.getScoreTotal() }
         for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
         else viewersGuiR[i].applyData(Player())
         for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
         else viewersGuiB[i].applyData(Player())
-        atensionMeters.applyData(s)
+        atensionMeters.applyData()
     }
 
 }

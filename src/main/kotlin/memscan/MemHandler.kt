@@ -15,7 +15,7 @@ class MemHandler : XrdApi {
     private var xrdProcess: Win32Process? = null
 
     override fun isConnected(): Boolean {
-        return try {
+        return if (xrdProcess == null) try {
             xrdProcess = openProcess(processIDByName("GuiltyGearXrd.exe"))
             xrdProcess!!.modules["GuiltyGearXrd.exe"]!!.pointer
             true
@@ -23,7 +23,7 @@ class MemHandler : XrdApi {
             false
         } catch (e: NullPointerException) {
             false
-        }
+        } else true
     }
 
     override fun getClientSteamId(): Long = try {

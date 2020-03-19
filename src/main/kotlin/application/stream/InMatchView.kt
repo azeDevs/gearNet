@@ -19,6 +19,7 @@ import utils.getRes
 
 class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val s: Session by inject()
     private val container: StackPane
     private lateinit var stunGaugeR: StunGaugeView
     private lateinit var bountyR: Label
@@ -145,7 +146,7 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
-    override fun applyData(s: Session) = Platform.runLater {
+    override fun applyData() = Platform.runLater {
         val f1 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Player()
         val f2 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Player()
         if (f1.getPlayerId() > 0L) {
@@ -154,7 +155,7 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                 if (s.getClientMatch().getHealth(0) > 0) healthR.text = s.getClientMatch().getHealth(0).toString()
                 else healthR.text = ""
                 stunGaugeR.setVisibility(true)
-                stunGaugeR.applyData(s.getClientMatch().getData())
+                stunGaugeR.applyData() //stunGaugeR.applyData(s.getClientMatch().getData())
             } else stunGaugeR.setVisibility(false)
             statusR.viewport = Rectangle2D(f1.getStatusImage().minX, f1.getStatusImage().minY, f1.getStatusImage().width, f1.getStatusImage().height)
             statusR.isVisible = true
@@ -174,7 +175,7 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                 if (s.getClientMatch().getHealth(1) > 0) healthB.text = s.getClientMatch().getHealth(1).toString()
                 else healthB.text = ""
                 stunGaugeB.setVisibility(true)
-                stunGaugeB.applyData(s.getClientMatch().getData())
+                stunGaugeB.applyData() //stunGaugeB.applyData(s.getClientMatch().getData())
             } else stunGaugeB.setVisibility(false)
             statusB.viewport = Rectangle2D(f2.getStatusImage().minX, f2.getStatusImage().minY, f2.getStatusImage().width, f2.getStatusImage().height)
             statusB.isVisible = true

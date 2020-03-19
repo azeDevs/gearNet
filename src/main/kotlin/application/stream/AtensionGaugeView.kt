@@ -20,6 +20,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
 
     private var animationFrame: Int = -1
 
+    private val s: Session by inject()
     private var container: StackPane
     private lateinit var flintHammer: ImageView
     private lateinit var munityProgress: Rectangle
@@ -175,7 +176,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         }
     }
 
-    override fun applyData(s: Session) = Platform.runLater {
+    override fun applyData() = Platform.runLater {
         val f = s.getStagedFighers().p(teamColor)
 
         if (!f.isValid()) bannerHandle.text = "-" else {
@@ -224,7 +225,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         }
     }
 
-    override fun updateAnimation(s: Session)  {
+    override fun updateAnimation()  {
         when (animationFrame) {
             0 -> flintHammer.viewport = Rectangle2D(640.0, 320.0, 192.0, 192.0)
             1 -> flintHammer.viewport = Rectangle2D(832.0, 320.0, 192.0, 192.0)

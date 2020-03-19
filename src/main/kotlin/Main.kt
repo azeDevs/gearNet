@@ -5,6 +5,7 @@ import application.stream.InMatchStyle
 import application.stream.ScoreStyle
 import javafx.stage.Stage
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.GearNet
 import tornadofx.App
@@ -25,8 +26,8 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
         const val GEARNET_ENABLED = false
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
-        const val TWITCH_CHAT_BOT = true
-        const val VERSION = "0.7.1"
+        const val TWITCH_CHAT_BOT = false
+        const val VERSION = "0.7.2"
     }
 
     override fun onBeforeShow(view: UIComponent) {
@@ -40,13 +41,13 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     override fun start(stage: Stage) {
         when(GEARNET_ENABLED) {
             true -> {
-                stage.width  = 1600.0 + 16 // 1600.0 + 16
-                stage.height = 900.0 + 39 // 900.0 + 39
+                stage.width  = 1600.0 + 16
+                stage.height = 900.0 + 39
                 stage.isFullScreen = false
             }
             false -> {
-                stage.width  = 1904.0 + 16 // 1600.0 + 16
-                stage.height = 1041.0 + 39 // 900.0 + 39
+                stage.width  = 1904.0 + 16
+                stage.height = 1041.0 + 39
                 stage.isFullScreen = true
             }
         }
@@ -60,6 +61,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     private fun cycleGameLoop() {
         GlobalScope.launch {
             gearNet.nextFrame()
+            delay(4)
             cycleGameLoop()
         }
     }

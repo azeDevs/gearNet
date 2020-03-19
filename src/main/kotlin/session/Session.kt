@@ -46,7 +46,7 @@ class Session : Controller() {
 
     fun getClientId() = clientId
     fun defineClientId() {
-        val playerData = xrdApi.getFighterData().filter { it.steamUserId != 0L }
+        val playerData = xrdApi.getFighterData().filter { it.steamId != 0L }
         if (clientId == -1L && playerData.isNotEmpty()) {
             clientId = xrdApi.getClientSteamId()
             println("Client defined ${getIdString(clientId)}")
@@ -61,15 +61,15 @@ class Session : Controller() {
     fun getTeamRed() = getPlayers().filter { it.isTeam(PLAYER_1) }
     fun getTeamBlue() = getPlayers().filter { it.isTeam(PLAYER_2) }
 
-    fun getFightersInLobby() = xrdApi.getFighterData().filter { it.steamUserId != 0L }
-    fun getFightersLoading() = xrdApi.getFighterData().filter { it.loadingPct in 1..99 }
+    fun getFightersInLobby() = xrdApi.getFighterData().filter { it.steamId != 0L }
+    fun getFightersLoading() = xrdApi.getFighterData().filter { it.loadPercent in 1..99 }
     fun getMatchData() = xrdApi.getMatchData()
     fun getClientMatch() = matchHandler.clientMatch
     fun getMatchHandler() = matchHandler
 
     fun updatePlayerAtension() {
-        val f1 = getPlayersMap()[getClientMatch().getFighterData(PLAYER_1).steamUserId] ?: Player()
-        val f2 = getPlayersMap()[getClientMatch().getFighterData(PLAYER_2).steamUserId] ?: Player()
+        val f1 = getPlayersMap()[getClientMatch().getFighterData(PLAYER_1).steamId] ?: Player()
+        val f2 = getPlayersMap()[getClientMatch().getFighterData(PLAYER_2).steamId] ?: Player()
 
         if (f1.isValid() && f2.isValid()) {
             // Apply Munity
@@ -127,14 +127,14 @@ class Session : Controller() {
         getFightersInLobby().forEach { data ->
 
             // Add player if they aren't already stored
-            if (!getPlayersMap().containsKey(data.steamUserId)) {
-                getPlayersMap()[data.steamUserId] = Player(data)
+            if (!getPlayersMap().containsKey(data.steamId)) {
+                getPlayersMap()[data.steamId] = Player(data)
                 somethingChanged = true
-                println("Fighter ❝${data.displayName}❞ added to Players (${getIdString(data.steamUserId)})")
+                println("Fighter ❝${data.userName}❞ added to Players (${getIdString(data.steamId)})")
             }
 
             // The present is now the past, and the future is now the present
-            val player = getPlayersMap()[data.steamUserId] ?: Player()
+            val player = getPlayersMap()[data.steamId] ?: Player()
             if (!player.getFighterData().equals(data)) somethingChanged = true
             player.updateFighterData(data, getActivePlayerCount())
             if (player.isStaged()) player.updateMatchData(getClientMatch().getData())
@@ -151,34 +151,34 @@ class Session : Controller() {
         getFightersLoading().forEach { data ->
 
             // XrdLobby Match stuff --------
-            if (data.playerSide.toInt() == 0) lobbyMatchPlayers.p1 = data
+            if (data.seatingId.toInt() == 0) lobbyMatchPlayers.p1 = data
             else lobbyMatchPlayers.p1 = FighterData()
-            if (data.playerSide.toInt() == 1) lobbyMatchPlayers.p2 = data
+            if (data.seatingId.toInt() == 1) lobbyMatchPlayers.p2 = data
             else lobbyMatchPlayers.p2 = FighterData()
 
             if (lobbyMatchPlayers.p1.isValid()
                 && lobbyMatchPlayers.p2.isValid()
-                && lobbyMatchPlayers.p1.cabinetLoc == lobbyMatchPlayers.p2.cabinetLoc) {
+                && lobbyMatchPlayers.p1.cabinetId == lobbyMatchPlayers.p2.cabinetId) {
                 val newMatch = Match(
                     getMatchHandler().archiveMatches.size.toLong(),
-                    lobbyMatchPlayers.p1.cabinetLoc,
+                    lobbyMatchPlayers.p1.cabinetId,
                     lobbyMatchPlayers
                 )
-                println("Lobby Match created for ❝${lobbyMatchPlayers.p1.displayName}❞ vs ❝${lobbyMatchPlayers.p2.displayName}❞")
+                println("Lobby Match created for ❝${lobbyMatchPlayers.p1.userName}❞ vs ❝${lobbyMatchPlayers.p2.userName}❞")
                 getMatchHandler().lobbyMatches[newMatch.getCabinet().toInt()] = Pair(newMatch.matchId, newMatch)
             }
 
             // Client Match stuff --------
-            if (data.cabinetLoc == getClient().getCabinet().toByte()
-                && data.playerSide.toInt() == 0) clientMatchPlayers.p1 =
+            if (data.cabinetId == getClient().getCabinet().toByte()
+                && data.seatingId.toInt() == 0) clientMatchPlayers.p1 =
                 data else clientMatchPlayers.p1 = FighterData()
-            if (data.cabinetLoc == getClient().getCabinet().toByte()
-                && data.playerSide.toInt() == 1) clientMatchPlayers.p2 =
+            if (data.cabinetId == getClient().getCabinet().toByte()
+                && data.seatingId.toInt() == 1) clientMatchPlayers.p2 =
                 data else clientMatchPlayers.p2 = FighterData()
 
             if (isMode(MATCH_MODE)
-                && clientMatchPlayers.p1.steamUserId == -1L
-                && clientMatchPlayers.p2.steamUserId == -1L) {
+                && clientMatchPlayers.p1.steamId == -1L
+                && clientMatchPlayers.p2.steamId == -1L) {
                 getPlayersMap().values.forEach {
                     if (it.getCabinet() == getClient().getCabinet()
                         && it.getPlaySide() == PLAYER_1)
@@ -196,7 +196,7 @@ class Session : Controller() {
                         getClient().getCabinet().toByte(),
                         clientMatchPlayers
                     )
-                println("Client Match created for ❝${lobbyMatchPlayers.p1.displayName}❞ vs ❝${lobbyMatchPlayers.p2.displayName}❞")
+                println("Client Match created for ❝${lobbyMatchPlayers.p1.userName}❞ vs ❝${lobbyMatchPlayers.p2.userName}❞")
                 somethingChanged = true
                 setMode(LOADING_MODE)
             }

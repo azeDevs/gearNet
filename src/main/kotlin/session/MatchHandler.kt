@@ -27,17 +27,17 @@ class MatchHandler(val s: Session) {
     }
 
     fun resolveEveryone(players: ObservableMap<Long, Player>, data: FighterData): Boolean {
-        val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isLoser() } ?: Player()
-        val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamUserId && it.isWinner() } ?: Player()
+        val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamId && it.isLoser() } ?: Player()
+        val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamId && it.isWinner() } ?: Player()
 
         if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getFighterData()
         if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getFighterData()
 
-        if (loser.steamUserId != -1L && winner.steamUserId != -1L) {
+        if (loser.steamId != -1L && winner.steamId != -1L) {
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
-            println("WINNER = ${winner.displayName} / LOSER = ${loser.displayName}")
-            println("WINNER Chain: ${players[winner.steamUserId]!!.getRating()}")
-            println(" LOSER Chain: ${players[loser.steamUserId]!!.getRating()}")
+            println("WINNER = ${winner.userName} / LOSER = ${loser.userName}")
+            println("WINNER Chain: ${players[winner.steamId]!!.getRating()}")
+            println(" LOSER Chain: ${players[loser.steamId]!!.getRating()}")
             resolveLobbyMatchResults(players)
 
 
@@ -54,30 +54,30 @@ class MatchHandler(val s: Session) {
     }
 
     private fun resolveLobbyMatchResults(players: ObservableMap<Long, Player>) {
-        val winnerSide = winner.playerSide.toInt()
-        val loserBounty = players[loser.steamUserId]!!.getScoreTotal()
-        val winnerBounty = players[winner.steamUserId]!!.getScoreTotal()
+        val winnerSide = winner.seatingId.toInt()
+        val loserBounty = players[loser.steamId]!!.getScoreTotal()
+        val winnerBounty = players[winner.steamId]!!.getScoreTotal()
 
         println("WINNER Bounty: $winnerBounty")
         println(" LOSER Bounty: $loserBounty")
 
-        val bonusLoserPayout = (players[loser.steamUserId]!!.getRating() * players[loser.steamUserId]!!.getMatchesWon()) + players[loser.steamUserId]!!.getMatchesSum() + (players[loser.steamUserId]!!.getRating() * 100)
-        val bonusWinnerPayout = ((players[winner.steamUserId]!!.getRating()+1) * players[winner.steamUserId]!!.getMatchesWon()) + players[winner.steamUserId]!!.getMatchesSum() + ((players[winner.steamUserId]!!.getRating()+1) * 1000)
+        val bonusLoserPayout = (players[loser.steamId]!!.getRating() * players[loser.steamId]!!.getMatchesWon()) + players[loser.steamId]!!.getMatchesSum() + (players[loser.steamId]!!.getRating() * 100)
+        val bonusWinnerPayout = ((players[winner.steamId]!!.getRating()+1) * players[winner.steamId]!!.getMatchesWon()) + players[winner.steamId]!!.getMatchesSum() + ((players[winner.steamId]!!.getRating()+1) * 1000)
 
         println("WINNER Signing Bonus: $bonusWinnerPayout")
         println(" LOSER Signing Bonus: $bonusLoserPayout")
 
-        val riskModifier = 0.32 + (0.02 * players[loser.steamUserId]!!.getRating()) - (0.01 * players[winner.steamUserId]!!.getRating())
+        val riskModifier = 0.32 + (0.02 * players[loser.steamId]!!.getRating()) - (0.01 * players[winner.steamId]!!.getRating())
         val payout = (loserBounty * riskModifier).toInt()
 
         println("RISK = $riskModifier / PAYOUT = $payout")
 
         if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
-            players[loser.steamUserId]!!.changeScore(bonusLoserPayout - payout)
-            players[loser.steamUserId]!!.changeRating(-2)
+            players[loser.steamId]!!.changeScore(bonusLoserPayout - payout)
+            players[loser.steamId]!!.changeRating(-2)
         }
-        players[winner.steamUserId]!!.changeScore(bonusWinnerPayout + payout)
-        players[winner.steamUserId]!!.changeRating(1)
+        players[winner.steamId]!!.changeScore(bonusWinnerPayout + payout)
+        players[winner.steamId]!!.changeRating(1)
 
         /*
             ±0 NEUTRAL   =              (0± bountyInflate %, 0± betOnPayout %, 0± betOffPayout %)
