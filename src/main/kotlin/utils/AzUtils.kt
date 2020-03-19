@@ -133,7 +133,7 @@ fun time() = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Loc
  *
  * @return the time in millis
  */
-fun timeMillis() = System.currentTimeMillis()
+fun timeMillis(): Long = System.currentTimeMillis()
 
 
 /**

@@ -20,7 +20,7 @@ class MatchHandler(val s: Session) {
     private var winner = FighterData()
 
     fun updateClientMatch(matchData: MatchData): Boolean {
-        val updatedMatchSnap = clientMatch.updateMatchSnap(matchData, s)
+        val updatedMatchSnap = clientMatch.updateMatchSnap(matchData)
         for (i in 0..3) lobbyMatches[i] = Pair(-1L, Match())
         if (clientMatch.matchId != -1L) lobbyMatches[clientMatch.getCabinet().toInt()] = Pair(clientMatch.matchId, clientMatch)
         return updatedMatchSnap
