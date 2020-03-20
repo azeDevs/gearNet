@@ -4,17 +4,19 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.GearNetFrameData.FrameData
-import memscan.GearNetIcons.IC_DUEL
-import memscan.GearNetIcons.IC_GEAR
-import memscan.GearNetIcons.IC_OKAY
-import memscan.GearNetIcons.IC_PLAYER
-import memscan.GearNetIcons.IC_PLUG
+import memscan.GearNetUpdates.Companion.IC_COMPLETE
+import memscan.GearNetUpdates.Companion.IC_DATA_PLAYER
+import memscan.GearNetUpdates.Companion.IC_GEAR
+import memscan.GearNetUpdates.Companion.IC_MATCHUP
+import memscan.GearNetUpdates.Companion.IC_SCAN
+import memscan.GearNetUpdates.GNLog
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import utils.getIdString
 import utils.timeMillis
 
 class GearNet {
+
 
     companion object {
         const val GEAR_OFFLINE = 0
@@ -26,9 +28,10 @@ class GearNet {
         const val GEAR_TRAINER = 6
     }
 
-    private val gnUpdates = mutableListOf<String>()
+
     private val xrdApi: XrdApi = MemHandler()
     private val frameData = GearNetFrameData()
+    private val gnUpdates = GearNetUpdates()
     private var gearShift: Int = -1
     private var clientId: Long = -1
 
@@ -40,17 +43,23 @@ class GearNet {
         val startTime = timeMillis()
         delay(4)
         if (xrdApi.isConnected()) generateFrameData(startTime)
-        else gnUpdates.add("$IC_PLUG   Xrd Disconnected")
-        printGearNetUpdates()
+        else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
+        refreshGearNetUpdates()
     }
+
+
+    /**
+     *  Public access
+     */
+    fun getFrameData() = frameData.lastFrame()
+    fun getGNLogData() = gnUpdates.getGNLogs()
 
 
     /**
      *
      */
-    private fun printGearNetUpdates() {
-        if (gnUpdates.isNotEmpty()) gnUpdates.forEach { println(it) }
-        gnUpdates.clear()
+    private fun refreshGearNetUpdates() {
+        gnUpdates.clearUpdatesToConsole()
         startLoop()
     }
 
@@ -60,10 +69,9 @@ class GearNet {
      */
     private fun generateFrameData(startTime: Long) {
         defineClientId()
-        val updates = getUpdates()
-        val frameUpdate = frameData.logFrame(startTime, updates)
-        if (frameUpdate.isNotBlank()) gnUpdates.add(frameUpdate)
-        gnUpdates.addAll(updates)
+        val updates = getGNLogUpdates()
+        gnUpdates.add(frameData.getFrameUpdateLog(startTime, updates))
+        updates.forEach { gnUpdates.add(it) }
     }
 
 
@@ -76,7 +84,7 @@ class GearNet {
             setGearShift(GEAR_OFFLINE)
             if (xrdApi.getFighterData().any { it.steamId != 0L }) {
                 clientId = xrdApi.getClientSteamId()
-                gnUpdates.add("${IC_OKAY}Client ID defined: ${getIdString(clientId)}")
+                gnUpdates.add(IC_COMPLETE, "Client ID defined: ${getIdString(clientId)}")
                 setGearShift(GEAR_LOBBY)
             }
         }
@@ -90,13 +98,13 @@ class GearNet {
             gearShift = gearId
             // TODO: GEAR SHIFTER
             when (gearId) {
-                GEAR_OFFLINE -> println("$IC_PLUG   → OFFLINE")
-                GEAR_LOBBY -> println("$IC_GEAR→ LOBBY")
-                GEAR_MATCH -> println("$IC_GEAR→ MATCH")
-                GEAR_SLASH -> println("$IC_GEAR→ SLASH")
-                GEAR_VICTORY -> println("$IC_GEAR→ VICTORY")
-                GEAR_LOADING -> println("$IC_GEAR→ LOADING")
-                GEAR_TRAINER -> println("$IC_GEAR→ TRAINER")
+                GEAR_OFFLINE -> gnUpdates.add(IC_GEAR, "→ OFFLINE")
+                GEAR_LOBBY -> gnUpdates.add(IC_GEAR, "→ LOBBY")
+                GEAR_MATCH -> gnUpdates.add(IC_GEAR, "→ MATCH")
+                GEAR_SLASH -> gnUpdates.add(IC_GEAR, "→ SLASH")
+                GEAR_VICTORY -> gnUpdates.add(IC_GEAR, "→ VICTORY")
+                GEAR_LOADING -> gnUpdates.add(IC_GEAR, "→ LOADING")
+                GEAR_TRAINER -> gnUpdates.add(IC_GEAR, "→ TRAINER")
             }
         }
     }
@@ -106,8 +114,8 @@ class GearNet {
      *  Collects all [FighterData] and [MatchData] from [XrdApi]
      *  and integrates them into a usable [FrameData] object
      */
-    private fun getUpdates(): List<String> {
-        val totalUpdates = mutableListOf<String>()
+    private fun getGNLogUpdates(): List<GNLog> {
+        val totalUpdates = mutableListOf<GNLog>()
         val matchData = xrdApi.getMatchData()
         val dataList: MutableList<PlayerData> = mutableListOf()
 
@@ -132,14 +140,14 @@ class GearNet {
             // If the PlayerData contains a unique steamID, add new PlayerData
             if (playerFactory.isNewPlayer()) {
                 dataList.add(updatedData)
-                totalUpdates.add("$IC_PLAYER   Player ${updatedData.userName} added")
+                totalUpdates.add(GNLog(IC_DATA_PLAYER, "Player ${updatedData.userName} added"))
             }
         }
 
         val muList: List<MatchupData> = getMatchupData(dataList, matchData)
         if (muList.isNotEmpty()) {
             muList.filter { newMu -> frameData.lastFrame().muDataList.none { oldMu -> newMu.equals(oldMu) } }.forEach {
-                totalUpdates.add("${IC_DUEL}Matchup: ${it.player1.userName} vs ${it.player2.userName} [${it.timer}]")
+                totalUpdates.add(GNLog(IC_MATCHUP, "Matchup: ${it.player1.userName} vs ${it.player2.userName} [${it.timer}]"))
             }
         }
         if (totalUpdates.isNotEmpty()) frameData.addFrame(dataList, muList)

@@ -5,7 +5,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import memscan.GearNetIcons.IC_CHAT
+import memscan.GearNetUpdates.Companion.IC_CHAT
 import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
@@ -73,6 +73,6 @@ class TwitchHandler(private val s: Session) : BotApi {
         }
     }
 
-    fun logChat(displayName:String, message:String) = println("$IC_CHAT   $displayName: $message")
+    fun logChat(displayName:String, message:String) = println("${IC_CHAT}$displayName: $message")
 
 }
