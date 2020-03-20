@@ -28,7 +28,7 @@ class GearNetFrameData {
             val delay = timeMillis() - startTime
             val fps = ((16.33/(delay+1))*60).toInt()
             val totalFrames = "${frames.size} total ${plural("frame", frames.size)}"
-            GNLog(IC_COMPLETE, "$updateText $matchupText ($delay ms delay / $fps FPS / $totalFrames / ${lastFrame().frameTime})")
+            GNLog(IC_COMPLETE, "$updateText $matchupText ($delay ms delay / $fps FPS / $totalFrames)")
         } else GNLog()
     }
 

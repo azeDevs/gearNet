@@ -31,7 +31,7 @@ class Session : Controller() {
         const val LOADING_MODE = 4
     }
 
-    private val gearNet = GearNet()
+    val gearNet = GearNet()
     fun startGearNet() = gearNet.startLoop()
 
     private var sessionMode: Int = OFFLINE_MODE

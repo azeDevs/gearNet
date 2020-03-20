@@ -1,6 +1,7 @@
 package application.debug
 
 import MyApp.Companion.BORDER_TRACINGS
+import javafx.geometry.Pos
 import javafx.scene.effect.BlurType
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.BorderStrokeStyle
@@ -22,6 +23,7 @@ class DebugStyle : Stylesheet() {
         val tempListGeneric by cssclass()
         val tempListRed by cssclass()
         val tempListBlue by cssclass()
+        val tempListYellow by cssclass()
         val debugTextGeneric by cssclass()
         val debugTextRed by cssclass()
         val debugTextBlue by cssclass()
@@ -129,6 +131,16 @@ class DebugStyle : Stylesheet() {
                 effect = DropShadow(BlurType.ONE_PASS_BOX, c("#262f68"), 4.0, 400.0, 0.0, 0.0)
                 borderWidth += box(2.px)
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
+            }
+            and(tempListYellow) {
+                textFill = debugLiteYellow
+                alignment = Pos.TOP_LEFT
+                fontSize = 20.px
+                maxWidth = 1280.px
+                minWidth = 1280.px
+                maxHeight = 720.px
+                minHeight = 720.px
+                effect = DropShadow(BlurType.ONE_PASS_BOX, c("#000000"), 10.0, 1000.0, 0.0, 0.0)
             }
 
             and(debugTextGeneric) {

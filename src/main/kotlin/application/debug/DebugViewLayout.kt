@@ -35,6 +35,10 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var watchersList: Label
     private lateinit var fightersList: Label
 
+    private lateinit var gearNetLogs: Label
+
+    // TODO: ADD GearNetUpdates OUTPUT TO A LABEL OR SOMETHING
+
     private lateinit var gearnetPlayerListView: GearnetPlayerListView
 //    private lateinit var playerList: PlayerList
 //    private lateinit var playerEditor: PlayerEditor
@@ -43,6 +47,14 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
         with(root) {
             container = stackpane {
                 addClass(DebugStyle.debugContainer)
+
+                gearNetLogs = label("GearNet.UpdateLogs") {
+                    addClass(DebugStyle.tempListYellow)
+                    alignment = Pos.TOP_LEFT
+                    translateX += 64
+                    translateY += 160
+
+                }
 
                 modeLabel = label("OFFLINE_MODE") {
                     addClass(DebugStyle.debugTextYellow)
@@ -190,6 +202,8 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     // FIXME: SLEEP_MODE DOESN'T TRIGGER WHEN Xrd IS CLOSED
 
     override fun applyData() = Platform.runLater {
+
+        gearNetLogs.text = s.gearNet.getUpdateString()
 
         when (s.getMode()) {
             OFFLINE_MODE -> modeLabel.text = "OFFLINE_MODE"

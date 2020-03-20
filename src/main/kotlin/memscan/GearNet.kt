@@ -52,7 +52,7 @@ class GearNet {
      *  Public access
      */
     fun getFrameData() = frameData.lastFrame()
-    fun getGNLogData() = gnUpdates.getGNLogs()
+    fun getUpdateString() = gnUpdates.getUpdatesAsString(gearShift)
 
 
     /**
