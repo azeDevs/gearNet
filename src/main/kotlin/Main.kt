@@ -4,10 +4,7 @@ import application.debug.DebugStyle
 import application.stream.InMatchStyle
 import application.stream.ScoreStyle
 import javafx.stage.Stage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import memscan.GearNet
+import session.Session
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
@@ -16,14 +13,12 @@ fun main(args: Array<String>) {
     launch<MyApp>(args)
 }
 
-
-
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class, DebugStyle::class) {
 
-    private val gearNet = GearNet()
+    private val session: Session by inject()
 
     companion object {
-        const val GEARNET_ENABLED = false
+        const val GEARNET_ENABLED = true
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
         const val TWITCH_CHAT_BOT = false
@@ -55,15 +50,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
         super.start(stage)
         stage.toBack()
         stage.apply { }
-        cycleGameLoop()
-    }
-
-    private fun cycleGameLoop() {
-        GlobalScope.launch {
-            gearNet.nextFrame()
-            delay(4)
-            cycleGameLoop()
-        }
+        session.startGearNet()
     }
 
 }

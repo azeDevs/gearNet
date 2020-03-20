@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.math.abs
 
 
 /**
@@ -45,7 +46,7 @@ fun stringToInt(param: String): Int {
  * @param size the value to evaluate
  * @return the (un)modified text as a String
  */
-fun plural(text: String, size: Int) = "$text${if (size > 1) "s" else ""}"
+fun plural(text: String, size: Int) = "$text${if (abs(size) != 1) "s" else ""}"
 
 
 /**
@@ -193,7 +194,7 @@ fun truncate(name: String, length: Int): String {
     if (name.length > length) return re.replace(name, "?").substring(0, length)
     else return re.replace(name, "?")
 }
-
+fun truncateDecimal(value:Double): String = value.toString().substring(0, value.toString().lastIndexOf('.')-1)
 
 /**
  * TODO: WTF DOES THIS DO?

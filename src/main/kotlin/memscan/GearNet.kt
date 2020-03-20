@@ -1,10 +1,14 @@
 package memscan
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import memscan.GearNetFrameData.FrameData
-import memscan.IconLegend.IC_GEAR
-import memscan.IconLegend.IC_OKAY
-import memscan.IconLegend.IC_PLAYER
-import memscan.IconLegend.IC_PLUG
+import memscan.GearNetIcons.IC_DUEL
+import memscan.GearNetIcons.IC_GEAR
+import memscan.GearNetIcons.IC_OKAY
+import memscan.GearNetIcons.IC_PLAYER
+import memscan.GearNetIcons.IC_PLUG
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import utils.getIdString
@@ -20,42 +24,73 @@ class GearNet {
         const val GEAR_VICTORY = 4
         const val GEAR_LOADING = 5
         const val GEAR_TRAINER = 6
-
-
     }
 
+    private val gnUpdates = mutableListOf<String>()
     private val xrdApi: XrdApi = MemHandler()
     private val frameData = GearNetFrameData()
+    private var gearShift: Int = -1
     private var clientId: Long = -1
-    private var gearMode: Int = -1
 
-    // TODO: GEAR SHIFTER
-    // FIXME: PLAYER IDS DON'T ASSOCIATE PRE-MATCH, PLS FIX, (check this#getOpponent)
-    // FIXME: MATCHDATA DOESN'T ASSOCIATE, PLS FIX
 
     /**
-     *  Define which steamId should be associated with this [GearNet] session
+     *  Initiates memory scan on Guilty Gear Xrd to become [FrameData]
+     */
+    fun startLoop() = GlobalScope.launch {
+        val startTime = timeMillis()
+        delay(4)
+        if (xrdApi.isConnected()) generateFrameData(startTime)
+        else gnUpdates.add("$IC_PLUG   Xrd Disconnected")
+        printGearNetUpdates()
+    }
+
+
+    /**
+     *
+     */
+    private fun printGearNetUpdates() {
+        if (gnUpdates.isNotEmpty()) gnUpdates.forEach { println(it) }
+        gnUpdates.clear()
+        startLoop()
+    }
+
+
+    /**
+     *
+     */
+    private fun generateFrameData(startTime: Long) {
+        defineClientId()
+        val updates = getUpdates()
+        val frameUpdate = frameData.logFrame(startTime, updates)
+        if (frameUpdate.isNotBlank()) gnUpdates.add(frameUpdate)
+        gnUpdates.addAll(updates)
+    }
+
+
+    /**
+     *  Define which [steamId] should be associated with current [GearNet] session
      */
     private fun getClientId() = clientId
     private fun defineClientId() {
         if (getClientId() == -1L) {
-            setGearMode(GEAR_OFFLINE)
+            setGearShift(GEAR_OFFLINE)
             if (xrdApi.getFighterData().any { it.steamId != 0L }) {
                 clientId = xrdApi.getClientSteamId()
-                println("${IC_OKAY}clientId defined ${getIdString(clientId)}")
-                setGearMode(GEAR_LOBBY)
+                gnUpdates.add("${IC_OKAY}Client ID defined: ${getIdString(clientId)}")
+                setGearShift(GEAR_LOBBY)
             }
         }
     }
 
     /**
-     *  [GearNet] Gear Shifter™
+     *  Set [GearNet] Gear Shift™
      */
-    private fun setGearMode(mode: Int) {
-        if (gearMode != mode) {
-            gearMode = mode
-            when (mode) {
-                GEAR_OFFLINE -> println("$IC_GEAR→ OFFLINE")
+    private fun setGearShift(gearId: Int) {
+        if (gearShift != gearId) {
+            gearShift = gearId
+            // TODO: GEAR SHIFTER
+            when (gearId) {
+                GEAR_OFFLINE -> println("$IC_PLUG   → OFFLINE")
                 GEAR_LOBBY -> println("$IC_GEAR→ LOBBY")
                 GEAR_MATCH -> println("$IC_GEAR→ MATCH")
                 GEAR_SLASH -> println("$IC_GEAR→ SLASH")
@@ -66,24 +101,13 @@ class GearNet {
         }
     }
 
-    /**
-     *  Iniates and update from Guilty Gear Xrd to become [FrameData]
-     */
-    fun nextFrame() = when (xrdApi.isConnected()) {
-        true -> {
-            defineClientId()
-            val startTime = timeMillis()
-            frameData.logFrame(startTime, integratePlayerData())
-        }
-        else -> println("$IC_PLUG   ${frameData.frameCount()}: Frames stored, Xrd Disconnected")
-    }
 
     /**
      *  Collects all [FighterData] and [MatchData] from [XrdApi]
      *  and integrates them into a usable [FrameData] object
      */
-    private fun integratePlayerData(): Int {
-        var totalUpdates = 0
+    private fun getUpdates(): List<String> {
+        val totalUpdates = mutableListOf<String>()
         val matchData = xrdApi.getMatchData()
         val dataList: MutableList<PlayerData> = mutableListOf()
 
@@ -99,33 +123,126 @@ class GearNet {
                     // Does the new PlayerData differ from the legacy PlayerData?
                     // If not then use apply the legacy PlayerData instead
                     val playerUpdates = playerFactory.receivedUpdates()
-                    if (playerUpdates > 0) {
+                    if (playerUpdates.isNotEmpty()) {
                         dataList.add(updatedData)
-                        totalUpdates += playerUpdates
+                        totalUpdates.addAll(playerUpdates)
                     } else dataList.add(legacyData)
                 }
             }
             // If the PlayerData contains a unique steamID, add new PlayerData
             if (playerFactory.isNewPlayer()) {
-                totalUpdates++
                 dataList.add(updatedData)
-                println("$IC_PLAYER   PlayerData ${updatedData.userName} added")
+                totalUpdates.add("$IC_PLAYER   Player ${updatedData.userName} added")
             }
         }
 
-        if (totalUpdates > 0) {
-            frameData.addFrame(dataList)
+        val muList: List<MatchupData> = getMatchupData(dataList, matchData)
+        if (muList.isNotEmpty()) {
+            muList.filter { newMu -> frameData.lastFrame().muDataList.none { oldMu -> newMu.equals(oldMu) } }.forEach {
+                totalUpdates.add("${IC_DUEL}Matchup: ${it.player1.userName} vs ${it.player2.userName} [${it.timer}]")
+            }
         }
+        if (totalUpdates.isNotEmpty()) frameData.addFrame(dataList, muList)
         return totalUpdates
     }
 
-    private fun isOnClientCabinet(fighterData: FighterData) = fighterData.isOnCabinet(getClientFighter().cabinetId.toInt())
-    private fun getClientFighter() = xrdApi.getFighterData().firstOrNull { it.steamId == clientId } ?: FighterData()
-    private fun getOpponent(fighterData: FighterData, seatingId: Int): FighterData = xrdApi.getFighterData().firstOrNull { it.cabinetId == fighterData.cabinetId && it.seatingId.toInt() == seatingId } ?: FighterData()
-    private fun getPlayer(steamId: Long): PlayerData = frameData.lastFrame().playerDataList.firstOrNull { it.steamId == steamId } ?: PlayerData()
 
+    /**
+     *
+     */
+    private fun getMatchupData(dataList: MutableList<PlayerData>, matchData: MatchData): List<MatchupData> {
+        val muList: MutableList<MatchupData> = mutableListOf()
+        dataList.forEach { data1 ->
+            dataList.forEach { data2 ->
+                if (data1.steamId == data2.opponentId && data1.opponentId == data2.steamId) {
+                    if (data1.isOnCabinet(getClientCabinet()) && data2.isOnCabinet(getClientCabinet())) {
+                        if (data1.isSeatedAt(PLAYER_1)) {
+                            if (muList.none { it.equals(MatchupData(data1, data2, matchData.timer)) }) muList.add(MatchupData(data1, data2, matchData.timer))
+                        } else {
+                            if (muList.none { it.equals(MatchupData(data2, data1, matchData.timer)) }) muList.add(MatchupData(data2, data1, matchData.timer))
+                        }
+                    } else if (data1.isSeatedAt(PLAYER_1)) {
+                        if (muList.none { it.equals(MatchupData(data1, data2)) }) muList.add(MatchupData(data1, data2))
+                    } else {
+                        if (muList.none { it.equals(MatchupData(data2, data1)) }) muList.add(MatchupData(data2, data1))
+                    }
+                }
+            }
+        }
+        return muList
+    }
+
+
+    /**
+     *
+     */
+    private fun getClientCabinet() = getClientFighter().cabinetId.toInt()
+    private fun getClientFighter() = xrdApi.getFighterData().firstOrNull { it.steamId == clientId } ?: FighterData()
+
+
+    /**
+     *
+     */
+    private fun getOpponent(fighterData: FighterData): FighterData {
+        return xrdApi.getFighterData().firstOrNull {
+            return@firstOrNull if (it.isOnCabinet(fighterData.cabinetId.toInt())) {
+                when {
+                    fighterData.isSeatedAt(PLAYER_1) -> it.isSeatedAt(PLAYER_2)
+                    fighterData.isSeatedAt(PLAYER_2) -> it.isSeatedAt(PLAYER_1)
+                    else -> false
+                }
+            } else false
+        } ?: FighterData()
+    }
+
+
+    /**
+     *
+     */
     private fun getPlayerData(fighterData: FighterData, matchData: MatchData): PlayerData {
         when {
+            fighterData.isSeatedAt(PLAYER_1) && fighterData.isOnCabinet(getClientCabinet()) -> {
+                return PlayerData(
+                    fighterData.steamId,
+                    fighterData.userName,
+                    fighterData.characterId,
+                    fighterData.cabinetId,
+                    fighterData.seatingId,
+                    fighterData.matchesWon,
+                    fighterData.matchesSum,
+                    fighterData.loadPercent,
+                    getOpponent(fighterData).steamId,
+                    matchData.health.second,
+                    matchData.rounds.second,
+                    matchData.tension.second,
+                    matchData.stunCurrent.second,
+                    matchData.stunMaximum.second,
+                    matchData.burst.second,
+                    matchData.struck.second,
+                    matchData.guardGauge.second
+                )
+            }
+            fighterData.isSeatedAt(PLAYER_2) && fighterData.isOnCabinet(getClientCabinet()) -> {
+                return PlayerData(
+                    fighterData.steamId,
+                    fighterData.userName,
+                    fighterData.characterId,
+                    fighterData.cabinetId,
+                    fighterData.seatingId,
+                    fighterData.matchesWon,
+                    fighterData.matchesSum,
+                    fighterData.loadPercent,
+                    getOpponent(fighterData).steamId,
+                    matchData.health.second,
+                    matchData.rounds.second,
+                    matchData.tension.second,
+                    matchData.stunCurrent.second,
+                    matchData.stunMaximum.second,
+                    matchData.burst.second,
+                    matchData.struck.second,
+                    matchData.guardGauge.second
+                )
+            }
             fighterData.isSeatedAt(PLAYER_1) -> {
                 return PlayerData(
                     fighterData.steamId,
@@ -136,7 +253,7 @@ class GearNet {
                     fighterData.matchesWon,
                     fighterData.matchesSum,
                     fighterData.loadPercent,
-                    getOpponent(fighterData, PLAYER_2).steamId
+                    getOpponent(fighterData).steamId
                 )
             }
             fighterData.isSeatedAt(PLAYER_2) -> {
@@ -149,49 +266,7 @@ class GearNet {
                     fighterData.matchesWon,
                     fighterData.matchesSum,
                     fighterData.loadPercent,
-                    getOpponent(fighterData, PLAYER_1).steamId
-                )
-            }
-            fighterData.isSeatedAt(PLAYER_1) && isOnClientCabinet(fighterData) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData, PLAYER_2).steamId,
-                    matchData.health.second,
-                    matchData.rounds.second,
-                    matchData.tension.second,
-                    matchData.stunCurrent.second,
-                    matchData.stunMaximum.second,
-                    matchData.burst.second,
-                    matchData.struck.second,
-                    matchData.guardGauge.second
-                )
-            }
-            fighterData.isSeatedAt(PLAYER_2) && isOnClientCabinet(fighterData) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData, PLAYER_1).steamId,
-                    matchData.health.second,
-                    matchData.rounds.second,
-                    matchData.tension.second,
-                    matchData.stunCurrent.second,
-                    matchData.stunMaximum.second,
-                    matchData.burst.second,
-                    matchData.struck.second,
-                    matchData.guardGauge.second
+                    getOpponent(fighterData).steamId
                 )
             }
             else -> {
@@ -208,6 +283,23 @@ class GearNet {
             }
         }
     }
+
+
+    /**
+     *  [MatchupData] Class
+     */
+    @Suppress("CovariantEquals")
+    data class MatchupData(
+        val player1: PlayerData = PlayerData(),
+        val player2: PlayerData = PlayerData(),
+        val timer: Int = -1
+    ) {
+        fun isValid() = player1.isValid() && player2.isValid() && timer > -1
+        fun equals(other: MatchupData) = timer == other.timer &&
+                player1.steamId == other.player1.steamId &&
+                player2.steamId == other.player2.steamId
+    }
+
 
     /**
      *  [PlayerData] Class
@@ -230,10 +322,11 @@ class GearNet {
         val stunMaximum: Int = -1,
         val burst: Boolean = false,
         val struck: Boolean = false,
-        val guardGauge: Int = -1,
-        val frameTime: Long = timeMillis()
+        val guardGauge: Int = -1
     ) {
         fun isValid() = steamId > 0
+        fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
+        fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
         fun equals(other: PlayerData) = steamId == other.steamId &&
                 userName == other.userName &&
                 characterId == other.characterId &&
@@ -251,5 +344,7 @@ class GearNet {
                 struck == other.struck &&
                 guardGauge == other.guardGauge
     }
+
+
 }
 

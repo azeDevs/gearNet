@@ -2,10 +2,7 @@ package session
 
 import MyApp.Companion.SIMULATION_MODE
 import javafx.collections.ObservableMap
-import memscan.FighterData
-import memscan.MemHandler
-import memscan.MemRandomizer
-import memscan.XrdApi
+import memscan.*
 import models.Match
 import models.Player
 import models.Player.Companion.MAX_ATENSION
@@ -33,6 +30,9 @@ class Session : Controller() {
         const val VICTORY_MODE = 3
         const val LOADING_MODE = 4
     }
+
+    private val gearNet = GearNet()
+    fun startGearNet() = gearNet.startLoop()
 
     private var sessionMode: Int = OFFLINE_MODE
     private var clientId: Long = -1

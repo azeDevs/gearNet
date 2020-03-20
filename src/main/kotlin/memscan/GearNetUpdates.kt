@@ -1,0 +1,4 @@
+package memscan
+
+class GearNetUpdates {
+}

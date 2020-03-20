@@ -1,18 +1,19 @@
 package memscan
 
 
-val MemLibrary = arrayOf(
-    MemData("Player 1 HP", longArrayOf(0x01B18C78L, 0x9CCL), 4),
-    MemData("Player 2 HP", longArrayOf(0x01B18C7CL, 0x9CCL), 4),
-    MemData("Match Timer 1", longArrayOf(0x0177A8ACL, 0x708L, 0x4CL, 0x450L), 4),
-    MemData("Match Timer 2", longArrayOf(0x0177A8ACL, 0x708L, 0xD4L, 0x4CL, 0x450L), 4)
-)
-
 class MemData(
     val labelText: String,
     val offsets : LongArray,
     val varSize : Int
 ) {
+    companion object {
+        val MemLibrary = arrayOf(
+            MemData("Player 1 HP", longArrayOf(0x01B18C78L, 0x9CCL), 4),
+            MemData("Player 2 HP", longArrayOf(0x01B18C7CL, 0x9CCL), 4),
+            MemData("Match Timer 1", longArrayOf(0x0177A8ACL, 0x708L, 0x4CL, 0x450L), 4),
+            MemData("Match Timer 2", longArrayOf(0x0177A8ACL, 0x708L, 0xD4L, 0x4CL, 0x450L), 4)
+        )
+    }
     private var data : Long = -1L
 
     fun getData(): Long {
