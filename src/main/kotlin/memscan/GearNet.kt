@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import memscan.GearNetFrameData.FrameData
 import memscan.GearNetUpdates.Companion.IC_COMPLETE
 import memscan.GearNetUpdates.Companion.IC_DATA_PLAYER
-import memscan.GearNetUpdates.Companion.IC_GEAR
 import memscan.GearNetUpdates.Companion.IC_MATCHUP
 import memscan.GearNetUpdates.Companion.IC_SCAN
 import memscan.GearNetUpdates.GNLog
@@ -17,31 +16,19 @@ import utils.timeMillis
 
 class GearNet {
 
-
-    companion object {
-        const val GEAR_OFFLINE = 0
-        const val GEAR_LOBBY = 1
-        const val GEAR_MATCH = 2
-        const val GEAR_SLASH = 3
-        const val GEAR_VICTORY = 4
-        const val GEAR_LOADING = 5
-        const val GEAR_TRAINER = 6
-    }
-
-
     private val xrdApi: XrdApi = MemHandler()
     private val frameData = GearNetFrameData()
     private val gnUpdates = GearNetUpdates()
-    private var gearShift: Int = -1
+    private val gearShift = GearNetShifter(gnUpdates, this)
     private var clientId: Long = -1
 
 
     /**
      *  Initiates memory scan on Guilty Gear Xrd to become [FrameData]
      */
-    fun startLoop() = GlobalScope.launch {
+    fun start() = GlobalScope.launch {
         val startTime = timeMillis()
-        delay(4)
+        delay(12)
         if (xrdApi.isConnected()) generateFrameData(startTime)
         else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
         refreshGearNetUpdates()
@@ -51,8 +38,12 @@ class GearNet {
     /**
      *  Public access
      */
-    fun getFrameData() = frameData.lastFrame()
-    fun getUpdateString() = gnUpdates.getUpdatesAsString(gearShift)
+    fun getShift() = gearShift.getShift()
+    fun getFrame() = frameData.lastFrame()
+    fun getUpdateString() = gnUpdates.getUpdatesAsString(gearShift.getShift())
+    fun getClientMatchup(): MatchupData = getFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
+    fun getClientCabinet() = getClientFighter().cabinetId.toInt()
+    fun getClientFighter(): PlayerData = getFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
 
 
     /**
@@ -60,7 +51,7 @@ class GearNet {
      */
     private fun refreshGearNetUpdates() {
         gnUpdates.clearUpdatesToConsole()
-        startLoop()
+        start()
     }
 
 
@@ -69,6 +60,7 @@ class GearNet {
      */
     private fun generateFrameData(startTime: Long) {
         defineClientId()
+        gearShift.update()
         val updates = getGNLogUpdates()
         gnUpdates.add(frameData.getFrameUpdateLog(startTime, updates))
         updates.forEach { gnUpdates.add(it) }
@@ -80,34 +72,13 @@ class GearNet {
      */
     private fun getClientId() = clientId
     private fun defineClientId() {
-        if (getClientId() == -1L) {
-            setGearShift(GEAR_OFFLINE)
-            if (xrdApi.getFighterData().any { it.steamId != 0L }) {
-                clientId = xrdApi.getClientSteamId()
-                gnUpdates.add(IC_COMPLETE, "Client ID defined: ${getIdString(clientId)}")
-                setGearShift(GEAR_LOBBY)
-            }
+        if (getClientId() == -1L && xrdApi.getFighterData().any { it.steamId != 0L }) {
+            clientId = xrdApi.getClientSteamId()
+            gnUpdates.add(IC_COMPLETE, "Client ID defined: ${getIdString(clientId)}")
         }
     }
 
-    /**
-     *  Set [GearNet] Gear Shift™
-     */
-    private fun setGearShift(gearId: Int) {
-        if (gearShift != gearId) {
-            gearShift = gearId
-            // TODO: GEAR SHIFTER
-            when (gearId) {
-                GEAR_OFFLINE -> gnUpdates.add(IC_GEAR, "→ OFFLINE")
-                GEAR_LOBBY -> gnUpdates.add(IC_GEAR, "→ LOBBY")
-                GEAR_MATCH -> gnUpdates.add(IC_GEAR, "→ MATCH")
-                GEAR_SLASH -> gnUpdates.add(IC_GEAR, "→ SLASH")
-                GEAR_VICTORY -> gnUpdates.add(IC_GEAR, "→ VICTORY")
-                GEAR_LOADING -> gnUpdates.add(IC_GEAR, "→ LOADING")
-                GEAR_TRAINER -> gnUpdates.add(IC_GEAR, "→ TRAINER")
-            }
-        }
-    }
+
 
 
     /**
@@ -121,10 +92,10 @@ class GearNet {
 
         xrdApi.getFighterData().filter { it.isValid() }.forEach { fighterData ->
             val playerFactory = PlayerDataFactory()
-            playerFactory.setNewData(getPlayerData(fighterData, matchData))
-            val updatedData = getPlayerData(fighterData, matchData)
+            playerFactory.setNewData(generatePlayerData(fighterData, matchData))
+            val updatedData = generatePlayerData(fighterData, matchData)
             // Get the last FrameData to be compared to the incoming PlayerData
-            frameData.lastFrame().playerDataList.forEach { legacyData ->
+            frameData.lastFrame().playerData.forEach { legacyData ->
                 // Does the legacy PlayerData have the same steamID as the new PlayerData?
                 if (legacyData.steamId == updatedData.steamId) {
                     playerFactory.setOldData(legacyData)
@@ -146,7 +117,7 @@ class GearNet {
 
         val muList: List<MatchupData> = getMatchupData(dataList, matchData)
         if (muList.isNotEmpty()) {
-            muList.filter { newMu -> frameData.lastFrame().muDataList.none { oldMu -> newMu.equals(oldMu) } }.forEach {
+            muList.filter { newMu -> frameData.lastFrame().matchupData.none { oldMu -> newMu.equals(oldMu) } }.forEach {
                 totalUpdates.add(GNLog(IC_MATCHUP, "Matchup: ${it.player1.userName} vs ${it.player2.userName} [${it.timer}]"))
             }
         }
@@ -184,13 +155,6 @@ class GearNet {
     /**
      *
      */
-    private fun getClientCabinet() = getClientFighter().cabinetId.toInt()
-    private fun getClientFighter() = xrdApi.getFighterData().firstOrNull { it.steamId == clientId } ?: FighterData()
-
-
-    /**
-     *
-     */
     private fun getOpponent(fighterData: FighterData): FighterData {
         return xrdApi.getFighterData().firstOrNull {
             return@firstOrNull if (it.isOnCabinet(fighterData.cabinetId.toInt())) {
@@ -207,7 +171,7 @@ class GearNet {
     /**
      *
      */
-    private fun getPlayerData(fighterData: FighterData, matchData: MatchData): PlayerData {
+    private fun generatePlayerData(fighterData: FighterData, matchData: MatchData): PlayerData {
         when {
             fighterData.isSeatedAt(PLAYER_1) && fighterData.isOnCabinet(getClientCabinet()) -> {
                 return PlayerData(
@@ -303,6 +267,8 @@ class GearNet {
         val timer: Int = -1
     ) {
         fun isValid() = player1.isValid() && player2.isValid() && timer > -1
+        fun getLoaders() = if(player1.loadPercent in 1..99 || player2.loadPercent in 1..99) (player1.loadPercent + player2.loadPercent)/2 else -1
+        fun isOnCabinet(cabinetId: Int) = player1.isOnCabinet(cabinetId) && player2.isOnCabinet(cabinetId)
         fun equals(other: MatchupData) = timer == other.timer &&
                 player1.steamId == other.player1.steamId &&
                 player2.steamId == other.player2.steamId

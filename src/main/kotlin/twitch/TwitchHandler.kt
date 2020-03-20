@@ -6,7 +6,6 @@ import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import memscan.GearNetUpdates.Companion.IC_CHAT
-import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import session.Session
@@ -56,10 +55,10 @@ class TwitchHandler(private val s: Session) : BotApi {
             if (it.message.isNotEmpty()) {
                 logChat(it.displayName, it.message)
                 // ADD VIEWER IF THEY ARE NEW
-                if (!s.getPlayersMap().containsKey(it.twitchId)) {
-                    s.getPlayersMap().put(it.twitchId, Player(it))
-                    println("${it.displayName} added to Viewers Map")
-                }
+//                if (!s.getPlayersMap().containsKey(it.twitchId)) {
+//                    s.getPlayersMap().put(it.twitchId, Player(it))
+//                    println("${it.displayName} added to Viewers Map")
+//                }
                 // RUN COMMAND IF THERE IS ONE
                 if (it.message.contains("azpngRC") && !s.getPlayersMap()[it.twitchId]!!.isTeam(PLAYER_1)) {
                     s.getPlayersMap()[it.twitchId]!!.setTeam(PLAYER_1)

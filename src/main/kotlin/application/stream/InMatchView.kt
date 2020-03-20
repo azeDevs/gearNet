@@ -1,6 +1,6 @@
 package application.stream
 
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D

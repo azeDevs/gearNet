@@ -1,13 +1,10 @@
 package application.stream
 
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Player
-import models.Player.Companion.PLAYER_1
-import models.Player.Companion.PLAYER_2
 import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
@@ -62,12 +59,12 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData() = Platform.runLater {
-        val viewerTeamR = s.getWatchers().filter { item -> item.isTeam(PLAYER_1) }.sortedByDescending { item -> item.getScoreTotal() }
-        val viewerTeamB = s.getWatchers().filter { item -> item.isTeam(PLAYER_2) }.sortedByDescending { item -> item.getScoreTotal() }
-        for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
-        else viewersGuiR[i].applyData(Player())
-        for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
-        else viewersGuiB[i].applyData(Player())
+//        val viewerTeamR = s.getWatchers().filter { item -> item.isTeam(PLAYER_1) }.sortedByDescending { item -> item.getScoreTotal() }
+//        val viewerTeamB = s.getWatchers().filter { item -> item.isTeam(PLAYER_2) }.sortedByDescending { item -> item.getScoreTotal() }
+//        for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
+//        else viewersGuiR[i].applyData(Player())
+//        for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
+//        else viewersGuiB[i].applyData(Player())
         atensionMeters.applyData()
     }
 

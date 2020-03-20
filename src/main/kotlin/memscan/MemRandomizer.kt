@@ -3,7 +3,6 @@ package memscan
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import models.Player
 import session.Character.getCharacterInitials
 import utils.Duo
 import utils.getIdString
@@ -73,9 +72,9 @@ class MemRandomizer : XrdApi {
             if (botLobby.values.none { it.cabinetId == sightedBot.cabinetId && it.seatingId.toInt() == abs(sightedBot.seatingId.toInt() - 1) }) {
                 seat.p1 = sightedBot.cabinetId.toInt()
                 seat.p2 = abs(sightedBot.seatingId.toInt() - 1)
-                println("B: ${s.userName} [${getIdString(s.steamId)}] has moved to cab ${Player(
-                    sightedBot
-                ).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString()}")
+//                println("B: ${s.userName} [${getIdString(s.steamId)}] has moved to cab ${Player(
+//                    sightedBot
+//                ).getCabinetString()}, spot ${Player(sightedBot).getPlaySideString()}")
             } else {
                 println("TODO: Bot searched for open seats, but that hasn't been implemented yet")
             }
@@ -119,8 +118,8 @@ class MemRandomizer : XrdApi {
     private fun isClientBot(s: FighterData) = s.steamId == getClientSteamId()
     private fun isInMatch(s: FighterData) = s.steamId == player1 || s.steamId == player2
 
-    override fun isConnected() = true
     override fun getClientSteamId() = getClientBot().steamId
+    override fun isConnected() = true
     override fun getFighterData() = botLobby.values.toList()
     override fun getMatchData() = botMatch
 

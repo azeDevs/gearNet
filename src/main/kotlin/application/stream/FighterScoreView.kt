@@ -1,6 +1,6 @@
 package application.stream
 
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -20,7 +20,8 @@ import utils.getRandomName
 import utils.getRes
 import kotlin.random.Random
 
-class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment(), ArcadeView {
+class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment(),
+    ArcadeView {
 
     private val s: Session by inject()
     private var wholeThing: StackPane
@@ -162,7 +163,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
     }
 
     private fun applyFighterData(p: Player) {
-        character.viewport = getCharacterTrademark(p.getFighterData().characterId)
+        character.viewport = getCharacterTrademark(p.getPlayerData().characterId)
         handle1.text = p.getUserName(); handle1.isVisible = true
         handle2.text = p.getUserName(); handle2.isVisible = true
         status.viewport = p.getStatusImage(); status.isVisible = true

@@ -1,21 +1,17 @@
 package application.stream
 
 import application.ApplicationStyle
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
+import application.debug.DebugStyle
+import javafx.application.Platform
+import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
+import javafx.scene.control.Label
 import javafx.scene.layout.StackPane
+import memscan.GearNetShifter.Shift.*
 import session.Session
-import session.Session.Companion.LOADING_MODE
-import session.Session.Companion.LOBBY_MODE
-import session.Session.Companion.MATCH_MODE
-import session.Session.Companion.OFFLINE_MODE
-import session.Session.Companion.SLASH_MODE
-import session.Session.Companion.VICTORY_MODE
-import tornadofx.Fragment
-import tornadofx.addClass
-import tornadofx.imageview
-import tornadofx.stackpane
+import tornadofx.*
 import utils.getRes
 
 class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
@@ -27,40 +23,51 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var lobbyView: LobbyView
     private lateinit var inMatchView: InMatchView
     private lateinit var viewersView: ViewersView
+    private lateinit var gearNetLogs: Label
 
     override fun updateAnimation() {
         viewersView.updateAnimation()
     }
 
-    override fun applyData() {
+    override fun applyData() = Platform.runLater {
         when (s.getMode()) {
-            OFFLINE_MODE -> {
+            GEAR_OFFLINE -> {
                 lobbyView.setVisibility(showHud)
                 inMatchView.setVisibility(!showHud)
             }
-            VICTORY_MODE -> {
+            GEAR_VICTORY -> {
                 lobbyView.setVisibility(true)
                 inMatchView.setVisibility(false)
                 showHud = true
             }
-            LOBBY_MODE -> {
+            GEAR_LOBBY -> {
                 lobbyView.setVisibility(true)
                 inMatchView.setVisibility(false)
                 showHud = true
             }
-            LOADING_MODE -> {
+            GEAR_LOADING -> {
                 lobbyView.setVisibility(false)
                 inMatchView.setVisibility(false)
                 showHud = true
             }
-            MATCH_MODE -> {
+            GEAR_MATCH -> {
                 lobbyView.setVisibility(false)
                 inMatchView.setVisibility(true)
                 showHud = false
             }
-            SLASH_MODE -> {
+            GEAR_SLASH -> {
                 lobbyView.setVisibility(false)
                 inMatchView.setVisibility(false)
+                showHud = false
+            }
+            GEAR_TRAINER -> {
+                lobbyView.setVisibility(false)
+                inMatchView.setVisibility(true)
+                showHud = false
+            }
+            GEAR_DRAWN -> {
+                lobbyView.setVisibility(false)
+                inMatchView.setVisibility(true)
                 showHud = false
             }
         }
@@ -68,6 +75,7 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
         inMatchView.applyData()
         lobbyView.applyData()
         viewersView.applyData()
+        gearNetLogs.text = s.gn.getUpdateString()
     }
 
     init {
@@ -83,6 +91,13 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     fitWidth = 448.0
                     fitHeight = 128.0
                     translateY -= 488
+                }
+
+                gearNetLogs = label("GearNet.UpdateLogs") {
+                    addClass(DebugStyle.tempListYellow)
+                    alignment = Pos.TOP_LEFT
+                    translateX += 64
+                    translateY += 160
                 }
             }
         }

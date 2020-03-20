@@ -1,6 +1,8 @@
 package memscan
 
 import MyApp.Companion.VERSION
+import memscan.GearNetShifter.Shift
+import memscan.GearNetShifter.Shift.*
 
 class GearNetUpdates {
 
@@ -31,15 +33,16 @@ class GearNetUpdates {
     /**
      *
      */
-    fun getUpdatesAsString(gearShift: Int): String {
+    fun getUpdatesAsString(gearShift: Shift): String {
         val sb = StringBuilder("ＧｅａｒＮｅｔ   //   $VERSION   ")
         sb.append(when(gearShift) {
-            GearNet.GEAR_LOBBY -> "$IC_GEAR LOBBY"
-            GearNet.GEAR_MATCH -> "$IC_GEAR MATCH"
-            GearNet.GEAR_SLASH -> "$IC_GEAR SLASH"
-            GearNet.GEAR_VICTORY -> "$IC_GEAR VICTORY"
-            GearNet.GEAR_LOADING -> "$IC_GEAR LOADING"
-            GearNet.GEAR_TRAINER -> "$IC_GEAR TRAINER"
+            GEAR_LOADING -> "$IC_GEAR LOADING"
+            GEAR_LOBBY -> "$IC_GEAR LOBBY"
+            GEAR_MATCH -> "$IC_GEAR MATCH"
+            GEAR_SLASH -> "$IC_GEAR SLASH"
+            GEAR_DRAWN -> "$IC_GEAR DRAWN"
+            GEAR_VICTORY -> "$IC_GEAR VICTORY"
+            GEAR_TRAINER -> "$IC_GEAR TRAINER"
             else -> "$IC_GEAR OFFLINE"
         })
         sb.append("\n")//⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n")

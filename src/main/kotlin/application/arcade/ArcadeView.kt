@@ -1,4 +1,4 @@
-package application.debug
+package application.arcade
 
 import javafx.application.Platform
 

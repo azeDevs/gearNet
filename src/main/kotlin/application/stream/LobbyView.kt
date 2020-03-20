@@ -1,11 +1,10 @@
 package application.stream
 
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Player
 import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
@@ -54,14 +53,14 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 //                bountiesGui[i].setVisibility(true)
 //            }
 //        }
-        val viewerTeamC = s.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
-
-        for (i in 0..15) {
-            if (viewerTeamC.size > i) {
-                viewersGuiC[i].applyData(viewerTeamC[i])
-                viewersGuiC[i].setVisibility(true)
-            } else viewersGuiC[i].applyData(Player())
-        }
+//        val viewerTeamC = s.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+//
+//        for (i in 0..15) {
+//            if (viewerTeamC.size > i) {
+//                viewersGuiC[i].applyData(viewerTeamC[i])
+//                viewersGuiC[i].setVisibility(true)
+//            } else viewersGuiC[i].applyData(Player())
+//        }
     }
 
 }

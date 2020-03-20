@@ -14,7 +14,6 @@ import tornadofx.observableMapOf
 import twitch.TwitchHandler
 import twitch.WatcherData
 import utils.Duo
-import utils.getIdString
 import utils.getRandomName
 import kotlin.math.max
 import kotlin.random.Random
@@ -31,11 +30,10 @@ class Session : Controller() {
         const val LOADING_MODE = 4
     }
 
-    val gearNet = GearNet()
-    fun startGearNet() = gearNet.startLoop()
+    val gn = GearNet()
+    fun startGearNet() = gn.start()
 
     private var sessionMode: Int = OFFLINE_MODE
-    private var clientId: Long = -1
     private val xrdApi: XrdApi = if (SIMULATION_MODE) MemRandomizer() else MemHandler()
     private val matchHandler = MatchHandler(this)
     private val twitchHandler = TwitchHandler(this)
@@ -44,24 +42,8 @@ class Session : Controller() {
     fun getTwitchHandler() = twitchHandler
     fun isXrdApiConnected() = xrdApi.isConnected()
 
-    fun getClientId() = clientId
-    fun defineClientId() {
-        val playerData = xrdApi.getFighterData().filter { it.steamId != 0L }
-        if (clientId == -1L && playerData.isNotEmpty()) {
-            clientId = xrdApi.getClientSteamId()
-            println("Client defined ${getIdString(clientId)}")
-            setMode(LOBBY_MODE)
-        }
-    }
-
     fun getPlayersMap() = players
-    fun getPlayers() = players.values
-    fun getFighters() = getPlayers().filter { !it.isWatcher() }
-    fun getWatchers() = getPlayers().filter { it.isWatcher() }
-    fun getTeamRed() = getPlayers().filter { it.isTeam(PLAYER_1) }
-    fun getTeamBlue() = getPlayers().filter { it.isTeam(PLAYER_2) }
 
-    fun getFightersInLobby() = xrdApi.getFighterData().filter { it.steamId != 0L }
     fun getFightersLoading() = xrdApi.getFighterData().filter { it.loadPercent in 1..99 }
     fun getMatchData() = xrdApi.getMatchData()
     fun getClientMatch() = matchHandler.clientMatch
@@ -102,11 +84,10 @@ class Session : Controller() {
         }
     }
 
-    fun getClientFighter(): Player = getPlayersMap().values.firstOrNull { it.getPlayerId() == getClientId() } ?: Player()
     fun getStagedFighers(): Duo<Player> {
-        val stagingCabinet = if(getClientFighter().isOnCabinet()) getClientFighter().getCabinet() else 0
+        val stagingCabinet = gn.getClientCabinet()
         val f1 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
-        val f2 = getPlayersMap().values.firstOrNull { it.getPlaySide() == PLAYER_2 && it.getCabinet() == stagingCabinet } ?: Player()
+        val f2 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
         return Duo(f1, f2)
     }
 
@@ -123,26 +104,25 @@ class Session : Controller() {
         var somethingChanged = false
 
         // Define the GearNet client player
-        defineClientId()
-        getFightersInLobby().forEach { data ->
-
-            // Add player if they aren't already stored
-            if (!getPlayersMap().containsKey(data.steamId)) {
-                getPlayersMap()[data.steamId] = Player(data)
-                somethingChanged = true
-                println("Fighter ❝${data.userName}❞ added to Players (${getIdString(data.steamId)})")
-            }
-
-            // The present is now the past, and the future is now the present
-            val player = getPlayersMap()[data.steamId] ?: Player()
-            if (!player.getFighterData().equals(data)) somethingChanged = true
-            player.updateFighterData(data, getActivePlayerCount())
-            if (player.isStaged()) player.updateMatchData(getClientMatch().getData())
-
-            // Resolve if a game occured and what the reward will be
-            if (getMatchHandler().resolveEveryone(getPlayersMap(), data)) somethingChanged = true
-
-        }
+//        getFightersInLobby().forEach { data ->
+//
+//            // Add player if they aren't already stored
+//            if (!getPlayersMap().containsKey(data.steamId)) {
+//                getPlayersMap()[data.steamId] = Player(data)
+//                somethingChanged = true
+//                println("Fighter ❝${data.userName}❞ added to Players (${getIdString(data.steamId)})")
+//            }
+//
+//            // The present is now the past, and the future is now the present
+//            val player = getPlayersMap()[data.steamId] ?: Player()
+//            if (!player.getPlayerData().equals(data)) somethingChanged = true
+//            player.updateFighterData(data, getActivePlayerCount())
+//            if (player.isStaged()) player.updateMatchData(getClientMatch().getData())
+//
+//            // Resolve if a game occured and what the reward will be
+//            if (getMatchHandler().resolveEveryone(getPlayersMap(), data)) somethingChanged = true
+//
+//        }
 
         // New match underway?
         val lobbyMatchPlayers = Duo(FighterData(), FighterData())
@@ -169,31 +149,31 @@ class Session : Controller() {
             }
 
             // Client Match stuff --------
-            if (data.cabinetId == getClient().getCabinet().toByte()
+            if (data.cabinetId.toInt() == gn.getClientCabinet()
                 && data.seatingId.toInt() == 0) clientMatchPlayers.p1 =
                 data else clientMatchPlayers.p1 = FighterData()
-            if (data.cabinetId == getClient().getCabinet().toByte()
+            if (data.cabinetId.toInt() == gn.getClientCabinet()
                 && data.seatingId.toInt() == 1) clientMatchPlayers.p2 =
                 data else clientMatchPlayers.p2 = FighterData()
 
-            if (isMode(MATCH_MODE)
-                && clientMatchPlayers.p1.steamId == -1L
-                && clientMatchPlayers.p2.steamId == -1L) {
-                getPlayersMap().values.forEach {
-                    if (it.getCabinet() == getClient().getCabinet()
-                        && it.getPlaySide() == PLAYER_1)
-                        clientMatchPlayers.p1 = it.getFighterData()
-                    if (it.getCabinet() == getClient().getCabinet()
-                        && it.getPlaySide() == PLAYER_2)
-                        clientMatchPlayers.p2 = it.getFighterData()
-                }
-            }
+//            if (isMode(MATCH_MODE)
+//                && clientMatchPlayers.p1.steamId == -1L
+//                && clientMatchPlayers.p2.steamId == -1L) {
+//                getPlayersMap().values.forEach {
+//                    if (it.getCabinet() == gn.getClientCabinet()
+//                        && it.getPlaySide() == PLAYER_1)
+//                        clientMatchPlayers.p1 = it.getPlayerData()
+//                    if (it.getCabinet() == gn.getClientCabinet()
+//                        && it.getPlaySide() == PLAYER_2)
+//                        clientMatchPlayers.p2 = it.getPlayerData()
+//                }
+//            }
             // Set sessionMode to LOADING_MODE?
             if (!getClientMatch().isValid() && getStagedFighers().p1.isValid() && getStagedFighers().p2.isValid()) {
                 getMatchHandler().clientMatch =
                     Match(
                         getMatchHandler().archiveMatches.size.toLong(),
-                        getClient().getCabinet().toByte(),
+                        gn.getClientCabinet().toByte(),
                         clientMatchPlayers
                     )
                 println("Client Match created for ❝${lobbyMatchPlayers.p1.userName}❞ vs ❝${lobbyMatchPlayers.p2.userName}❞")
@@ -221,7 +201,7 @@ class Session : Controller() {
 
 
     fun isMode(vararg mode: Int) = mode.any { it == sessionMode }
-    fun getMode() = sessionMode
+    fun getMode() = gn.getShift()
     fun setMode(mode: Int) {
         sessionMode = mode
         when (mode) {
@@ -238,9 +218,6 @@ class Session : Controller() {
         .sortedByDescending { item -> item.getStatusFloat() }
         .sortedByDescending { item -> item.getScoreTotal() }
         .sortedByDescending { item -> if (!item.isAbsent()) 1 else 0 }
-
-
-    private fun getClient(): Player = if (getPlayersMap().isEmpty()) Player() else getPlayersMap().values.first { it.getPlayerId() == getClientId() }
 
 }
 

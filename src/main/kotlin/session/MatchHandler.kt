@@ -30,8 +30,8 @@ class MatchHandler(val s: Session) {
         val loserPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamId && it.isLoser() } ?: Player()
         val winnerPlayer = players.values.firstOrNull { it.getPlayerId() == data.steamId && it.isWinner() } ?: Player()
 
-        if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getFighterData()
-        if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getFighterData()
+//        if (loserPlayer.getPlayerId() != -1L) loser = loserPlayer.getPlayerData()
+//        if (winnerPlayer.getPlayerId() != -1L) winner = winnerPlayer.getPlayerData()
 
         if (loser.steamId != -1L && winner.steamId != -1L) {
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")

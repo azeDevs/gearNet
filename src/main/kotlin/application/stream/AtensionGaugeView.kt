@@ -1,6 +1,6 @@
 package application.stream
 
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -16,7 +16,8 @@ import session.Session
 import tornadofx.*
 import utils.getRes
 
-class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment(), ArcadeView {
+class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : Fragment(),
+    ArcadeView {
 
     private var animationFrame: Int = -1
 

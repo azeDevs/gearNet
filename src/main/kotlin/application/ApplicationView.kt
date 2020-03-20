@@ -1,7 +1,7 @@
 package application
 
 import MyApp.Companion.GEARNET_ENABLED
-import application.debug.ArcadeView
+import application.arcade.ArcadeView
 import application.debug.DebugViewLayout
 import application.stream.StreamViewLayout
 import javafx.scene.layout.StackPane
@@ -22,23 +22,15 @@ class ApplicationView : View() {
         stackpane {
             viewLayout = if(GEARNET_ENABLED) DebugViewLayout(parent) else StreamViewLayout(parent)
             cycleGameLoop()
-            cycleAnimationLoop()
         }
     }
 
     fun cycleGameLoop() {
         GlobalScope.launch {
-            delay(4)
-            viewLayout.applyData()
-            cycleGameLoop()
-        }
-    }
-
-    fun cycleAnimationLoop() {
-        GlobalScope.launch {
             delay(48)
+            viewLayout.applyData()
             viewLayout.updateAnimation()
-            cycleAnimationLoop()
+            cycleGameLoop()
         }
     }
 
