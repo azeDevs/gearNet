@@ -1,10 +1,10 @@
 import application.ApplicationStyle
 import application.ApplicationView
+import application.arcade.Arcadia
 import application.debug.DebugStyle
 import application.stream.InMatchStyle
 import application.stream.ScoreStyle
 import javafx.stage.Stage
-import session.Session
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
@@ -15,10 +15,10 @@ fun main(args: Array<String>) {
 
 class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class, DebugStyle::class) {
 
-    private val session: Session by inject()
+    private val arcadia: Arcadia by inject()
 
     companion object {
-        const val GEARNET_ENABLED = false
+        const val GEARNET_ENABLED = true
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
         const val TWITCH_CHAT_BOT = false
@@ -50,7 +50,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
         super.start(stage)
         stage.toBack()
         stage.apply { }
-        session.startGearNet()
+        arcadia.startArcadia()
     }
 
 }

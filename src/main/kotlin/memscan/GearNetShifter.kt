@@ -24,7 +24,7 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates, private val gn: Gear
         val oldShift = gearShift
 
         // Shift GEAR_OFFLINE
-        if (!gn.getClientFighter().isValid()) shift(GEAR_OFFLINE)
+        if (!gn.getClientPlayer().isValid()) shift(GEAR_OFFLINE)
         else {
             val clientMatchLoading = gn.getFrame().matchupData.firstOrNull { !it.isValid()
                     && it.isOnCabinet(gn.getClientCabinet())

@@ -42,8 +42,8 @@ class GearNet {
     fun getFrame() = frameData.lastFrame()
     fun getUpdateString() = gnUpdates.getUpdatesAsString(gearShift.getShift())
     fun getClientMatchup(): MatchupData = getFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
-    fun getClientCabinet() = getClientFighter().cabinetId.toInt()
-    fun getClientFighter(): PlayerData = getFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
+    fun getClientCabinet() = getClientPlayer().cabinetId.toInt()
+    fun getClientPlayer(): PlayerData = getFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
 
 
     /**

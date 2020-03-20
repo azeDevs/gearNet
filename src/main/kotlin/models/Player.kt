@@ -301,7 +301,7 @@ class Player(
     fun getRounds():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.rounds else getMatchupData().player2.rounds
     fun getHealth():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.health else getMatchupData().player2.health
     fun getStunProgress():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.stunCurrent else getMatchupData().player2.stunCurrent
-    fun getMaxStun():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.stunMaximum else getMatchupData().player2.stunMaximum
+    fun getStunMaximum():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.stunMaximum else getMatchupData().player2.stunMaximum
     fun getTension():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.tension else getMatchupData().player2.tension
     fun getRisc():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.guardGauge else getMatchupData().player2.guardGauge
     fun getBurst():Boolean = if(getPlaySide() == PLAYER_1) getMatchupData().player1.burst else getMatchupData().player2.burst
@@ -309,7 +309,7 @@ class Player(
 
     fun getRoundsString():String = "Rounds: ${getRounds()} / 2"
     fun getHealthString():String = "Health: ${getHealth()} / 420 ${if(isBeingDamaged()) "!" else ""}"
-    fun getStunString():String = "Stun: ${getStunProgress()} / ${getMaxStun()}"
+    fun getStunString():String = "Stun: ${getStunProgress()} / ${getStunMaximum()}"
     fun getTensionString():String = "Tension: ${getTension()} / 10000"
     fun getRiscString():String = "RISC: ${getRisc()} / 12800"
     fun getBurstString():String = "Burst: ${if(getBurst()) "O" else "X"}"

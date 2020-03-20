@@ -1,5 +1,6 @@
 package application.stream
 
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -13,7 +14,6 @@ import javafx.scene.paint.Stop
 import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
-import session.Session
 import tornadofx.*
 import utils.getRes
 import utils.isWithin
@@ -21,7 +21,7 @@ import utils.truncate
 
 class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, private val teamColor:Int) : Fragment() {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private val scaleFactor: Float = 0.8f
     private var container: StackPane
     private lateinit var teamBackground: ImageView

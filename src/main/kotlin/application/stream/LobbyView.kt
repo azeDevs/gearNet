@@ -1,11 +1,11 @@
 package application.stream
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
@@ -13,7 +13,7 @@ import utils.getRes
 
 class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private val container: StackPane
     private val bountiesGui: MutableList<FighterScoreView> = ArrayList()
     private val viewersGuiC: MutableList<ViewerScoreView> = ArrayList()
@@ -48,12 +48,12 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
 //        for (i in 0..7) {
-//            if (s.getPlayersList().size > i) {
+//            if (a.getPlayers().size > i) {
 //                bountiesGui[i].applyData(s, i)
 //                bountiesGui[i].setVisibility(true)
 //            }
 //        }
-//        val viewerTeamC = s.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
+//        val viewerTeamC = a.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
 //
 //        for (i in 0..15) {
 //            if (viewerTeamC.size > i) {

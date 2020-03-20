@@ -1,6 +1,7 @@
 package application.stream
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -9,17 +10,16 @@ import javafx.scene.control.Label
 import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
+import memscan.GearNetShifter.Shift.GEAR_MATCH
 import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
-import session.Session
-import session.Session.Companion.MATCH_MODE
 import tornadofx.*
 import utils.getRes
 
 class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private val container: StackPane
     private lateinit var stunGaugeR: StunGaugeView
     private lateinit var bountyR: Label
@@ -147,21 +147,21 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
     override fun applyData() = Platform.runLater {
-        val f1 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Player()
-        val f2 = s.getPlayersList().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Player()
-        if (f1.getPlayerId() > 0L) {
-            bountyR.text = f1.getScoreTotalString()
-            if (s.isMode(MATCH_MODE)) {
-                if (s.getClientMatch().getHealth(0) > 0) healthR.text = s.getClientMatch().getHealth(0).toString()
+        val p1 = a.getPlayers().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Player()
+        val p2 = a.getPlayers().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Player()
+        if (p1.getPlayerId() > 0L) {
+            bountyR.text = p1.getScoreTotalString()
+            if (a.isShift(GEAR_MATCH)) {
+                if (a.getPlayersStaged().p1.getHealth() > 0) healthR.text = a.getPlayersStaged().p1.getHealth().toString()
                 else healthR.text = ""
                 stunGaugeR.setVisibility(true)
                 stunGaugeR.applyData() //stunGaugeR.applyData(s.getClientMatch().getData())
             } else stunGaugeR.setVisibility(false)
-            statusR.viewport = Rectangle2D(f1.getStatusImage().minX, f1.getStatusImage().minY, f1.getStatusImage().width, f1.getStatusImage().height)
+            statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
             statusR.isVisible = true
-            ratingR.viewport = f1.getRatingImage(PLAYER_1)
-            ratingR.isVisible = f1.getRating() > 0
-            spiritR.isVisible = f1.getRating() > 0
+            ratingR.viewport = p1.getRatingImage(PLAYER_1)
+            ratingR.isVisible = p1.getRating() > 0
+            spiritR.isVisible = p1.getRating() > 0
         } else {
             bountyR.text = "FREE"
             stunGaugeR.setVisibility(false)
@@ -169,19 +169,19 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
             ratingR.isVisible = false
             spiritR.isVisible = false
         }
-        if (f2.getPlayerId() > 0L) {
-            bountyB.text = f2.getScoreTotalString()
-            if (s.isMode(MATCH_MODE)) {
-                if (s.getClientMatch().getHealth(1) > 0) healthB.text = s.getClientMatch().getHealth(1).toString()
+        if (p2.getPlayerId() > 0L) {
+            bountyB.text = p2.getScoreTotalString()
+            if (a.isShift(GEAR_MATCH)) {
+                if (a.getPlayersStaged().p2.getHealth() > 0) healthR.text = a.getPlayersStaged().p2.getHealth().toString()
                 else healthB.text = ""
                 stunGaugeB.setVisibility(true)
                 stunGaugeB.applyData() //stunGaugeB.applyData(s.getClientMatch().getData())
             } else stunGaugeB.setVisibility(false)
-            statusB.viewport = Rectangle2D(f2.getStatusImage().minX, f2.getStatusImage().minY, f2.getStatusImage().width, f2.getStatusImage().height)
+            statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
             statusB.isVisible = true
-            ratingB.viewport = f2.getRatingImage(PLAYER_2)
-            ratingB.isVisible = f2.getRating() > 0
-            spiritB.isVisible = f2.getRating() > 0
+            ratingB.viewport = p2.getRatingImage(PLAYER_2)
+            ratingB.isVisible = p2.getRating() > 0
+            spiritB.isVisible = p2.getRating() > 0
         } else {
             bountyB.text = "FREE"
             stunGaugeB.setVisibility(false)

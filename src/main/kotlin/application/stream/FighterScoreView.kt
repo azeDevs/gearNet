@@ -1,6 +1,7 @@
 package application.stream
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
@@ -13,7 +14,6 @@ import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import models.Player
 import session.Character.getCharacterTrademark
-import session.Session
 import tornadofx.*
 import utils.addCommas
 import utils.getRandomName
@@ -23,7 +23,7 @@ import kotlin.random.Random
 class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment(),
     ArcadeView {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private var wholeThing: StackPane
     private lateinit var character: ImageView
     private lateinit var spirit: ImageView

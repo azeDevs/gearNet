@@ -1,11 +1,11 @@
 package application.stream
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.image.ImageView
-import session.Session
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
@@ -13,7 +13,7 @@ import utils.getRes
 
 class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private lateinit var atensionWheel: ImageView
     private lateinit var atensionGaugeR: AtensionGaugeView
     private lateinit var atensionGaugeB: AtensionGaugeView

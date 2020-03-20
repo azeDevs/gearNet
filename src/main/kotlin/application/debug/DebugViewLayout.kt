@@ -1,20 +1,22 @@
 package application.debug
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
-import session.Session
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import tornadofx.*
 
 class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
+    private val a: Arcadia by inject()
     private var container: StackPane
-    private val s: Session by inject()
-
+    private lateinit var gearNetLogs: Label
     private lateinit var modeLabel: Label
     private lateinit var timeLabel: Label
     private lateinit var apiConnections: Label
@@ -30,7 +32,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var watchersList: Label
     private lateinit var fightersList: Label
 
-    private lateinit var gearNetLogs: Label
+
 
     init {
         with(root) {
@@ -185,79 +187,66 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
 
-        gearNetLogs.text = s.gn.getUpdateString()
+        gearNetLogs.text = a.getGNLogsString()
+        modeLabel.text = a.getShift().name
+        timeLabel.isVisible = a.getClientMatch().isValid()
+        timeLabel.text = "TIMER\n${a.getClientMatch().timer}"
 
-        modeLabel.text = s.getMode().name
+        apiConnections.text = "GuiltyGear ${if(a.isXrdApiConnected()) "OK" else "NA"} / RoboTwitch ${if (a.isRoboApiConnected()) "OK" else "NA"}"
+        clientFighter.text = "Host Client: ${a.getClientPlayer().getUserName()}"
 
-        timeLabel.isVisible = s.getClientMatch().isValid()
-        timeLabel.text = "TIMER\n${s.getClientMatch().getTimer()}"
+        fighterRidentification.text = a.getPlayersStaged().p1.getDebugDataString(2)
+        fighterBidentification.text = a.getPlayersStaged().p2.getDebugDataString(2)
 
-        apiConnections.text = "GuiltyGear ${if(s.isXrdApiConnected()) "OK" else "NA"} / RoboTwitch ${if (s.getTwitchHandler().isConnected()) "OK" else "NA"}"
-        clientFighter.text = "Host Client: ${s.gn.getClientFighter().userName}"
+        fighterRstats.isVisible = a.getPlayersStaged().p1.isValid()
+        fighterRstats.text = "Record: ${a.getPlayersStaged().p1.getRecordString()}" +
+                "\nBystanding: ${a.getPlayersStaged().p1.getBystandingString()}" +
+                "\nRating: ${a.getPlayersStaged().p1.getRatingString()}" +
+                "\nS: ${a.getPlayersStaged().p1.getScoreTotalString()}${if(a.getPlayersStaged().p2.getScoreDelta()!=0) " (${a.getPlayersStaged().p2.getScoreDeltaString()})" else ""}" +
+                "\nA: ${a.getPlayersStaged().p1.getAtension()} / R: ${a.getPlayersStaged().p1.getRespect()} / M: ${a.getPlayersStaged().p1.getMunity()}"
 
-        fighterRidentification.isVisible = false
-        fighterBidentification.isVisible = false
-        fighterRstats.isVisible = false
-        fighterBstats.isVisible = false
-        matchRstats.isVisible = false
-        matchBstats.isVisible = false
-        fightersList.isVisible = false
-        watchersList.isVisible = false
-        teamRPlayers.isVisible = false
-        teamBPlayers.isVisible = false
+        fighterBstats.isVisible = a.getPlayersStaged().p2.isValid()
+        fighterBstats.text = "Record: ${a.getPlayersStaged().p2.getRecordString()}" +
+                "\nBystanding: ${a.getPlayersStaged().p2.getBystandingString()}" +
+                "\nRating: ${a.getPlayersStaged().p2.getRatingString()}" +
+                "\nS: ${a.getPlayersStaged().p2.getScoreTotalString()}${if(a.getPlayersStaged().p2.getScoreDelta()!=0) " (${a.getPlayersStaged().p2.getScoreDeltaString()})" else ""}" +
+                "\nA: ${a.getPlayersStaged().p2.getAtension()} / R: ${a.getPlayersStaged().p2.getRespect()} / M: ${a.getPlayersStaged().p2.getMunity()}"
 
-//        fighterRidentification.text = s.getStagedFighers().p1.getDebugDataString(2)
-//        fighterBidentification.text = s.getStagedFighers().p2.getDebugDataString(2)
-//
-//        fighterRstats.isVisible = s.getStagedFighers().p1.isValid()
-//        fighterRstats.text = "Record: ${s.getStagedFighers().p1.getRecordString()}" +
-//                "\nBystanding: ${s.getStagedFighers().p1.getBystandingString()}" +
-//                "\nRating: ${s.getStagedFighers().p1.getRatingString()}" +
-//                "\nS: ${s.getStagedFighers().p1.getScoreTotalString()}${if(s.getStagedFighers().p2.getScoreDelta()!=0) " (${s.getStagedFighers().p2.getScoreDeltaString()})" else ""}" +
-//                "\nA: ${s.getStagedFighers().p1.getAtension()} / R: ${s.getStagedFighers().p1.getRespect()} / M: ${s.getStagedFighers().p1.getMunity()}"
-//
-//        fighterBstats.isVisible = s.getStagedFighers().p2.isValid()
-//        fighterBstats.text = "Record: ${s.getStagedFighers().p2.getRecordString()}" +
-//                "\nBystanding: ${s.getStagedFighers().p2.getBystandingString()}" +
-//                "\nRating: ${s.getStagedFighers().p2.getRatingString()}" +
-//                "\nS: ${s.getStagedFighers().p2.getScoreTotalString()}${if(s.getStagedFighers().p2.getScoreDelta()!=0) " (${s.getStagedFighers().p2.getScoreDeltaString()})" else ""}" +
-//                "\nA: ${s.getStagedFighers().p2.getAtension()} / R: ${s.getStagedFighers().p2.getRespect()} / M: ${s.getStagedFighers().p2.getMunity()}"
-//
-//        matchRstats.isVisible = s.getStagedFighers().p1.isValid() && s.getClientMatch().isValid()
-//        matchRstats.text = "Won ${s.getStagedFighers().p1.getRoundsString()}" +
-//                "\n${s.getStagedFighers().p1.getHealthString()}" +
-//                "\n${s.getStagedFighers().p1.getStunString()}" +
-//                "\n${s.getStagedFighers().p1.getTensionString()}" +
-//                "\n${s.getStagedFighers().p1.getRiscString()}" +
-//                "\n${s.getStagedFighers().p1.getBurstString()}" +
-//                "\n${s.getStagedFighers().p1.getStrikeStunString()}"
-//
-//        matchBstats.isVisible = s.getStagedFighers().p2.isValid() && s.getClientMatch().isValid()
-//        matchBstats.text = "Won ${s.getStagedFighers().p2.getRoundsString()}" +
-//                "\n${s.getStagedFighers().p2.getHealthString()}" +
-//                "\n${s.getStagedFighers().p2.getStunString()}" +
-//                "\n${s.getStagedFighers().p2.getTensionString()}" +
-//                "\n${s.getStagedFighers().p2.getRiscString()}" +
-//                "\n${s.getStagedFighers().p2.getBurstString()}" +
-//                "\n${s.getStagedFighers().p2.getStrikeStunString()}"
-//
-//        val fighterNamesText = StringBuilder("FIGHTERS:")
-//        s.getFighters().forEach { fighterNamesText.append("\n${it.getDebugDataString(2)} ${it.getAtensionString()}") }
-//        fightersList.text = fighterNamesText.toString()
-//
-//        val watcherNamesText = StringBuilder("WATCHERS:")
-//        s.getWatchers().forEach { watcherNamesText.append("\n${it.getDebugDataString(0)} ${it.getAtensionString()}") }
-//        watchersList.text = watcherNamesText.toString()
-//
-//        teamRPlayers.isVisible = s.getTeamRed().isNotEmpty()
-//        val teamRText = StringBuilder("REDS:")
-//        s.getTeamRed().forEach { teamRText.append("\n${if(it.isWatcher()) "W:" else "F:"} ${it.getDebugDataString(0)} ${it.getAtensionString()}") }
-//        teamRPlayers.text = teamRText.toString()
-//
-//        teamBPlayers.isVisible = s.getTeamBlue().isNotEmpty()
-//        val teamBText = StringBuilder("BLUES:")
-//        s.getTeamBlue().forEach { teamBText.append("\n${if(it.isWatcher()) "W:" else "F:"} ${it.getDebugDataString(0)} ${it.getAtensionString()}") }
-//        teamBPlayers.text = teamBText.toString()
+        matchRstats.isVisible = a.getPlayersStaged().p1.isValid() && a.getClientMatch().isValid()
+        matchRstats.text = "Won ${a.getPlayersStaged().p1.getRoundsString()}" +
+                "\n${a.getPlayersStaged().p1.getHealthString()}" +
+                "\n${a.getPlayersStaged().p1.getStunString()}" +
+                "\n${a.getPlayersStaged().p1.getTensionString()}" +
+                "\n${a.getPlayersStaged().p1.getRiscString()}" +
+                "\n${a.getPlayersStaged().p1.getBurstString()}" +
+                "\n${a.getPlayersStaged().p1.getStrikeStunString()}"
+
+        matchBstats.isVisible = a.getPlayersStaged().p2.isValid() && a.getClientMatch().isValid()
+        matchBstats.text = "Won ${a.getPlayersStaged().p2.getRoundsString()}" +
+                "\n${a.getPlayersStaged().p2.getHealthString()}" +
+                "\n${a.getPlayersStaged().p2.getStunString()}" +
+                "\n${a.getPlayersStaged().p2.getTensionString()}" +
+                "\n${a.getPlayersStaged().p2.getRiscString()}" +
+                "\n${a.getPlayersStaged().p2.getBurstString()}" +
+                "\n${a.getPlayersStaged().p2.getStrikeStunString()}"
+
+        val fighterNamesText = StringBuilder("FIGHTERS:")
+        a.getFighters().forEach { fighterNamesText.append("\n${it.getDebugDataString(2)} ${it.getAtensionString()}") }
+        fightersList.text = fighterNamesText.toString()
+
+        val watcherNamesText = StringBuilder("WATCHERS:")
+        a.getWatchers().forEach { watcherNamesText.append("\n${it.getDebugDataString(0)} ${it.getAtensionString()}") }
+        watchersList.text = watcherNamesText.toString()
+
+        teamRPlayers.isVisible = a.getTeam(PLAYER_1).isNotEmpty()
+        val teamRText = StringBuilder("REDS:")
+        a.getTeam(PLAYER_1).forEach { teamRText.append("\n${if(it.isWatcher()) "W:" else "F:"} ${it.getDebugDataString(0)} ${it.getAtensionString()}") }
+        teamRPlayers.text = teamRText.toString()
+
+        teamBPlayers.isVisible = a.getTeam(PLAYER_2).isNotEmpty()
+        val teamBText = StringBuilder("BLUES:")
+        a.getTeam(PLAYER_2).forEach { teamBText.append("\n${if(it.isWatcher()) "W:" else "F:"} ${it.getDebugDataString(0)} ${it.getAtensionString()}") }
+        teamBPlayers.text = teamBText.toString()
 
     }
 

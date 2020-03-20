@@ -1,6 +1,7 @@
 package application.stream
 
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
@@ -12,7 +13,6 @@ import javafx.scene.shape.Rectangle
 import models.Player.Companion.MAX_ATENSION
 import models.Player.Companion.MAX_MUNITY
 import models.Player.Companion.MAX_RESPECT
-import session.Session
 import tornadofx.*
 import utils.getRes
 
@@ -21,7 +21,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
 
     private var animationFrame: Int = -1
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private var container: StackPane
     private lateinit var flintHammer: ImageView
     private lateinit var munityProgress: Rectangle
@@ -178,12 +178,12 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     }
 
     override fun applyData() = Platform.runLater {
-        val f = s.getStagedFighers().p(teamColor)
+        val f = a.getPlayersStaged().p(teamColor)
 
         if (!f.isValid()) bannerHandle.text = "-" else {
             container.isVisible = true
 
-            if (s.getClientMatch().getStrikeStun(teamColor)) bannerHandle.text = "X"
+            if (a.getPlayersStaged().p(teamColor).getStrikeStun()) bannerHandle.text = "X"
             else bannerHandle.text = f.getUserName()
 
             munityProgress.width = getPercentage(MAX_MUNITY-f.getMunity(), MAX_MUNITY, munityMaxWidth)

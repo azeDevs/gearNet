@@ -2,6 +2,7 @@ package application.stream
 
 import application.ApplicationStyle
 import application.arcade.ArcadeView
+import application.arcade.Arcadia
 import application.debug.DebugStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
@@ -10,13 +11,12 @@ import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.layout.StackPane
 import memscan.GearNetShifter.Shift.*
-import session.Session
 import tornadofx.*
 import utils.getRes
 
 class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
-    private val s: Session by inject()
+    private val a: Arcadia by inject()
     private var showHud = true
     var streamView: StackPane
 
@@ -30,7 +30,7 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData() = Platform.runLater {
-        when (s.getMode()) {
+        when (a.getShift()) {
             GEAR_OFFLINE -> {
                 lobbyView.setVisibility(showHud)
                 inMatchView.setVisibility(!showHud)
@@ -75,7 +75,7 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
         inMatchView.applyData()
         lobbyView.applyData()
         viewersView.applyData()
-        gearNetLogs.text = s.gn.getUpdateString()
+        gearNetLogs.text = a.getGNLogsString()
     }
 
     init {
