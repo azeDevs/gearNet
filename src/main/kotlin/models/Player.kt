@@ -28,7 +28,7 @@ class Player(
         if (isLoading()) setBystanding(playersActive)
         setMatchesWon(updatedData.matchesWon)
         setMatchesSum(updatedData.matchesSum)
-        if (isBeingDamaged()) when(getPlaySide()) {
+        if (isBeingDamaged()) when(getTeamSeat()) {
             PLAYER_1 -> println("PLAYER_1 DAMAGED!")
             PLAYER_2 -> println("PLAYER_2 DAMAGED!")
         }
@@ -38,7 +38,7 @@ class Player(
     /**
      *
      */
-    fun isStaged() = isOnPlaySide(PLAYER_1) || isOnPlaySide(PLAYER_2)
+    fun isStaged() = isSeatedAt(PLAYER_1) || isSeatedAt(PLAYER_2)
     fun oldMatchupData() = if (matchupDatas.size>1) matchupDatas[matchupDatas.size-2] else if (matchupDatas.size==1) getMatchupData() else MatchupData()
     fun getMatchupData() = matchupDatas.lastOrNull() ?: MatchupData()
     fun addMatchupData(updatedData: MatchupData) { matchupDatas.add(updatedData) }
@@ -48,8 +48,8 @@ class Player(
         const val PLAYER_2 = 1
         const val PROSPECT = 2
         const val MAX_MUNITY = 16
-        const val MAX_RESPECT = 160
-        const val MAX_ATENSION = 1600
+        const val MAX_RESPECT = 1600
+        const val MAX_ATENSION = 160000
     }
 
 
@@ -85,10 +85,10 @@ class Player(
     /**
      *
      */
-    fun isOnPlaySide(sideId:Int = -1) = if(getPlaySide() in 0..1) getPlayerData().seatingId.toInt() == sideId else getPlaySide() in 0..1
-    fun getPlaySide() = getPlayerData().seatingId.toInt()
-    fun getPlaySideString(): String = if (getCabinet() > 3) "-"
-    else when(getPlaySide()) {
+    fun isSeatedAt(sideId:Int = -1) = getPlayerData().seatingId.toInt() == sideId
+    fun getTeamSeat() = getPlayerData().seatingId.toInt()
+    fun getTeamSeatString(): String = if (getCabinet() > 3) "-"
+    else when(getTeamSeat()) {
         0 -> "R"
         1 -> "B"
         2 -> "P"
@@ -97,7 +97,7 @@ class Player(
         5 -> "5"
         6 -> "6"
         7 -> "S"
-        else -> getPlaySide().toString()
+        else -> getTeamSeat().toString()
     }
     fun isOnCabinet(cabId:Int = -1) = if(isWatcher()) true else if(cabId in 0..3) getCabinet() == cabId else getCabinet() in 0..3
     fun getCabinet() = getPlayerData().cabinetId.toInt()
@@ -241,12 +241,16 @@ class Player(
     /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
      *  Player Atension Stats
      */
-    private var munity = 0
+    private var signal = false
+    private var amunity = 0
     private var respect = 0
     private var atension = 0
 
-    fun getMunity() = this.munity
-    fun setMunity(value:Int) { munity = value }
+    fun getSignal() = signal
+    fun setSignal(flag:Boolean) { signal = flag }
+
+    fun getAmunity() = this.amunity
+    fun setAmunity(value:Int) { amunity = value }
 
     fun getRespect() = this.respect
     fun setRespect(value:Int) { respect = value }
@@ -258,7 +262,7 @@ class Player(
 
     fun getAtensionString() = if(getAtension()!=0) "A:${getAtension()}/" else "" +
             if(getRespect()!=0) "R:${getRespect()}/" else "" +
-            if(getMunity()!=0) "M:${getMunity()}/" else "" +
+            if(getAmunity()!=0) "M:${getAmunity()}/" else "" +
             if(getScoreTotal()!=0) getScoreTotalString() else "" + if(getScoreDelta()!=0)" (${getScoreDeltaString()})" else ""
 
 
@@ -296,24 +300,24 @@ class Player(
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
      */
     fun isInMatch():Boolean = getMatchupData().isValid()
-    fun isBeingDamaged():Boolean = if(getPlaySide() == PLAYER_1) oldMatchupData().player1.health != getMatchupData().player1.health else oldMatchupData().player2.health != getMatchupData().player2.health
+    fun isBeingDamaged():Boolean = if(getTeamSeat() == PLAYER_1) oldMatchupData().player1.health != getMatchupData().player1.health else oldMatchupData().player2.health != getMatchupData().player2.health
 
-    fun getRounds():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.rounds else getMatchupData().player2.rounds
-    fun getHealth():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.health else getMatchupData().player2.health
-    fun getStunProgress():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.stunCurrent else getMatchupData().player2.stunCurrent
-    fun getStunMaximum():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.stunMaximum else getMatchupData().player2.stunMaximum
-    fun getTension():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.tension else getMatchupData().player2.tension
-    fun getRisc():Int = if(getPlaySide() == PLAYER_1) getMatchupData().player1.guardGauge else getMatchupData().player2.guardGauge
-    fun getBurst():Boolean = if(getPlaySide() == PLAYER_1) getMatchupData().player1.burst else getMatchupData().player2.burst
-    fun getStrikeStun():Boolean = if(getPlaySide() == PLAYER_1) getMatchupData().player1.struck else getMatchupData().player2.struck
+    fun getRounds():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.rounds else getMatchupData().player2.rounds
+    fun getHealth():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.health else getMatchupData().player2.health
+    fun getStunProgress():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunCurrent else getMatchupData().player2.stunCurrent
+    fun getStunMaximum():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunMaximum else getMatchupData().player2.stunMaximum
+    fun getTension():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.tension else getMatchupData().player2.tension
+    fun getRisc():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.guardGauge else getMatchupData().player2.guardGauge
+    fun getBurst():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.burst else getMatchupData().player2.burst
+    fun getStrikeStun():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.struck else getMatchupData().player2.struck
 
     fun getRoundsString():String = "Rounds: ${getRounds()} / 2"
     fun getHealthString():String = "Health: ${getHealth()} / 420 ${if(isBeingDamaged()) "!" else ""}"
     fun getStunString():String = "Stun: ${getStunProgress()} / ${getStunMaximum()}"
     fun getTensionString():String = "Tension: ${getTension()} / 10000"
     fun getRiscString():String = "RISC: ${getRisc()} / 12800"
-    fun getBurstString():String = "Burst: ${if(getBurst()) "O" else "X"}"
-    fun getStrikeStunString():String = "Struck: ${if(getStrikeStun()) "O" else "X"}"
+    fun getBurstString():String = "Burst: ${if(getBurst()) "☩" else "-"}"
+    fun getStrikeStunString():String = "Struck: ${if(getStrikeStun()) "☩" else "-"}"
 
     private fun getLoadPercentString() = if(isLoading()) "${getLoadPercent()}%" else if(isInMatch()) "►" else ""
     private fun getLoadPercent() = getPlayerData().loadPercent
@@ -330,10 +334,10 @@ class Player(
     fun getDebugDataString(mask: Int = -1) = when {
         !isValid() -> "-"
         mask == 0 -> getUserName()
-        mask == 1 -> "[${getPlaySideString()}] ${getUserName()} ${getLoadPercentString()}"
-        mask == 2 -> "[${getPlaySideString()}] ${getUserName()} (${getCharacterString()}) ${getLoadPercentString()}"
-        mask == 3 -> "[${getCabinetString()+getPlaySideString()}] ${getUserName()} ${getLoadPercentString()}"
-        mask == 4 -> "[${getCabinetString()+getPlaySideString()}] ${getUserName()} (${getCharacterString()}) ${getLoadPercentString()}"
+        mask == 1 -> "[${getTeamSeatString()}] ${getUserName()} ${getLoadPercentString()}"
+        mask == 2 -> "[${getTeamSeatString()}] ${getUserName()} (${getCharacterString()}) ${getLoadPercentString()}"
+        mask == 3 -> "[${getCabinetString()+getTeamSeatString()}] ${getUserName()} ${getLoadPercentString()}"
+        mask == 4 -> "[${getCabinetString()+getTeamSeatString()}] ${getUserName()} (${getCharacterString()}) ${getLoadPercentString()}"
         else -> "="
     }
 

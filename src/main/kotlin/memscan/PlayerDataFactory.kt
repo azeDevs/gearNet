@@ -3,17 +3,100 @@ import memscan.GearNet.PlayerData
 import memscan.GearNetUpdates.Companion.IC_DATA_CHANGE
 import memscan.GearNetUpdates.Companion.IC_DATA_PLAYER
 import memscan.GearNetUpdates.GNLog
+import models.Player
 import utils.plural
 
-class PlayerDataFactory {
+class PlayerDataFactory() {
+
 
     private var oldData: PlayerData = PlayerData()
     private var newData: PlayerData = PlayerData()
 
-    fun isNewPlayer() = !oldData.isValid()
-    fun setOldData(playerData: PlayerData) { this.oldData = playerData }
-    fun setNewData(playerData: PlayerData) { this.newData = playerData }
 
+    /**
+     *
+     */
+    fun getNewData() = newData
+    fun getOldData() = newData
+    fun isNewPlayer() = !oldData.isValid()
+
+
+    /**
+     *
+     */
+    fun generateNewData(
+        fighterData: FighterData,
+        matchData: MatchData,
+        frameData: GearNetFrameData,
+        opponentData: FighterData,
+        clientCabinet: Int
+    ) {
+        frameData.lastFrame().playerData.forEach { legacyData -> if (legacyData.steamId == fighterData.steamId) this.oldData = legacyData }
+        val seatId = fighterData.seatingId.toInt()
+        val playerData = when {
+            isStagedOnClientCabinet(fighterData, clientCabinet) -> {
+                PlayerData(
+                    fighterData.steamId,
+                    fighterData.userName,
+                    fighterData.characterId,
+                    fighterData.cabinetId,
+                    fighterData.seatingId,
+                    fighterData.matchesWon,
+                    fighterData.matchesSum,
+                    fighterData.loadPercent,
+                    opponentData.steamId,
+                    matchData.health.toList()[seatId],
+                    matchData.rounds.toList()[seatId],
+                    matchData.tension.toList()[seatId],
+                    matchData.stunCurrent.toList()[seatId],
+                    matchData.stunMaximum.toList()[seatId],
+                    matchData.burst.toList()[seatId],
+                    matchData.struck.toList()[seatId],
+                    matchData.guardGauge.toList()[seatId] // TODO: Deltas
+                )
+            }
+            isStagedAnywhere(fighterData) -> {
+                PlayerData(
+                    fighterData.steamId,
+                    fighterData.userName,
+                    fighterData.characterId,
+                    fighterData.cabinetId,
+                    fighterData.seatingId,
+                    fighterData.matchesWon,
+                    fighterData.matchesSum,
+                    fighterData.loadPercent,
+                    opponentData.steamId
+                )
+            }
+            else -> {
+                PlayerData(
+                    fighterData.steamId,
+                    fighterData.userName,
+                    fighterData.characterId,
+                    fighterData.cabinetId,
+                    fighterData.seatingId,
+                    fighterData.matchesWon,
+                    fighterData.matchesSum,
+                    fighterData.loadPercent
+                )
+            }
+        }
+
+        this.newData = playerData
+    }
+
+    private fun isStagedOnClientCabinet(fighterData: FighterData, clientCabinet: Int) =
+        isStagedAnywhere(fighterData) && fighterData.isOnCabinet(
+            clientCabinet
+        )
+
+    private fun isStagedAnywhere(fighterData: FighterData) =
+        fighterData.isSeatedAt(Player.PLAYER_1) || fighterData.isSeatedAt(Player.PLAYER_2)
+
+
+    /**
+     *
+     */
     fun receivedUpdates(): List<GNLog> {
         val ic = "Δ"
         val updates = mutableListOf<GNLog>()
@@ -41,5 +124,6 @@ class PlayerDataFactory {
             totalUpdates
         } else emptyList()
     }
+
 
 }

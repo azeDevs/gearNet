@@ -167,7 +167,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         handle1.text = p.getUserName(); handle1.isVisible = true
         handle2.text = p.getUserName(); handle2.isVisible = true
         status.viewport = p.getStatusImage(); status.isVisible = true
-        rating.viewport = p.getRatingImage(p.getPlaySide()); rating.isVisible = true
+        rating.viewport = p.getRatingImage(p.getTeamSeat()); rating.isVisible = true
         bounty1.text = p.getScoreTotalString()
         bounty2.text = p.getScoreTotalString()
         change.text = p.getScoreDeltaString()
@@ -194,7 +194,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         setChangeTextColor(changeInt)
         change.text = p.getScoreDeltaString(changeInt)
         status.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        rating.viewport = p.getRatingImage(p.getPlaySide())
+        rating.viewport = p.getRatingImage(p.getTeamSeat())
         spirit.isVisible = chainInt > 0
         spirit.fitWidth = 44.0 + ((8+chainInt) * chainInt)
         spirit.fitHeight = 44.0 + ((8+chainInt) * chainInt)

@@ -54,9 +54,10 @@ class RoboHandler(private val a: Arcadia) : BotApi {
         getViewerData().forEach {
             if (it.message.isNotEmpty()) {
                 logChat(it.displayName, it.message)
+
                 // ADD VIEWER IF THEY ARE NEW
                 if (!a.getPlayersMap().containsKey(it.twitchId)) {
-                    a.getPlayersMap().put(it.twitchId, Player(it))
+                    a.getPlayersMap()[it.twitchId] = Player(it)
                     println("${it.displayName} added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE

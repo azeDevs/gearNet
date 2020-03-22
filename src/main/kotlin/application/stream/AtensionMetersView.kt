@@ -6,6 +6,8 @@ import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.image.ImageView
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import tornadofx.Fragment
 import tornadofx.imageview
 import tornadofx.stackpane
@@ -27,8 +29,8 @@ class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
                     fitHeight = 200.0
                     translateY += 444
                 }
-                atensionGaugeR = AtensionGaugeView(parent, 0)
-                atensionGaugeB = AtensionGaugeView(parent, 1)
+                atensionGaugeR = AtensionGaugeView(parent, PLAYER_1)
+                atensionGaugeB = AtensionGaugeView(parent, PLAYER_2)
             }
         }
     }
@@ -39,6 +41,8 @@ class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData() = Platform.runLater {
+        if (a.getPlayersStaged().p1.getSignal()) atensionWheel.rotate -= 3.33
+//        if (a.getPlayersStaged().p2.getBurst()) atensionWheel.rotate -= 2.0
         atensionGaugeR.applyData()
         atensionGaugeB.applyData()
     }

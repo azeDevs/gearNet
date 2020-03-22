@@ -127,15 +127,15 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
                 ratingR = imageview(getRes("atlas.png").toString()) { // RISK RATING RED
                     viewport = Rectangle2D(832.0, 704.0, 256.0, 64.0)
-                    translateX -= 548
-                    translateY -= 313
+                    translateX -= 500
+                    translateY -= 320
                     fitWidth = 256.0
                     fitHeight = 64.0
                 }
                 ratingB = imageview(getRes("atlas.png").toString()) { // RISK RATING BLUE
                     viewport = Rectangle2D(1088.0, 704.0, 256.0, 64.0)
-                    translateX += 548
-                    translateY -= 313
+                    translateX += 500
+                    translateY -= 320
                     fitWidth = 256.0
                     fitHeight = 64.0
                 }
@@ -147,21 +147,21 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
     override fun applyData() = Platform.runLater {
-        val p1 = a.getPlayers().firstOrNull { it.getPlaySide() == PLAYER_1 } ?: Player()
-        val p2 = a.getPlayers().firstOrNull { it.getPlaySide() == PLAYER_2 } ?: Player()
+        val p1 = a.getPlayers().firstOrNull { it.getTeamSeat() == PLAYER_1 } ?: Player()
+        val p2 = a.getPlayers().firstOrNull { it.getTeamSeat() == PLAYER_2 } ?: Player()
         if (p1.getPlayerId() > 0L) {
             bountyR.text = p1.getScoreTotalString()
             if (a.isShift(GEAR_MATCH)) {
                 if (a.getPlayersStaged().p1.getHealth() > 0) healthR.text = a.getPlayersStaged().p1.getHealth().toString()
                 else healthR.text = ""
                 stunGaugeR.setVisibility(true)
-                stunGaugeR.applyData() //stunGaugeR.applyData(s.getClientMatch().getData())
+                stunGaugeR.applyData()
             } else stunGaugeR.setVisibility(false)
             statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
             statusR.isVisible = true
             ratingR.viewport = p1.getRatingImage(PLAYER_1)
-            ratingR.isVisible = p1.getRating() > 0
-            spiritR.isVisible = p1.getRating() > 0
+            ratingR.isVisible = true
+//            spiritR.isVisible = p1.getRating() > 0
         } else {
             bountyR.text = "FREE"
             stunGaugeR.setVisibility(false)
@@ -175,13 +175,13 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                 if (a.getPlayersStaged().p2.getHealth() > 0) healthR.text = a.getPlayersStaged().p2.getHealth().toString()
                 else healthB.text = ""
                 stunGaugeB.setVisibility(true)
-                stunGaugeB.applyData() //stunGaugeB.applyData(s.getClientMatch().getData())
+                stunGaugeB.applyData()
             } else stunGaugeB.setVisibility(false)
             statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
             statusB.isVisible = true
             ratingB.viewport = p2.getRatingImage(PLAYER_2)
-            ratingB.isVisible = p2.getRating() > 0
-            spiritB.isVisible = p2.getRating() > 0
+            ratingB.isVisible = true
+//            spiritB.isVisible = p2.getRating() > 0
         } else {
             bountyB.text = "FREE"
             stunGaugeB.setVisibility(false)

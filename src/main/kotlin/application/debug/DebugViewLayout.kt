@@ -43,7 +43,9 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     addClass(DebugStyle.tempListYellow)
                     alignment = Pos.TOP_LEFT
                     translateX += 64
-                    translateY += 160
+                    translateY += 240
+                    isVisible = false
+
 
                 }
 
@@ -73,7 +75,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     addClass(DebugStyle.tempListGeneric)
                     textAlignment = TextAlignment.CENTER
                     alignment = Pos.CENTER
-                    translateY += 320
+                    translateY += 360
                 }
 
                 fighterRidentification = label("RED STAGE...") {
@@ -116,8 +118,8 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
                 vbox {
                     alignment = Pos.BOTTOM_LEFT
-                    translateY -= 170
-                    translateX += 508
+                    translateY -= 256
+                    translateX += 2
                     matchRstats = label("RED MATCH STATS...") {
                         addClass(DebugStyle.tempListRed)
                         alignment = Pos.BOTTOM_LEFT
@@ -127,8 +129,8 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
                 vbox {
                     alignment = Pos.BOTTOM_RIGHT
-                    translateY -= 170
-                    translateX -= 508
+                    translateY -= 256
+                    translateX -= 2
                     matchBstats = label("BLUE MATCH STATS...") {
                         addClass(DebugStyle.tempListBlue)
                         alignment = Pos.BOTTOM_RIGHT
@@ -187,48 +189,53 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
 
+        val p1 = a.getPlayersStaged().p1
+        val p2 = a.getPlayersStaged().p2
+
         gearNetLogs.text = a.getGNLogsString()
+//        gearNetLogs.isVisible = false
         modeLabel.text = a.getShift().name
         timeLabel.isVisible = a.getClientMatch().isValid()
         timeLabel.text = "TIMER\n${a.getClientMatch().timer}"
 
+
         apiConnections.text = "GuiltyGear ${if(a.isXrdApiConnected()) "OK" else "NA"} / RoboTwitch ${if (a.isRoboApiConnected()) "OK" else "NA"}"
         clientFighter.text = "Host Client: ${a.getClientPlayer().getUserName()}"
 
-        fighterRidentification.text = a.getPlayersStaged().p1.getDebugDataString(2)
-        fighterBidentification.text = a.getPlayersStaged().p2.getDebugDataString(2)
+        fighterRidentification.text = p1.getDebugDataString(2)
+        fighterBidentification.text = p2.getDebugDataString(2)
 
-        fighterRstats.isVisible = a.getPlayersStaged().p1.isValid()
-        fighterRstats.text = "Record: ${a.getPlayersStaged().p1.getRecordString()}" +
-                "\nBystanding: ${a.getPlayersStaged().p1.getBystandingString()}" +
-                "\nRating: ${a.getPlayersStaged().p1.getRatingString()}" +
-                "\nS: ${a.getPlayersStaged().p1.getScoreTotalString()}${if(a.getPlayersStaged().p2.getScoreDelta()!=0) " (${a.getPlayersStaged().p2.getScoreDeltaString()})" else ""}" +
-                "\nA: ${a.getPlayersStaged().p1.getAtension()} / R: ${a.getPlayersStaged().p1.getRespect()} / M: ${a.getPlayersStaged().p1.getMunity()}"
+        fighterRstats.isVisible = p1.isValid()
+        fighterRstats.text = "Record: ${p1.getRecordString()}" +
+                "\nBystanding: ${p1.getBystandingString()}" +
+                "\nRating: ${p1.getRatingString()}" +
+                "\nS: ${p1.getScoreTotalString()}${if(p1.getScoreDelta()!=0) " (${p1.getScoreDeltaString()})" else ""}" +
+                "\nA: ${p1.getAtension()} / R: ${p1.getRespect()} / M: ${p1.getAmunity()}"
 
-        fighterBstats.isVisible = a.getPlayersStaged().p2.isValid()
-        fighterBstats.text = "Record: ${a.getPlayersStaged().p2.getRecordString()}" +
-                "\nBystanding: ${a.getPlayersStaged().p2.getBystandingString()}" +
-                "\nRating: ${a.getPlayersStaged().p2.getRatingString()}" +
-                "\nS: ${a.getPlayersStaged().p2.getScoreTotalString()}${if(a.getPlayersStaged().p2.getScoreDelta()!=0) " (${a.getPlayersStaged().p2.getScoreDeltaString()})" else ""}" +
-                "\nA: ${a.getPlayersStaged().p2.getAtension()} / R: ${a.getPlayersStaged().p2.getRespect()} / M: ${a.getPlayersStaged().p2.getMunity()}"
+        fighterBstats.isVisible = p2.isValid()
+        fighterBstats.text = "Record: ${p2.getRecordString()}" +
+                "\nBystanding: ${p2.getBystandingString()}" +
+                "\nRating: ${p2.getRatingString()}" +
+                "\nS: ${p2.getScoreTotalString()}${if(p2.getScoreDelta()!=0) " (${p2.getScoreDeltaString()})" else ""}" +
+                "\nA: ${p2.getAtension()} / R: ${p2.getRespect()} / M: ${p2.getAmunity()}"
 
-        matchRstats.isVisible = a.getPlayersStaged().p1.isValid() && a.getClientMatch().isValid()
-        matchRstats.text = "Won ${a.getPlayersStaged().p1.getRoundsString()}" +
-                "\n${a.getPlayersStaged().p1.getHealthString()}" +
-                "\n${a.getPlayersStaged().p1.getStunString()}" +
-                "\n${a.getPlayersStaged().p1.getTensionString()}" +
-                "\n${a.getPlayersStaged().p1.getRiscString()}" +
-                "\n${a.getPlayersStaged().p1.getBurstString()}" +
-                "\n${a.getPlayersStaged().p1.getStrikeStunString()}"
+        matchRstats.isVisible = p1.isValid() && a.getClientMatch().isValid()
+        matchRstats.text = "Won ${p1.getRoundsString()}" +
+                "\n${p1.getHealthString()}" +
+                "\n${p1.getStunString()}" +
+                "\n${p1.getTensionString()}" +
+                "\n${p1.getRiscString()}" +
+                "\n${p1.getBurstString()}" +
+                "\n${p1.getStrikeStunString()}"
 
-        matchBstats.isVisible = a.getPlayersStaged().p2.isValid() && a.getClientMatch().isValid()
-        matchBstats.text = "Won ${a.getPlayersStaged().p2.getRoundsString()}" +
-                "\n${a.getPlayersStaged().p2.getHealthString()}" +
-                "\n${a.getPlayersStaged().p2.getStunString()}" +
-                "\n${a.getPlayersStaged().p2.getTensionString()}" +
-                "\n${a.getPlayersStaged().p2.getRiscString()}" +
-                "\n${a.getPlayersStaged().p2.getBurstString()}" +
-                "\n${a.getPlayersStaged().p2.getStrikeStunString()}"
+        matchBstats.isVisible = p2.isValid() && a.getClientMatch().isValid()
+        matchBstats.text = "Won ${p2.getRoundsString()}" +
+                "\n${p2.getHealthString()}" +
+                "\n${p2.getStunString()}" +
+                "\n${p2.getTensionString()}" +
+                "\n${p2.getRiscString()}" +
+                "\n${p2.getBurstString()}" +
+                "\n${p2.getStrikeStunString()}"
 
         val fighterNamesText = StringBuilder("FIGHTERS:")
         a.getFighters().forEach { fighterNamesText.append("\n${it.getDebugDataString(2)} ${it.getAtensionString()}") }

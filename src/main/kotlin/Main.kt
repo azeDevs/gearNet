@@ -18,7 +18,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     private val arcadia: Arcadia by inject()
 
     companion object {
-        const val GEARNET_ENABLED = true
+        const val GEARNET_ENABLED = false
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
         const val TWITCH_CHAT_BOT = false

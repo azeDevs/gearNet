@@ -20,7 +20,6 @@ class GearNet {
     private val frameData = GearNetFrameData()
     private val gnUpdates = GearNetUpdates()
     private val gearShift = GearNetShifter(gnUpdates, this)
-    private var clientId: Long = -1
 
 
     /**
@@ -41,9 +40,7 @@ class GearNet {
     fun getShift() = gearShift.getShift()
     fun getFrame() = frameData.lastFrame()
     fun getUpdateString() = gnUpdates.getUpdatesAsString(gearShift.getShift())
-    fun getClientMatchup(): MatchupData = getFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
-    fun getClientCabinet() = getClientPlayer().cabinetId.toInt()
-    fun getClientPlayer(): PlayerData = getFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
+
 
 
     /**
@@ -61,57 +58,35 @@ class GearNet {
     private fun generateFrameData(startTime: Long) {
         defineClientId()
         gearShift.update()
-        val updates = getGNLogUpdates()
+        val updates = update()
         gnUpdates.add(frameData.getFrameUpdateLog(startTime, updates))
         updates.forEach { gnUpdates.add(it) }
     }
 
 
     /**
-     *  Define which [steamId] should be associated with current [GearNet] session
-     */
-    private fun getClientId() = clientId
-    private fun defineClientId() {
-        if (getClientId() == -1L && xrdApi.getFighterData().any { it.steamId != 0L }) {
-            clientId = xrdApi.getClientSteamId()
-            gnUpdates.add(IC_COMPLETE, "Client ID defined: ${getIdString(clientId)}")
-        }
-    }
-
-
-
-
-    /**
      *  Collects all [FighterData] and [MatchData] from [XrdApi]
      *  and integrates them into a usable [FrameData] object
      */
-    private fun getGNLogUpdates(): List<GNLog> {
+    private fun update(): List<GNLog> {
         val totalUpdates = mutableListOf<GNLog>()
         val matchData = xrdApi.getMatchData()
         val dataList: MutableList<PlayerData> = mutableListOf()
 
         xrdApi.getFighterData().filter { it.isValid() }.forEach { fighterData ->
             val playerFactory = PlayerDataFactory()
-            playerFactory.setNewData(generatePlayerData(fighterData, matchData))
-            val updatedData = generatePlayerData(fighterData, matchData)
-            // Get the last FrameData to be compared to the incoming PlayerData
-            frameData.lastFrame().playerData.forEach { legacyData ->
-                // Does the legacy PlayerData have the same steamID as the new PlayerData?
-                if (legacyData.steamId == updatedData.steamId) {
-                    playerFactory.setOldData(legacyData)
-                    // Does the new PlayerData differ from the legacy PlayerData?
-                    // If not then use apply the legacy PlayerData instead
-                    val playerUpdates = playerFactory.receivedUpdates()
-                    if (playerUpdates.isNotEmpty()) {
-                        dataList.add(updatedData)
-                        totalUpdates.addAll(playerUpdates)
-                    } else dataList.add(legacyData)
-                }
-            }
+            playerFactory.generateNewData(fighterData, matchData, frameData, getOpponent(fighterData), getClientCabinet())
+
+            val playerUpdates = playerFactory.receivedUpdates()
+            if (playerUpdates.isNotEmpty()) {
+                dataList.add(playerFactory.getNewData())
+                totalUpdates.addAll(playerUpdates)
+            } else dataList.add(playerFactory.getOldData())
+
             // If the PlayerData contains a unique steamID, add new PlayerData
             if (playerFactory.isNewPlayer()) {
-                dataList.add(updatedData)
-                totalUpdates.add(GNLog(IC_DATA_PLAYER, "Player ${updatedData.userName} added"))
+                dataList.add(playerFactory.getNewData())
+                totalUpdates.add(GNLog(IC_DATA_PLAYER, "Player ${playerFactory.getNewData().userName} added"))
             }
         }
 
@@ -169,92 +144,23 @@ class GearNet {
 
 
     /**
-     *
+     *  Define which [steamId] should be associated with current [GearNet] session
      */
-    private fun generatePlayerData(fighterData: FighterData, matchData: MatchData): PlayerData {
-        when {
-            fighterData.isSeatedAt(PLAYER_1) && fighterData.isOnCabinet(getClientCabinet()) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData).steamId,
-                    matchData.health.second,
-                    matchData.rounds.second,
-                    matchData.tension.second,
-                    matchData.stunCurrent.second,
-                    matchData.stunMaximum.second,
-                    matchData.burst.second,
-                    matchData.struck.second,
-                    matchData.guardGauge.second
-                )
-            }
-            fighterData.isSeatedAt(PLAYER_2) && fighterData.isOnCabinet(getClientCabinet()) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData).steamId,
-                    matchData.health.second,
-                    matchData.rounds.second,
-                    matchData.tension.second,
-                    matchData.stunCurrent.second,
-                    matchData.stunMaximum.second,
-                    matchData.burst.second,
-                    matchData.struck.second,
-                    matchData.guardGauge.second
-                )
-            }
-            fighterData.isSeatedAt(PLAYER_1) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData).steamId
-                )
-            }
-            fighterData.isSeatedAt(PLAYER_2) -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent,
-                    getOpponent(fighterData).steamId
-                )
-            }
-            else -> {
-                return PlayerData(
-                    fighterData.steamId,
-                    fighterData.userName,
-                    fighterData.characterId,
-                    fighterData.cabinetId,
-                    fighterData.seatingId,
-                    fighterData.matchesWon,
-                    fighterData.matchesSum,
-                    fighterData.loadPercent
-                )
-            }
+    private var clientId: Long = -1
+    private fun getClientId() = clientId
+    private fun defineClientId() {
+        if (getClientId() == -1L && xrdApi.getFighterData().any { it.steamId != 0L }) {
+            clientId = xrdApi.getClientSteamId()
+            gnUpdates.add(IC_COMPLETE, "Client ID defined: ${getIdString(getClientId())}")
         }
     }
+
+
+    fun getRedPlayer(): PlayerData = getClientMatchup().player1
+    fun getBluePlayer(): PlayerData = getClientMatchup().player1
+    fun getClientMatchup(): MatchupData = frameData.lastFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
+    fun getClientCabinet(): Int = if(getClientPlayer().cabinetId.toInt()>3) -1 else getClientPlayer().cabinetId.toInt()
+    fun getClientPlayer(): PlayerData = frameData.lastFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
 
 
     /**
@@ -296,7 +202,13 @@ class GearNet {
         val stunMaximum: Int = -1,
         val burst: Boolean = false,
         val struck: Boolean = false,
-        val guardGauge: Int = -1
+        val guardGauge: Int = -1,
+
+        val healthDelta: Int = 0,
+        val tensionDelta: Int = 0,
+        val stunCurrentDelta: Int = 0,
+        val stunMaximumDelta: Int = 0,
+        val guardGaugeDelta: Int = 0
     ) {
         fun isValid() = steamId > 0
         fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId

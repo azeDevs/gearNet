@@ -7,6 +7,7 @@ import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
+import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
@@ -29,7 +30,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     private lateinit var respectProgress: Rectangle
     private lateinit var atensionBacking: Rectangle
     private lateinit var atensionProgress: Rectangle
-    private lateinit var bannerHandle: Label
+    private lateinit var bannerScore: Label
 
 //    val audioResourceURL = resources.url("sound.wav")
 
@@ -163,14 +164,15 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                     }
                 }
 
-                bannerHandle = label {
+                bannerScore = label {
                     addClass(ScoreStyle.signsTurnedText)
                     alignment = Pos.CENTER
                     when(teamColor) {
                         0 -> translateX -= 215.0
                         else -> translateX += 215.0
                     }
-                    translateY -= 820.0
+                    translateY -= 800.0
+                    blendMode = BlendMode.DIFFERENCE
                 }
 
             }
@@ -180,16 +182,25 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
     override fun applyData() = Platform.runLater {
         val f = a.getPlayersStaged().p(teamColor)
 
-        if (!f.isValid()) bannerHandle.text = "-" else {
+        if (!f.isValid()) {
+            bannerScore.text = "X"
+            munityProgress.width = getPercentage(0, MAX_MUNITY, munityMaxWidth)
+            respectProgress.width = getPercentage(0, MAX_RESPECT, respectMaxWidth)
+            atensionProgress.width = getPercentage(0, MAX_ATENSION, atensionMaxWidth)
+            animationFrame = -1
+            f.setSignal(false)
+        } else {
             container.isVisible = true
 
-            if (a.getPlayersStaged().p(teamColor).getStrikeStun()) bannerHandle.text = "X"
-            else bannerHandle.text = f.getUserName()
+            bannerScore.text = f.getAmunity().toString()
 
-            munityProgress.width = getPercentage(MAX_MUNITY-f.getMunity(), MAX_MUNITY, munityMaxWidth)
+            munityProgress.width = getPercentage(MAX_MUNITY-f.getAmunity(), MAX_MUNITY, munityMaxWidth)
             respectProgress.width = getPercentage(f.getRespect(), MAX_RESPECT, respectMaxWidth)
             atensionProgress.width = getPercentage(f.getAtension(), MAX_ATENSION, atensionMaxWidth)
-            if (f.getAtension() >= MAX_ATENSION) animationFrame = 0
+            if (f.getSignal()) {
+                animationFrame = 0
+                f.setSignal(false)
+            }
             when (teamColor) {
                 0 -> { // RED CREST
                     atensionProgress.fill = when {
@@ -240,7 +251,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                 animationFrame = -1
             }
         }
-        animationFrame++
+        if (animationFrame != -1) animationFrame++
     }
 
     private fun getPercentage(value:Int = 0, maximum:Int = 100, modifier:Double = 100.0) = (value.toDouble() / maximum) * modifier

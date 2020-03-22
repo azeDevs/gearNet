@@ -43,14 +43,14 @@ class Arcadia : Controller() {
     fun getPlayers() = getPlayersMap().values
     fun getWatchers() = getPlayers().filter { it.isWatcher() }.toList()
     fun getFighters() = getPlayers().filter { !it.isWatcher() }.toList()
-    fun getTeam(colorId: Int) = getPlayers().filter { !it.isTeam(colorId) }.toList()
+    fun getTeam(colorId: Int) = getPlayers().filter { it.isTeam(colorId) && it.isWatcher() }.toList()
     fun getPlayersMap() = players
     fun getPlayersLoading() = gn.getFrame().playerData.filter { it.loadPercent in 1..99 }
     fun getPlayersActive() = getPlayers().filter { !it.isAbsent() }.toList()
     fun getPlayersStaged(): Duo<Player> {
         val stagingCabinet = gn.getClientCabinet()
-        val p1 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
-        val p2 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val p1 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val p2 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
         return Duo(p1, p2)
     }
 
@@ -101,35 +101,48 @@ class Arcadia : Controller() {
         val p1 = getPlayer(cm.player1.steamId)
         val p2 = getPlayer(cm.player2.steamId)
 
-        if (p1.isValid() && p2.isValid()) {
-            // Apply Munity
-            p1.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_1) }.size)
-            p2.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_2) }.size)
-
-
+        if (p1.isValid()) {
+            p1.setAmunity(getTeam(PLAYER_1).size)
             // Boost Respect when in strike-stun & taking no damage
-            if (p1.getStrikeStun() && !p1.isBeingDamaged()) {
-                if (p1.getRespect() >= MAX_RESPECT) p1.addAtension(-2)
-                else p1.addRespect(16+p1.getMunity()) }
-            if (p2.getStrikeStun() && !p2.isBeingDamaged()) {
-                if (p2.getRespect() >= MAX_RESPECT) p2.addAtension(-2)
-                else p2.addRespect(16+p2.getMunity()) }
-
+            if (p1.getBurst()) p1.addRespect(8*p1.getAmunity())
             // Boost Atension when putting opponent into strike-stun
-            if (p1.getStrikeStun()) p2.addAtension(p2.getRespect() * (p2.getMunity()+1))
-            if (p2.getStrikeStun()) p1.addAtension(p1.getRespect() * (p1.getMunity()+1))
+            if (p2.getStrikeStun()) {
+                p1.addAtension(p1.getRespect() * (p1.getAmunity()))
+                p1.addRespect(-p1.getAmunity())
+            }
 
+
+            // Resolve full Respect
+            if (p1.getRespect() >= MAX_RESPECT) p1.setRespect(MAX_RESPECT)
             // Resolve full Atension
             if (p1.getAtension() >= MAX_ATENSION) {
+                p1.setSignal(true)
                 p1.setAtension(0)
                 p1.setRespect(0)
                 p1.addSigns(1)
             }
-            if (p2.getAtension() >= MAX_ATENSION) {
-                p2.setAtension(0)
-                p2.setRespect(0)
-                p2.addSigns(1)
+
+
+            p1.setAmunity(getTeam(PLAYER_1).size)
+            // Boost Respect when in strike-stun & taking no damage
+            if (p1.getBurst()) p1.addRespect(8*p1.getAmunity())
+            // Boost Atension when putting opponent into strike-stun
+            if (p2.getStrikeStun()) {
+                p1.addAtension(p1.getRespect() * (p1.getAmunity()))
+                p1.addRespect(-p1.getAmunity())
             }
+
+
+            // Resolve full Respect
+            if (p1.getRespect() >= MAX_RESPECT) p1.setRespect(MAX_RESPECT)
+            // Resolve full Atension
+            if (p1.getAtension() >= MAX_ATENSION) {
+                p1.setSignal(true)
+                p1.setAtension(0)
+                p1.setRespect(0)
+                p1.addSigns(1)
+            }
+
         }
     }
 
@@ -174,7 +187,7 @@ class Arcadia : Controller() {
      *
      */
     private fun resolveLobbyMatchResults() {
-        val winnerSide = winner.getPlaySide()
+        val winnerSide = winner.getTeamSeat()
         val loserBounty = getPlayer(loser).getScoreTotal()
         val winnerBounty = getPlayer(winner).getScoreTotal()
 

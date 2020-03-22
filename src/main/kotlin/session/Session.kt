@@ -55,28 +55,30 @@ class Session : Controller() {
 
         if (f1.isValid() && f2.isValid()) {
             // Apply Munity
-            f1.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_1) }.size)
-            f2.setMunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_2) }.size)
+            f1.setAmunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_1) }.size)
+            f2.setAmunity(getPlayersMap().values.filter { item -> item.isTeam(PLAYER_2) }.size)
 
             // Boost Respect when in strike-stun & taking no damage
             if (getClientMatch().getStrikeStun(PLAYER_1) && !getClientMatch().isBeingDamaged(PLAYER_1)) {
                 if (f1.getRespect() >= MAX_RESPECT) f1.addAtension(-2)
-                else f1.addRespect(16+f1.getMunity()) }
+                else f1.addRespect(16+f1.getAmunity()) }
             if (getClientMatch().getStrikeStun(PLAYER_2) && !getClientMatch().isBeingDamaged(PLAYER_2)) {
                 if (f2.getRespect() >= MAX_RESPECT) f2.addAtension(-2)
-                else f2.addRespect(16+f2.getMunity()) }
+                else f2.addRespect(16+f2.getAmunity()) }
 
             // Boost Atension when putting opponent into strike-stun
-            if (getClientMatch().getStrikeStun(PLAYER_1)) f2.addAtension(f2.getRespect() * (f2.getMunity()+1))
-            if (getClientMatch().getStrikeStun(PLAYER_2)) f1.addAtension(f1.getRespect() * (f1.getMunity()+1))
+            if (getClientMatch().getStrikeStun(PLAYER_1)) f2.addAtension(f2.getRespect() * (f2.getAmunity()+1))
+            if (getClientMatch().getStrikeStun(PLAYER_2)) f1.addAtension(f1.getRespect() * (f1.getAmunity()+1))
 
             // Resolve full Atension
             if (f1.getAtension() >= MAX_ATENSION) {
+                f1.setSignal(true)
                 f1.setAtension(0)
                 f1.setRespect(0)
                 f1.addSigns(1)
             }
             if (f2.getAtension() >= MAX_ATENSION) {
+                f2.setSignal(true)
                 f2.setAtension(0)
                 f2.setRespect(0)
                 f2.addSigns(1)
@@ -86,8 +88,8 @@ class Session : Controller() {
 
     fun getStagedFighers(): Duo<Player> {
         val stagingCabinet = gn.getClientCabinet()
-        val f1 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
-        val f2 = getPlayersMap().values.firstOrNull { it.isOnPlaySide(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val f1 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val f2 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
         return Duo(f1, f2)
     }
 

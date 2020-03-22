@@ -10,6 +10,9 @@ import utils.timeMillis
 class GearNetFrameData {
 
 
+    /**
+     *  [FrameData] Class
+     */
     private val frames: MutableList<FrameData> = mutableListOf()
     fun addFrame(updatedDataList: MutableList<PlayerData>, updatedMuList: List<MatchupData>) = frames.add(FrameData(updatedDataList, updatedMuList))
     fun lastFrame() = frames.lastOrNull() ?: FrameData()
@@ -38,6 +41,5 @@ class GearNetFrameData {
         val matchupData: List<MatchupData> = listOf(),
         val frameTime: Long = timeMillis()
     )
-
 
 }

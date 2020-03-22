@@ -6,13 +6,14 @@ import application.arcade.Arcadia
 import application.debug.DebugStyle
 import javafx.application.Platform
 import javafx.geometry.Pos
-import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.layout.StackPane
 import memscan.GearNetShifter.Shift.*
-import tornadofx.*
-import utils.getRes
+import tornadofx.Fragment
+import tornadofx.addClass
+import tornadofx.label
+import tornadofx.stackpane
 
 class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
@@ -86,18 +87,19 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                 inMatchView = InMatchView(parent)
                 viewersView = ViewersView(parent)
 
-                imageview(getRes("atlas.png").toString()) { // BARC TITLE
-                    viewport = Rectangle2D(1088.0, 768.0, 448.0, 128.0)
-                    fitWidth = 448.0
-                    fitHeight = 128.0
-                    translateY -= 488
-                }
+//                imageview(getRes("atlas.png").toString()) { // BARC TITLE
+//                    viewport = Rectangle2D(1088.0, 768.0, 448.0, 128.0)
+//                    fitWidth = 448.0
+//                    fitHeight = 128.0
+//                    translateY -= 488
+//                }
 
                 gearNetLogs = label("GearNet.UpdateLogs") {
+                    isVisible = false
                     addClass(DebugStyle.tempListYellow)
                     alignment = Pos.TOP_LEFT
-                    translateX += 64
-                    translateY += 160
+                    translateX += 160
+                    translateY += 520
                 }
             }
         }

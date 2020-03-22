@@ -110,20 +110,20 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
             setChangeTextColor(p.getScoreDelta())
             container.isVisible = true
         } else if (p.isValid() && p.isTeam(PLAYER_1) && teamColor == PLAYER_1) {
-            // Do stuff for Viewer Atension, stage left (Red)
+            // Do stuff for Red Viewer Amunity, stage left (Red)
             alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
             signs.text = p.getSigns().toString()
-            signs.isVisible = p.getSigns() > 0
+            signs.isVisible = true
             score.text = p.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
         } else if (p.isValid() && p.isTeam(PLAYER_2) && teamColor == PLAYER_2) {
-            // Do stuff for Viewer Atension, stage right (Blue)
+            // Do stuff for Blue Viewer Amunity, stage right (Blue)
             alias.text = truncate(p.getUserName(), 11)
             alias.isVisible = true
             signs.text = p.getSigns().toString()
-            signs.isVisible = p.getSigns() > 0
+            signs.isVisible = true
             score.text = p.getScoreTotalString()
             delta.text = ""
             container.isVisible = true
