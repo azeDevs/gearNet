@@ -44,9 +44,7 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                     alignment = Pos.TOP_LEFT
                     translateX += 64
                     translateY += 240
-                    isVisible = false
-
-
+//                    isVisible = false
                 }
 
                 modeLabel = label("OFFLINE_MODE") {
@@ -224,18 +222,24 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                 "\n${p1.getHealthString()}" +
                 "\n${p1.getStunString()}" +
                 "\n${p1.getTensionString()}" +
-                "\n${p1.getRiscString()}" +
-                "\n${p1.getBurstString()}" +
-                "\n${p1.getStrikeStunString()}"
+                "\n${p1.getGuardGaugeString()}" +
+                "\n${p1.getBurstEnabledString()}" +
+                "\n${p1.getStunLockedString()}\n" +
+                "\n${p1.getBlockingString()}" +
+                "\n${p1.getDamagedString()}" +
+                "\n${p1.getYRCingString()}"
 
         matchBstats.isVisible = p2.isValid() && a.getClientMatch().isValid()
         matchBstats.text = "Won ${p2.getRoundsString()}" +
                 "\n${p2.getHealthString()}" +
                 "\n${p2.getStunString()}" +
                 "\n${p2.getTensionString()}" +
-                "\n${p2.getRiscString()}" +
-                "\n${p2.getBurstString()}" +
-                "\n${p2.getStrikeStunString()}"
+                "\n${p2.getGuardGaugeString()}" +
+                "\n${p2.getBurstEnabledString()}" +
+                "\n${p2.getStunLockedString()}\n" +
+                "\n${p2.getBlockingString()}" +
+                "\n${p2.getDamagedString()}" +
+                "\n${p2.getYRCingString()}"
 
         val fighterNamesText = StringBuilder("FIGHTERS:")
         a.getFighters().forEach { fighterNamesText.append("\n${it.getDebugDataString(2)} ${it.getAtensionString()}") }

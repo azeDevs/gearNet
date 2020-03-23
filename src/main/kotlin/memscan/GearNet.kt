@@ -201,9 +201,8 @@ class GearNet {
         val stunCurrent: Int = -1,
         val stunMaximum: Int = -1,
         val burst: Boolean = false,
-        val struck: Boolean = false,
+        val stunLocked: Boolean = false,
         val guardGauge: Int = -1,
-
         val healthDelta: Int = 0,
         val tensionDelta: Int = 0,
         val stunCurrentDelta: Int = 0,
@@ -211,6 +210,9 @@ class GearNet {
         val guardGaugeDelta: Int = 0
     ) {
         fun isValid() = steamId > 0
+        fun isBlocking() = healthDelta == 0 && stunLocked
+        fun isDamaged() = healthDelta < 0
+        fun isYRCing() = tensionDelta == -2500 && !stunLocked
         fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
         fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
         fun equals(other: PlayerData) = steamId == other.steamId &&
@@ -227,7 +229,7 @@ class GearNet {
                 stunCurrent == other.stunCurrent &&
                 stunMaximum == other.stunMaximum &&
                 burst == other.burst &&
-                struck == other.struck &&
+                stunLocked == other.stunLocked &&
                 guardGauge == other.guardGauge
     }
 

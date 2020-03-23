@@ -13,8 +13,8 @@ import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import models.Player
-import session.Character.getCharacterTrademark
 import tornadofx.*
+import utils.XrdCharacter.getCharacterTrademark
 import utils.addCommas
 import utils.getRandomName
 import utils.getRes

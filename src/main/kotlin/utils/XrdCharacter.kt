@@ -1,8 +1,8 @@
-package session
+package utils
 
 import javafx.geometry.Rectangle2D
 
-object Character {
+object XrdCharacter {
 
     const val NULL: Byte = -0x1 // "GENERIC" DEFINITION
     const val SO: Byte = 0x00 // 0

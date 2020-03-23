@@ -3,8 +3,8 @@ package models
 import javafx.geometry.Rectangle2D
 import memscan.GearNet.MatchupData
 import memscan.GearNet.PlayerData
-import session.Character
 import twitch.WatcherData
+import utils.XrdCharacter
 import utils.addCommas
 import kotlin.math.max
 
@@ -28,10 +28,6 @@ class Player(
         if (isLoading()) setBystanding(playersActive)
         setMatchesWon(updatedData.matchesWon)
         setMatchesSum(updatedData.matchesSum)
-        if (isBeingDamaged()) when(getTeamSeat()) {
-            PLAYER_1 -> println("PLAYER_1 DAMAGED!")
-            PLAYER_2 -> println("PLAYER_2 DAMAGED!")
-        }
     }
 
 
@@ -57,12 +53,12 @@ class Player(
      *  Player Identification (Name/ID)
      */
     fun isValid() = playerId > 0
-    fun isWatcher() = getCharacterId() == Character.NULL
+    fun isWatcher() = getCharacterId() == XrdCharacter.NULL
     fun getPlayerId() = this.playerId
     fun getIdString(id:Long) = if (id.toString().length > 8) "ID${id.toString().substring(id.toString().length-8, id.toString().length)}" else "ID${id}"
     fun getUserName() = this.userName
     fun getCharacterId() = getPlayerData().characterId
-    fun getCharacterString() = Character.getCharacterInitials(getCharacterId())
+    fun getCharacterString() = XrdCharacter.getCharacterInitials(getCharacterId())
 
 
     /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
@@ -300,24 +296,48 @@ class Player(
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
      */
     fun isInMatch():Boolean = getMatchupData().isValid()
-    fun isBeingDamaged():Boolean = if(getTeamSeat() == PLAYER_1) oldMatchupData().player1.health != getMatchupData().player1.health else oldMatchupData().player2.health != getMatchupData().player2.health
 
+    /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
+     *  Value Getters
+     */
     fun getRounds():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.rounds else getMatchupData().player2.rounds
     fun getHealth():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.health else getMatchupData().player2.health
     fun getStunProgress():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunCurrent else getMatchupData().player2.stunCurrent
     fun getStunMaximum():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunMaximum else getMatchupData().player2.stunMaximum
+    fun getGuardGauge():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.guardGauge else getMatchupData().player2.guardGauge
     fun getTension():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.tension else getMatchupData().player2.tension
-    fun getRisc():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.guardGauge else getMatchupData().player2.guardGauge
-    fun getBurst():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.burst else getMatchupData().player2.burst
-    fun getStrikeStun():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.struck else getMatchupData().player2.struck
+    fun isStunLocked():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunLocked else getMatchupData().player2.stunLocked
+    fun isBurstEnabled():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.burst else getMatchupData().player2.burst
 
+    fun getHealthDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.healthDelta else getMatchupData().player2.healthDelta
+    fun getStunProgressDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunCurrentDelta else getMatchupData().player2.stunCurrentDelta
+    fun getStunMaximumDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.stunMaximumDelta else getMatchupData().player2.stunMaximumDelta
+    fun getTensionDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.tensionDelta else getMatchupData().player2.tensionDelta
+    fun getGuardGaugeDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.guardGaugeDelta else getMatchupData().player2.guardGaugeDelta
+
+
+    fun isBlocking():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isBlocking() else getMatchupData().player2.isBlocking()
+    fun isDamaged():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isDamaged() else getMatchupData().player2.isDamaged()
+    fun isYRCing():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isYRCing() else getMatchupData().player2.isYRCing()
+
+
+    /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
+     *  String Getters
+     */
     fun getRoundsString():String = "Rounds: ${getRounds()} / 2"
-    fun getHealthString():String = "Health: ${getHealth()} / 420 ${if(isBeingDamaged()) "!" else ""}"
-    fun getStunString():String = "Stun: ${getStunProgress()} / ${getStunMaximum()}"
-    fun getTensionString():String = "Tension: ${getTension()} / 10000"
-    fun getRiscString():String = "RISC: ${getRisc()} / 12800"
-    fun getBurstString():String = "Burst: ${if(getBurst()) "☩" else "-"}"
-    fun getStrikeStunString():String = "Struck: ${if(getStrikeStun()) "☩" else "-"}"
+    fun getHealthString():String = "Health: ${getHealth()}${getDeltaString(getHealthDelta())} / 420"
+    fun getStunString():String = "Stun: ${getStunProgress()}${getDeltaString(getStunProgressDelta())} / ${getStunMaximum()}${getDeltaString(getStunMaximumDelta())}"
+    fun getTensionString():String = "Tension: ${getTension()}${getDeltaString(getTensionDelta())} / 10000"
+    fun getGuardGaugeString():String = "Guard Gauge: ${getGuardGauge()}${getDeltaString(getGuardGaugeDelta())} / 12800"
+    fun getStunLockedString():String = "Stun Locked: ${getBooleanString(isStunLocked())}"
+    fun getBurstEnabledString():String = "Burst Enabled: ${getBooleanString(isBurstEnabled())}"
+
+    fun getBlockingString():String = "isBlocking: ${getBooleanString(isBlocking())}"
+    fun getDamagedString():String = "isDamaged: ${getBooleanString(isDamaged())}"
+    fun getYRCingString():String = "isYRCing: ${getBooleanString(isYRCing())}"
+
+    fun getBooleanString(flag:Boolean):String = if(flag) "☩" else "·"
+    fun getDeltaString(deltaValue:Int):String = if(deltaValue > 0) "+$deltaValue" else if(deltaValue < 0) deltaValue.toString() else "±0"
 
     private fun getLoadPercentString() = if(isLoading()) "${getLoadPercent()}%" else if(isInMatch()) "►" else ""
     private fun getLoadPercent() = getPlayerData().loadPercent

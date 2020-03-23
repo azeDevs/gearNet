@@ -18,11 +18,11 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     private val arcadia: Arcadia by inject()
 
     companion object {
-        const val GEARNET_ENABLED = false
+        const val GEARNET_ENABLED = true
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
-        const val TWITCH_CHAT_BOT = false
-        const val VERSION = "0.7.2"
+        const val TWITCH_CHAT_BOT = true
+        const val VERSION = "0.7.3"
     }
 
     override fun onBeforeShow(view: UIComponent) {

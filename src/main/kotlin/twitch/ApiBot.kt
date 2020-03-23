@@ -18,7 +18,7 @@ interface BotApi {
     /**
      * @return a List of all Messages
      */
-    fun getViewerData(): List<WatcherData>
+    fun getWatcherData(): List<WatcherData>
 
 }
 

@@ -3,7 +3,10 @@ package twitch
 import MyApp.Companion.SIMULATION_MODE
 import MyApp.Companion.TWITCH_CHAT_BOT
 import application.arcade.Arcadia
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
+import com.github.twitch4j.TwitchClientBuilder
+import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import memscan.GearNetUpdates
 import models.Player
 import utils.getRandomName
@@ -14,8 +17,8 @@ class RoboHandler(private val a: Arcadia) : BotApi {
 
 
     private val watcherData: MutableList<WatcherData> = mutableListOf()
-    private val twitchClient: TwitchClient = TCB.builder()
-        .withChatAccount(OA2C("twitch", getTokenFromFile("keys", "twitch_bot")))
+    private val twitchClient: TwitchClient = TwitchClientBuilder.builder()
+        .withChatAccount(OAuth2Credential("twitch", getTokenFromFile("keys", "twitch_bot")))
         .withEnableChat(true)
         .withEnableHelix(true)
         .withEnableKraken(true)
@@ -23,7 +26,7 @@ class RoboHandler(private val a: Arcadia) : BotApi {
         .build()
 
     init {
-        twitchClient.chat.eventManager.onEvent(CME::class.java).subscribe { watcherData.add(WatcherData(it.user.id, it.user.name, it.message)) }
+        twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe { watcherData.add(WatcherData(it.user.id, it.user.name, it.message)) }
         twitchClient.chat.joinChannel("azeDevs")
         sendMessage("Hello World!")
     }
@@ -32,9 +35,9 @@ class RoboHandler(private val a: Arcadia) : BotApi {
     /**
      *
      */
-    override fun sendMessage(message: String) { if (TWITCH_CHAT_BOT) twitchClient.chat.sendMessage("azeDevs", logChat("roboaze", message)) else logChat("roboaze", message) }
+    override fun sendMessage(message: String) { if (TWITCH_CHAT_BOT) twitchClient.chat.sendMessage("azeDevs", logChat("roboaze", "\uD83E\uDD16 $message")) else logChat("roboaze", "\uD83D\uDCBB $message") }
     override fun isConnected(): Boolean = twitchClient.messagingInterface.getChatters("azeDevs").isFailedExecution
-    override fun getViewerData(): List<WatcherData> {
+    override fun getWatcherData(): List<WatcherData> {
         val outList: MutableList<WatcherData> = arrayListOf()
         watcherData.forEach { outList.add(it) }
         watcherData.clear()
@@ -51,7 +54,7 @@ class RoboHandler(private val a: Arcadia) : BotApi {
             1 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngBC"))
             2 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), getRandomName(), getRandomName()))
         }
-        getViewerData().forEach {
+        getWatcherData().forEach {
             if (it.message.isNotEmpty()) {
                 logChat(it.displayName, it.message)
 

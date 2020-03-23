@@ -3,8 +3,8 @@ package memscan
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import session.Character.getCharacterInitials
 import utils.Duo
+import utils.XrdCharacter.getCharacterInitials
 import utils.getIdString
 import utils.getRandomName
 import utils.isInRange

@@ -104,9 +104,9 @@ class Arcadia : Controller() {
         if (p1.isValid()) {
             p1.setAmunity(getTeam(PLAYER_1).size)
             // Boost Respect when in strike-stun & taking no damage
-            if (p1.getBurst()) p1.addRespect(8*p1.getAmunity())
+            if (p1.isBurstEnabled()) p1.addRespect(8*p1.getAmunity())
             // Boost Atension when putting opponent into strike-stun
-            if (p2.getStrikeStun()) {
+            if (p2.isStunLocked()) {
                 p1.addAtension(p1.getRespect() * (p1.getAmunity()))
                 p1.addRespect(-p1.getAmunity())
             }
@@ -125,9 +125,9 @@ class Arcadia : Controller() {
 
             p1.setAmunity(getTeam(PLAYER_1).size)
             // Boost Respect when in strike-stun & taking no damage
-            if (p1.getBurst()) p1.addRespect(8*p1.getAmunity())
+            if (p1.isBurstEnabled()) p1.addRespect(8*p1.getAmunity())
             // Boost Atension when putting opponent into strike-stun
-            if (p2.getStrikeStun()) {
+            if (p2.isStunLocked()) {
                 p1.addAtension(p1.getRespect() * (p1.getAmunity()))
                 p1.addRespect(-p1.getAmunity())
             }

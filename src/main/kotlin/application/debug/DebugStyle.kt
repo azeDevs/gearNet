@@ -135,12 +135,12 @@ class DebugStyle : Stylesheet() {
             and(tempListYellow) {
                 textFill = debugLiteYellow
                 alignment = Pos.TOP_LEFT
-//                fontSize = 16.px
+                fontSize = 20.px
                 maxWidth = 1280.px
                 minWidth = 1280.px
                 maxHeight = 720.px
                 minHeight = 720.px
-                effect = DropShadow(BlurType.ONE_PASS_BOX, c("#000000"), 3.0, 777.0, 0.0, 0.0)
+                effect = DropShadow(BlurType.ONE_PASS_BOX, c("#000000"), 7.0, 777.0, 0.0, 0.0)
             }
 
             and(debugTextGeneric) {
