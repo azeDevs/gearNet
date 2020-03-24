@@ -183,7 +183,7 @@ class DebugStyle : Stylesheet() {
 //                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)
             }
             and(debugTextYellow) {
-                textFill = c("#000000")//debugLiteYellow
+                textFill = debugLiteYellow //c("#000000")//debugLiteYellow
 //                backgroundColor += debugSimpYellow
 //                borderColor += box(debugLiteYellow)
                 fontSize = 16.px

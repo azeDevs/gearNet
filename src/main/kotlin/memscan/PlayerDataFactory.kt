@@ -32,7 +32,6 @@ class PlayerDataFactory() {
         clientCabinet: Int
     ) {
         frameData.lastFrame().playerData.forEach { legacyData -> if (legacyData.steamId == fighterData.steamId) this.oldData = legacyData }
-        val oldPlayerData = frameData.oldFrame().playerData.firstOrNull { it.steamId == fighterData.steamId } ?: PlayerData()
         val seatId = fighterData.seatingId.toInt()
         val playerData = when {
             isStagedOnClientCabinet(fighterData, clientCabinet) -> {

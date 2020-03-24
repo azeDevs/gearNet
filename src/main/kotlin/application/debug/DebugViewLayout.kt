@@ -191,10 +191,14 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
         val p2 = a.getPlayersStaged().p2
 
         gearNetLogs.text = a.getGNLogsString()
-//        gearNetLogs.isVisible = false
         modeLabel.text = a.getShift().name
-        timeLabel.isVisible = a.getClientMatch().isValid()
-        timeLabel.text = "TIMER\n${a.getClientMatch().timer}"
+
+
+        val timerText = when (a.getClientMatch().winner) {
+            PLAYER_1->"<- TIMER - "
+            PLAYER_2->" - TIMER ->"
+            else->" - TIMER - " }
+        timeLabel.text = "$timerText\n${a.getClientMatch().timer}"
 
 
         apiConnections.text = "GuiltyGear ${if(a.isXrdApiConnected()) "OK" else "NA"} / RoboTwitch ${if (a.isRoboApiConnected()) "OK" else "NA"}"
@@ -217,29 +221,23 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                 "\nS: ${p2.getScoreTotalString()}${if(p2.getScoreDelta()!=0) " (${p2.getScoreDeltaString()})" else ""}" +
                 "\nA: ${p2.getAtension()} / R: ${p2.getRespect()} / M: ${p2.getAmunity()}"
 
-        matchRstats.isVisible = p1.isValid() && a.getClientMatch().isValid()
+        matchRstats.isVisible = p1.isValid() && a.getClientMatch().isTimeValid()
         matchRstats.text = "Won ${p1.getRoundsString()}" +
                 "\n${p1.getHealthString()}" +
                 "\n${p1.getStunString()}" +
                 "\n${p1.getTensionString()}" +
                 "\n${p1.getGuardGaugeString()}" +
                 "\n${p1.getBurstEnabledString()}" +
-                "\n${p1.getStunLockedString()}\n" +
-                "\n${p1.getBlockingString()}" +
-                "\n${p1.getDamagedString()}" +
-                "\n${p1.getYRCingString()}"
+                "\n${p1.getStunLockedString()}"
 
-        matchBstats.isVisible = p2.isValid() && a.getClientMatch().isValid()
+        matchBstats.isVisible = p2.isValid() && a.getClientMatch().isTimeValid()
         matchBstats.text = "Won ${p2.getRoundsString()}" +
                 "\n${p2.getHealthString()}" +
                 "\n${p2.getStunString()}" +
                 "\n${p2.getTensionString()}" +
                 "\n${p2.getGuardGaugeString()}" +
                 "\n${p2.getBurstEnabledString()}" +
-                "\n${p2.getStunLockedString()}\n" +
-                "\n${p2.getBlockingString()}" +
-                "\n${p2.getDamagedString()}" +
-                "\n${p2.getYRCingString()}"
+                "\n${p2.getStunLockedString()}"
 
         val fighterNamesText = StringBuilder("FIGHTERS:")
         a.getFighters().forEach { fighterNamesText.append("\n${it.getDebugDataString(2)} ${it.getAtensionString()}") }

@@ -295,7 +295,7 @@ class Player(
     val strikeStun: Pair<Boolean, Boolean> = Pair(first = false, second = false),
     val guardGauge: Pair<Int, Int> = Pair(-1,-1)
      */
-    fun isInMatch():Boolean = getMatchupData().isValid()
+    fun isInMatch():Boolean = getMatchupData().isTimeValid()
 
     /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
      *  Value Getters

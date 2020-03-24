@@ -1,15 +1,19 @@
 package memscan
 
 import memscan.GearNet.MatchupData
+import memscan.GearNet.PlayerData
 import memscan.GearNetShifter.Shift.*
 import memscan.GearNetUpdates.Companion.IC_GEAR
+import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 
-class GearNetShifter(private val gnUpdates: GearNetUpdates, private val gn: GearNet) {
+class GearNetShifter(private val gnUpdates: GearNetUpdates) {
 
     enum class Shift {
         GEAR_OFFLINE,
         GEAR_LOADING,
         GEAR_LOBBY,
+        GEAR_INTRO,
         GEAR_MATCH,
         GEAR_SLASH,
         GEAR_DRAWN,
@@ -20,61 +24,69 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates, private val gn: Gear
     private var gearShift: Shift = GEAR_OFFLINE
     fun getShift() = gearShift
 
-    fun update() {
+    fun update(
+        dataList: MutableList<PlayerData>,
+        muList: List<MatchupData>,
+        clientCabinet: Int
+    ): Shift {
         val oldShift = gearShift
+        val clientMatch = muList.firstOrNull { it.isOnCabinet(clientCabinet) } ?: MatchupData()
+        val player1 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeatedAt(PLAYER_1) } ?: PlayerData()
+        val player2 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeatedAt(PLAYER_2) } ?: PlayerData()
 
         // Shift GEAR_OFFLINE
-        if (!gn.getClientPlayer().isValid()) shift(GEAR_OFFLINE)
+        if (dataList.isEmpty()) shift(GEAR_OFFLINE)
         else {
-            val clientMatchLoading = gn.getFrame().matchupData.firstOrNull { !it.isValid()
-                    && it.isOnCabinet(gn.getClientCabinet())
-                    && it.getLoaders() in 1..99
-
-            } ?: MatchupData()
-            val clientMatchOnGoing = gn.getFrame().matchupData.firstOrNull { it.isValid()
-                    && it.isOnCabinet(gn.getClientCabinet()) } ?: MatchupData()
-
-
-            // Shift GEAR_LOADING
-            // FIXME: THIS STILL DOESN'T WORK, PLS FIX
-            if (!clientMatchOnGoing.isValid() &&
-                clientMatchLoading.isValid()
-            ) shift(GEAR_LOADING)
 
 
             // Shift GEAR_LOBBY
-            if (!clientMatchOnGoing.isValid() &&
-                !clientMatchLoading.isValid()
+            if (!clientMatch.isTimeValid() &&
+                oldShift != GEAR_LOADING
             ) shift(GEAR_LOBBY)
 
 
+            // Shift GEAR_LOADING
+            if (!clientMatch.isTimeValid() &&
+                player1.isLoading() && player2.isLoading()
+            ) shift(GEAR_LOADING)
+
+
+            // Shift GEAR_INTRO
+            if (clientMatch.isTimeValid() &&
+                (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer == 99)
+                && clientMatch.winner == -1
+            ) shift(GEAR_INTRO)
+
+
             // Shift GEAR_MATCH
-            if (clientMatchOnGoing.isValid() &&
-                (clientMatchOnGoing.player1.health > 0 || clientMatchOnGoing.player2.health > 0 && clientMatchOnGoing.timer > 0)
+            if (clientMatch.isTimeValid() &&
+                (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer in 0..98)
+                && clientMatch.winner == -1
             ) shift(GEAR_MATCH)
 
 
-            // Shift GEAR_SLASH
-            if (clientMatchOnGoing.isValid() &&
-                (clientMatchOnGoing.player1.health != clientMatchOnGoing.player2.health && clientMatchOnGoing.timer == 0) ||
-                (clientMatchOnGoing.player1.health == 0 || clientMatchOnGoing.player2.health == 0)
-                && (clientMatchOnGoing.player1.health != clientMatchOnGoing.player2.health)
-            ) shift(GEAR_SLASH)
-
-
             // Shift GEAR_DRAWN
-            // TODO: check that they aren't actually in Training mode instead
-            if (
-                (clientMatchOnGoing.player1.health == 0 && clientMatchOnGoing.player2.health == 0) ||
-                (clientMatchOnGoing.player1.health == clientMatchOnGoing.player2.health && clientMatchOnGoing.timer == 0)
+            if (clientMatch.isTimeValid() &&
+                ((clientMatch.player1.health == 0 && clientMatch.player2.health == 0) ||
+                (clientMatch.player1.health == clientMatch.player2.health && clientMatch.timer == 0))
+                && clientMatch.winner == -1
             ) shift(GEAR_DRAWN)
 
 
+            // Shift GEAR_SLASH
+            if (clientMatch.isTimeValid() &&
+                (clientMatch.player1.health != clientMatch.player2.health && clientMatch.timer == 0) ||
+                ((clientMatch.player1.health == 0 || clientMatch.player2.health == 0)
+                        && (clientMatch.player1.health != clientMatch.player2.health))
+                && clientMatch.winner == -1
+            ) shift(GEAR_SLASH)
+
+
             // Shift GEAR_VICTORY
-            // TODO: check if on client cab and that one of their match records has incremented
-//            if (
-//                clientMatchOnGoing.player1.health == 0 && clientMatchOnGoing.player2.health == 0
-//            ) shift(GEAR_VICTORY)
+            if (clientMatch.isTimeValid() &&
+                clientMatch.winner != -1
+                && clientMatch.timer != -1
+            ) shift(GEAR_VICTORY)
 
 
             // Shift GEAR_TRAINER
@@ -91,6 +103,7 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates, private val gn: Gear
             GEAR_OFFLINE -> gnUpdates.add(IC_GEAR, "→ OFFLINE")
             GEAR_LOADING -> gnUpdates.add(IC_GEAR, "→ LOADING")
             GEAR_LOBBY -> gnUpdates.add(IC_GEAR, "→ LOBBY")
+            GEAR_INTRO -> gnUpdates.add(IC_GEAR, "→ INTRO")
             GEAR_MATCH -> gnUpdates.add(IC_GEAR, "→ MATCH")
             GEAR_SLASH -> gnUpdates.add(IC_GEAR, "→ SLASH")
             GEAR_DRAWN -> gnUpdates.add(IC_GEAR, "→ DRAWN")
@@ -98,6 +111,7 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates, private val gn: Gear
             GEAR_TRAINER -> gnUpdates.add(IC_GEAR, "→ TRAINER")
         }
 
+        return gearShift
     }
 
 

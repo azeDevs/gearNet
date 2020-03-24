@@ -17,9 +17,9 @@ import utils.timeMillis
 class GearNet {
 
     private val xrdApi: XrdApi = MemHandler()
-    private val frameData = GearNetFrameData()
     private val gnUpdates = GearNetUpdates()
-    private val gearShift = GearNetShifter(gnUpdates, this)
+    private val frameData = GearNetFrameData()
+    private val gearShift = GearNetShifter(gnUpdates)
 
 
     /**
@@ -27,7 +27,7 @@ class GearNet {
      */
     fun start() = GlobalScope.launch {
         val startTime = timeMillis()
-        delay(12)
+        delay(7)
         if (xrdApi.isConnected()) generateFrameData(startTime)
         else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
         refreshGearNetUpdates()
@@ -57,7 +57,6 @@ class GearNet {
      */
     private fun generateFrameData(startTime: Long) {
         defineClientId()
-        gearShift.update()
         val updates = update()
         gnUpdates.add(frameData.getFrameUpdateLog(startTime, updates))
         updates.forEach { gnUpdates.add(it) }
@@ -77,6 +76,7 @@ class GearNet {
             val playerFactory = PlayerDataFactory()
             playerFactory.generateNewData(fighterData, matchData, frameData, getOpponent(fighterData), getClientCabinet())
 
+            // Add GNLogs to totalUpdates
             val playerUpdates = playerFactory.receivedUpdates()
             if (playerUpdates.isNotEmpty()) {
                 dataList.add(playerFactory.getNewData())
@@ -90,41 +90,21 @@ class GearNet {
             }
         }
 
-        val muList: List<MatchupData> = getMatchupData(dataList, matchData)
+        // Resolve and store MatchupData
+        val matchupFactory = MatchupDataFactory()
+        val muList: List<MatchupData> = matchupFactory.getMatchupData(dataList, matchData, frameData, getClientCabinet())
         if (muList.isNotEmpty()) {
             muList.filter { newMu -> frameData.lastFrame().matchupData.none { oldMu -> newMu.equals(oldMu) } }.forEach {
                 totalUpdates.add(GNLog(IC_MATCHUP, "Matchup: ${it.player1.userName} vs ${it.player2.userName} [${it.timer}]"))
             }
         }
-        if (totalUpdates.isNotEmpty()) frameData.addFrame(dataList, muList)
+
+        if (totalUpdates.isNotEmpty()) frameData.addFrame(dataList, muList, gearShift.update(dataList, muList, getClientCabinet()))
         return totalUpdates
     }
 
 
-    /**
-     *
-     */
-    private fun getMatchupData(dataList: MutableList<PlayerData>, matchData: MatchData): List<MatchupData> {
-        val muList: MutableList<MatchupData> = mutableListOf()
-        dataList.forEach { data1 ->
-            dataList.forEach { data2 ->
-                if (data1.steamId == data2.opponentId && data1.opponentId == data2.steamId) {
-                    if (data1.isOnCabinet(getClientCabinet()) && data2.isOnCabinet(getClientCabinet())) {
-                        if (data1.isSeatedAt(PLAYER_1)) {
-                            if (muList.none { it.equals(MatchupData(data1, data2, matchData.timer)) }) muList.add(MatchupData(data1, data2, matchData.timer))
-                        } else {
-                            if (muList.none { it.equals(MatchupData(data2, data1, matchData.timer)) }) muList.add(MatchupData(data2, data1, matchData.timer))
-                        }
-                    } else if (data1.isSeatedAt(PLAYER_1)) {
-                        if (muList.none { it.equals(MatchupData(data1, data2)) }) muList.add(MatchupData(data1, data2))
-                    } else {
-                        if (muList.none { it.equals(MatchupData(data2, data1)) }) muList.add(MatchupData(data2, data1))
-                    }
-                }
-            }
-        }
-        return muList
-    }
+
 
 
     /**
@@ -170,10 +150,11 @@ class GearNet {
     data class MatchupData(
         val player1: PlayerData = PlayerData(),
         val player2: PlayerData = PlayerData(),
+        val winner: Int = -1,
         val timer: Int = -1
     ) {
-        fun isValid() = player1.isValid() && player2.isValid() && timer > -1
-        fun getLoaders() = if(player1.loadPercent in 1..99 || player2.loadPercent in 1..99) (player1.loadPercent + player2.loadPercent)/2 else -1
+        fun isTimeValid() = player1.isValid() && player2.isValid() && timer > -1
+        fun isConcluded() = player1.isValid() && player2.isValid() && winner > -1
         fun isOnCabinet(cabinetId: Int) = player1.isOnCabinet(cabinetId) && player2.isOnCabinet(cabinetId)
         fun equals(other: MatchupData) = timer == other.timer &&
                 player1.steamId == other.player1.steamId &&
@@ -215,6 +196,7 @@ class GearNet {
         fun isYRCing() = tensionDelta == -2500 && !stunLocked
         fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
         fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
+        fun isLoading() = loadPercent in 1..99
         fun equals(other: PlayerData) = steamId == other.steamId &&
                 userName == other.userName &&
                 characterId == other.characterId &&

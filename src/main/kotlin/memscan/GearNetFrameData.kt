@@ -14,7 +14,7 @@ class GearNetFrameData {
      *  [FrameData] Class
      */
     private val frames: MutableList<FrameData> = mutableListOf()
-    fun addFrame(updatedDataList: MutableList<PlayerData>, updatedMuList: List<MatchupData>) = frames.add(FrameData(updatedDataList, updatedMuList))
+    fun addFrame(updatedDataList: MutableList<PlayerData>, updatedMuList: List<MatchupData>, gearShift: GearNetShifter.Shift) = frames.add(FrameData(updatedDataList, updatedMuList, gearShift))
     fun lastFrame() = frames.lastOrNull() ?: FrameData()
     fun oldFrame() = if(frames.size>1) frames[frames.size-2] else lastFrame()
 
@@ -37,9 +37,10 @@ class GearNetFrameData {
     /**
      *  [FrameData] Class
      */
-    data class FrameData(
+    data class FrameData( // TODO: ADD MATCH ARCHIVE TO FrameData OBJECT
         val playerData: List<PlayerData> = listOf(),
         val matchupData: List<MatchupData> = listOf(),
+        val gearShift: GearNetShifter.Shift = GearNetShifter.Shift.GEAR_OFFLINE,
         val frameTime: Long = timeMillis()
     )
 
