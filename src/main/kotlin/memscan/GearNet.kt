@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import memscan.GearNetFrameData.FrameData
+import memscan.GearNetShifter.Shift
 import memscan.GearNetUpdates.Companion.IC_COMPLETE
 import memscan.GearNetUpdates.Companion.IC_DATA_PLAYER
 import memscan.GearNetUpdates.Companion.IC_MATCHUP
@@ -27,7 +28,7 @@ class GearNet {
      */
     fun start() = GlobalScope.launch {
         val startTime = timeMillis()
-        delay(7)
+        delay(24)
         if (xrdApi.isConnected()) generateFrameData(startTime)
         else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
         refreshGearNetUpdates()
@@ -59,6 +60,7 @@ class GearNet {
         defineClientId()
         val updates = update()
         gnUpdates.add(frameData.getFrameUpdateLog(startTime, updates))
+        frameData.archiveMatchups()
         updates.forEach { gnUpdates.add(it) }
     }
 
@@ -150,6 +152,7 @@ class GearNet {
     data class MatchupData(
         val player1: PlayerData = PlayerData(),
         val player2: PlayerData = PlayerData(),
+        val shift: Shift = Shift.GEAR_LOBBY,
         val winner: Int = -1,
         val timer: Int = -1
     ) {
@@ -191,11 +194,8 @@ class GearNet {
         val guardGaugeDelta: Int = 0
     ) {
         fun isValid() = steamId > 0
-        fun isBlocking() = healthDelta == 0 && stunLocked
-        fun isDamaged() = healthDelta < 0
-        fun isYRCing() = tensionDelta == -2500 && !stunLocked
-        fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
-        fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
+        fun isOnCabinet(cabinetId: Int = this.cabinetId.toInt()) = if(this.cabinetId.toInt() in 0..3) this.cabinetId.toInt() == cabinetId else false
+        fun isSeated(seatingId: Int = this.seatingId.toInt()) = if(this.cabinetId.toInt() in 0..3) this.seatingId.toInt() == seatingId else false
         fun isLoading() = loadPercent in 1..99
         fun equals(other: PlayerData) = steamId == other.steamId &&
                 userName == other.userName &&

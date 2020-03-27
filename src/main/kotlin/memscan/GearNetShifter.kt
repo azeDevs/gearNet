@@ -31,8 +31,8 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
     ): Shift {
         val oldShift = gearShift
         val clientMatch = muList.firstOrNull { it.isOnCabinet(clientCabinet) } ?: MatchupData()
-        val player1 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeatedAt(PLAYER_1) } ?: PlayerData()
-        val player2 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeatedAt(PLAYER_2) } ?: PlayerData()
+        val player1 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeated(PLAYER_1) } ?: PlayerData()
+        val player2 = dataList.firstOrNull { it.isOnCabinet(clientCabinet) && it.isSeated(PLAYER_2) } ?: PlayerData()
 
         // Shift GEAR_OFFLINE
         if (dataList.isEmpty()) shift(GEAR_OFFLINE)
@@ -51,42 +51,48 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
             ) shift(GEAR_LOADING)
 
 
-            // Shift GEAR_INTRO
-            if (clientMatch.isTimeValid() &&
-                (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer == 99)
-                && clientMatch.winner == -1
-            ) shift(GEAR_INTRO)
-
-
-            // Shift GEAR_MATCH
-            if (clientMatch.isTimeValid() &&
-                (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer in 0..98)
-                && clientMatch.winner == -1
-            ) shift(GEAR_MATCH)
-
-
-            // Shift GEAR_DRAWN
-            if (clientMatch.isTimeValid() &&
-                ((clientMatch.player1.health == 0 && clientMatch.player2.health == 0) ||
-                (clientMatch.player1.health == clientMatch.player2.health && clientMatch.timer == 0))
-                && clientMatch.winner == -1
-            ) shift(GEAR_DRAWN)
-
-
-            // Shift GEAR_SLASH
-            if (clientMatch.isTimeValid() &&
-                (clientMatch.player1.health != clientMatch.player2.health && clientMatch.timer == 0) ||
-                ((clientMatch.player1.health == 0 || clientMatch.player2.health == 0)
-                        && (clientMatch.player1.health != clientMatch.player2.health))
-                && clientMatch.winner == -1
-            ) shift(GEAR_SLASH)
-
-
             // Shift GEAR_VICTORY
             if (clientMatch.isTimeValid() &&
                 clientMatch.winner != -1
                 && clientMatch.timer != -1
             ) shift(GEAR_VICTORY)
+
+
+            if (getShift() != GEAR_VICTORY) {
+
+
+                // Shift GEAR_INTRO
+                if (clientMatch.isTimeValid() &&
+                    (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer == 99)
+                    && clientMatch.winner == -1
+                ) shift(GEAR_INTRO)
+
+
+                // Shift GEAR_MATCH
+                if (clientMatch.isTimeValid() &&
+                    (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer in 0..98)
+                    && clientMatch.winner == -1
+                ) shift(GEAR_MATCH)
+
+
+                // Shift GEAR_DRAWN
+                if (clientMatch.isTimeValid() &&
+                    ((clientMatch.player1.health == 0 && clientMatch.player2.health == 0) ||
+                    (clientMatch.player1.health == clientMatch.player2.health && clientMatch.timer == 0))
+                    && clientMatch.winner == -1
+                ) shift(GEAR_DRAWN)
+
+
+                // Shift GEAR_SLASH
+                if (clientMatch.isTimeValid() &&
+                    (clientMatch.player1.health != clientMatch.player2.health && clientMatch.timer == 0) ||
+                    ((clientMatch.player1.health == 0 || clientMatch.player2.health == 0)
+                            && (clientMatch.player1.health != clientMatch.player2.health))
+                    && clientMatch.winner == -1
+                ) shift(GEAR_SLASH)
+
+
+            }
 
 
             // Shift GEAR_TRAINER

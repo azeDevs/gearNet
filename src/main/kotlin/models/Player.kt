@@ -316,10 +316,6 @@ class Player(
     fun getGuardGaugeDelta():Int = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.guardGaugeDelta else getMatchupData().player2.guardGaugeDelta
 
 
-    fun isBlocking():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isBlocking() else getMatchupData().player2.isBlocking()
-    fun isDamaged():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isDamaged() else getMatchupData().player2.isDamaged()
-    fun isYRCing():Boolean = if(getTeamSeat() == PLAYER_1) getMatchupData().player1.isYRCing() else getMatchupData().player2.isYRCing()
-
 
     /** ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ **
      *  String Getters
@@ -331,10 +327,6 @@ class Player(
     fun getGuardGaugeString():String = "Guard Gauge: ${getGuardGauge()}${getDeltaString(getGuardGaugeDelta())} / 12800"
     fun getStunLockedString():String = "Stun Locked: ${getBooleanString(isStunLocked())}"
     fun getBurstEnabledString():String = "Burst Enabled: ${getBooleanString(isBurstEnabled())}"
-
-    fun getBlockingString():String = "isBlocking: ${getBooleanString(isBlocking())}"
-    fun getDamagedString():String = "isDamaged: ${getBooleanString(isDamaged())}"
-    fun getYRCingString():String = "isYRCing: ${getBooleanString(isYRCing())}"
 
     fun getBooleanString(flag:Boolean):String = if(flag) "☩" else "·"
     fun getDeltaString(deltaValue:Int):String = if(deltaValue > 0) "+$deltaValue" else if(deltaValue < 0) deltaValue.toString() else "±0"

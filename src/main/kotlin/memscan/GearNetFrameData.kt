@@ -2,6 +2,7 @@ package memscan
 
 import memscan.GearNet.MatchupData
 import memscan.GearNet.PlayerData
+import memscan.GearNetShifter.Shift
 import memscan.GearNetUpdates.Companion.IC_COMPLETE
 import memscan.GearNetUpdates.GNLog
 import utils.plural
@@ -14,9 +15,22 @@ class GearNetFrameData {
      *  [FrameData] Class
      */
     private val frames: MutableList<FrameData> = mutableListOf()
+    private val matchArchive: MutableList<MatchupData> = mutableListOf()
     fun addFrame(updatedDataList: MutableList<PlayerData>, updatedMuList: List<MatchupData>, gearShift: GearNetShifter.Shift) = frames.add(FrameData(updatedDataList, updatedMuList, gearShift))
     fun lastFrame() = frames.lastOrNull() ?: FrameData()
     fun oldFrame() = if(frames.size>1) frames[frames.size-2] else lastFrame()
+
+
+    /**
+     *  @return a [String] for use with gnUpdates
+     */
+    fun archiveMatchups() {
+        lastFrame().matchupData.forEach {
+            if (it.shift == Shift.GEAR_VICTORY) {
+                matchArchive.add(it)
+            }
+        }
+    }
 
 
     /**

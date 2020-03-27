@@ -195,9 +195,9 @@ class DebugViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
 
         val timerText = when (a.getClientMatch().winner) {
-            PLAYER_1->"<- TIMER - "
-            PLAYER_2->" - TIMER ->"
-            else->" - TIMER - " }
+            PLAYER_1->"<- TIMER [${a.getClientMatch().shift.name}] - "
+            PLAYER_2->" - TIMER [${a.getClientMatch().shift.name}] ->"
+            else->" - TIMER [${a.getClientMatch().shift.name}] - " }
         timeLabel.text = "$timerText\n${a.getClientMatch().timer}"
 
 
