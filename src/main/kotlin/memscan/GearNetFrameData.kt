@@ -20,6 +20,7 @@ class GearNetFrameData {
     fun lastFrame() = frames.lastOrNull() ?: FrameData()
     fun oldFrame() = if(frames.size>1) frames[frames.size-2] else lastFrame()
 
+    fun getMatchArchive() = matchArchive
 
     /**
      *  @return a [String] for use with gnUpdates
@@ -27,7 +28,7 @@ class GearNetFrameData {
     fun archiveMatchups() {
         lastFrame().matchupData.forEach {
             if (it.shift == Shift.GEAR_VICTORY) {
-                matchArchive.add(it)
+                if (matchArchive.none { mu -> mu.equals(it) }) matchArchive.add(it)
             }
         }
     }
@@ -38,12 +39,12 @@ class GearNetFrameData {
      */
     fun getFrameUpdateLog(startTime:Long, updates: List<GNLog>): GNLog {
         return if (updates.isNotEmpty()) {
-            val updateText = "Frame generated, ${updates.size} ${plural("update", updates.size)} made"
-            val matchupText = "with ${lastFrame().matchupData.size} ${plural("Matchup", lastFrame().matchupData.size)}"
+            val updateText = "Frame generated, ${updates.size} ${plural("update", updates.size)}"
+            val matchupText = "with ${lastFrame().matchupData.size} ${plural("matchup", lastFrame().matchupData.size)}[${getMatchArchive().size}]"
             val delay = timeMillis() - startTime
             val fps = ((16.33/(delay+1))*60).toInt()
             val totalFrames = "${frames.size} total ${plural("frame", frames.size)}"
-            GNLog(IC_COMPLETE, "$updateText $matchupText ($delay ms delay / $fps FPS / $totalFrames)")
+            GNLog(IC_COMPLETE, "$updateText $matchupText ($fps FPS @ $delay ms / $totalFrames)")
         } else GNLog()
     }
 

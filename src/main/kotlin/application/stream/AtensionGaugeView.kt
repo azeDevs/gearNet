@@ -172,7 +172,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
                         else -> translateX += 215.0
                     }
                     translateY -= 800.0
-                    blendMode = BlendMode.DIFFERENCE
+                    blendMode = BlendMode.ADD
                 }
 
             }
@@ -192,7 +192,7 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
         } else {
             container.isVisible = true
 
-            bannerScore.text = f.getAmunity().toString()
+            bannerScore.text = f.getSigns().toString()
 
             munityProgress.width = getPercentage(MAX_MUNITY-f.getAmunity(), MAX_MUNITY, munityMaxWidth)
             respectProgress.width = getPercentage(f.getRespect(), MAX_RESPECT, respectMaxWidth)
@@ -204,31 +204,31 @@ class AtensionGaugeView(override val root: Parent, private val teamColor:Int) : 
             when (teamColor) {
                 0 -> { // RED CREST
                     atensionProgress.fill = when {
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() == 100 -> c("#feffe4")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 90..99 -> c("#fff49e")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 80..89 -> c("#ffe692")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 70..79 -> c("#ffd888")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 60..69 -> c("#ffc77d")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 50..59 -> c("#ffb572")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 40..49 -> c("#ffa168")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 30..39 -> c("#ff8c5e")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 20..29 -> c("#ff7553")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 10..19 -> c("#ff5c48")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() == 100 -> c("#ffb572")//c("#feffe4")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 90..99 -> c("#ffa168")//c("#fff49e")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 80..89 -> c("#ff8c5e")//c("#ffe692")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 70..79 -> c("#ff7553")//c("#ffd888")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 60..69 -> c("#ff5c48")//c("#ffc77d")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 50..59 -> c("#ffb572")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 40..49 -> c("#ffa168")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 30..39 -> c("#ff8c5e")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 20..29 -> c("#ff7553")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 10..19 -> c("#ff5c48")
                         else -> c("#ff413d")
                     }
                 }
                 1 -> { // BLUE CREST
                     atensionProgress.fill = when {
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() == 100 -> c("#feffe4")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 90..99 -> c("#fdf4ae")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 80..89 -> c("#f6e7b4")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 70..79 -> c("#eadabc")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 60..69 -> c("#d9cbbf")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 50..59 -> c("#c5bbbc")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 40..49 -> c("#a3aabc")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 30..39 -> c("#8098c3")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 20..29 -> c("#5d84ce")
-                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 10..19 -> c("#3a70de")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() == 100 -> c("#c5bbbc")//c("#feffe4")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 90..99 -> c("#a3aabc")//c("#fdf4ae")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 80..89 -> c("#8098c3")//c("#f6e7b4")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 70..79 -> c("#5d84ce")//c("#eadabc")
+                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 60..69 -> c("#3a70de")//c("#d9cbbf")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 50..59 -> c("#c5bbbc")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 40..49 -> c("#a3aabc")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 30..39 -> c("#8098c3")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 20..29 -> c("#5d84ce")
+//                        getPercentage(f.getAtension(), MAX_ATENSION).toInt() in 10..19 -> c("#3a70de")
                         else -> c("#1759f3")
                     }
                 }

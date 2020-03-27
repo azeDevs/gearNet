@@ -7,6 +7,7 @@ import twitch.WatcherData
 import utils.XrdCharacter
 import utils.addCommas
 import kotlin.math.max
+import kotlin.math.min
 
 class Player(
     private val playerId:Long = -1,
@@ -45,7 +46,7 @@ class Player(
         const val PROSPECT = 2
         const val MAX_MUNITY = 16
         const val MAX_RESPECT = 1600
-        const val MAX_ATENSION = 160000
+        const val MAX_ATENSION = 16000
     }
 
 
@@ -246,14 +247,14 @@ class Player(
     fun setSignal(flag:Boolean) { signal = flag }
 
     fun getAmunity() = this.amunity
-    fun setAmunity(value:Int) { amunity = value }
+    fun setAmunity(value:Int) { amunity = min(value, MAX_MUNITY) }
 
     fun getRespect() = this.respect
-    fun setRespect(value:Int) { respect = value }
+    fun setRespect(value:Int) { respect = min(value, MAX_RESPECT) }
     fun addRespect(amount:Int) { respect += amount }
 
     fun getAtension() = this.atension
-    fun setAtension(value:Int) { atension = value }
+    fun setAtension(value:Int) { atension = min(value, MAX_ATENSION) }
     fun addAtension(amount:Int) { atension += amount }
 
     fun getAtensionString() = if(getAtension()!=0) "A:${getAtension()}/" else "" +

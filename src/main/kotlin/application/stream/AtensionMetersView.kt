@@ -42,7 +42,7 @@ class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
         if (a.getPlayersStaged().p1.getSignal()) atensionWheel.rotate -= 3.33
-//        if (a.getPlayersStaged().p2.getBurst()) atensionWheel.rotate -= 2.0
+        if (a.getPlayersStaged().p2.getSignal()) atensionWheel.rotate += 3.33
         atensionGaugeR.applyData()
         atensionGaugeB.applyData()
     }

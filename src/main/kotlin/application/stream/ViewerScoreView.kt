@@ -37,7 +37,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
                 isVisible = false
                 scaleX *= scaleFactor
                 scaleY *= scaleFactor
-                translateY += (scaleIndex*52)-320.0-scaleIndex
+                translateY += (scaleIndex*52)-300.0-scaleIndex
                 scaleX -= (scaleIndex*0.016)
                 scaleY -= (scaleIndex*0.016)
 

@@ -58,7 +58,7 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
             ) shift(GEAR_VICTORY)
 
 
-            if (getShift() != GEAR_VICTORY) {
+            if (getShift() != GEAR_VICTORY && getShift() != GEAR_LOBBY) {
 
 
                 // Shift GEAR_INTRO

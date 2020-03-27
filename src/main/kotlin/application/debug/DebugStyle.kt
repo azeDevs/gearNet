@@ -65,8 +65,8 @@ class DebugStyle : Stylesheet() {
                 backgroundColor += debugDarkGreen
 //                borderColor += box(debugSimpGreen)
                 textFill = debugLiteGreen
-                maxWidth = 208.px
-                minWidth = 208.px
+                maxWidth = 240.px
+                minWidth = 240.px
                 padding = box(8.px)
 //                borderWidth += box(2.px)
 //                borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)

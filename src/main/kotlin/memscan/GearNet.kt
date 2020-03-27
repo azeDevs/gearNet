@@ -139,7 +139,7 @@ class GearNet {
 
 
     fun getRedPlayer(): PlayerData = getClientMatchup().player1
-    fun getBluePlayer(): PlayerData = getClientMatchup().player1
+    fun getBluePlayer(): PlayerData = getClientMatchup().player2
     fun getClientMatchup(): MatchupData = frameData.lastFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
     fun getClientCabinet(): Int = if(getClientPlayer().cabinetId.toInt()>3) -1 else getClientPlayer().cabinetId.toInt()
     fun getClientPlayer(): PlayerData = frameData.lastFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()

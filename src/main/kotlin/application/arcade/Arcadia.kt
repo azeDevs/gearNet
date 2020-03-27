@@ -48,9 +48,8 @@ class Arcadia : Controller() {
     fun getPlayersLoading() = gn.getFrame().playerData.filter { it.loadPercent in 1..99 }
     fun getPlayersActive() = getPlayers().filter { !it.isAbsent() }.toList()
     fun getPlayersStaged(): Duo<Player> {
-        val stagingCabinet = gn.getClientCabinet()
-        val p1 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_1) && it.isOnCabinet(stagingCabinet) } ?: Player()
-        val p2 = getPlayersMap().values.firstOrNull { it.isSeatedAt(PLAYER_2) && it.isOnCabinet(stagingCabinet) } ?: Player()
+        val p1 = getPlayersMap().values.firstOrNull { it.getPlayerId() == gn.getRedPlayer().steamId } ?: Player()
+        val p2 = getPlayersMap().values.firstOrNull { it.getPlayerId() == gn.getBluePlayer().steamId } ?: Player()
         return Duo(p1, p2)
     }
 
@@ -101,49 +100,46 @@ class Arcadia : Controller() {
         val p1 = getPlayer(cm.player1.steamId)
         val p2 = getPlayer(cm.player2.steamId)
 
-        if (p1.isValid()) {
-            p1.setAmunity(getTeam(PLAYER_1).size)
+        if (p1.isValid() && p2.isValid()) {
+            processAtension(p1, p2)
+            processAtension(p2, p1)
+        }
+    }
+
+    private fun processAtension(player: Player, opponent: Player) {
+
+        player.setAmunity(getTeam(player.getTeamSeat()).size+1)
+
+
+        if (gn.getShift() == Shift.GEAR_MATCH) {
+
             // Boost Respect when in strike-stun & taking no damage
-            if (p1.isBurstEnabled()) p1.addRespect(8*p1.getAmunity())
-            // Boost Atension when putting opponent into strike-stun
-            if (p2.isStunLocked()) {
-                p1.addAtension(p1.getRespect() * (p1.getAmunity()))
-                p1.addRespect(-p1.getAmunity())
+            if (player.isStunLocked() && player.getTensionDelta() < 0) {
+                player.addRespect(8 + opponent.getAmunity())
             }
 
 
             // Resolve full Respect
-            if (p1.getRespect() >= MAX_RESPECT) p1.setRespect(MAX_RESPECT)
-            // Resolve full Atension
-            if (p1.getAtension() >= MAX_ATENSION) {
-                p1.setSignal(true)
-                p1.setAtension(0)
-                p1.setRespect(0)
-                p1.addSigns(1)
-            }
+            if (player.getRespect() >= MAX_RESPECT) player.setRespect(MAX_RESPECT)
+            if (player.getRespect() <= 0) player.setRespect(0)
 
 
-            p1.setAmunity(getTeam(PLAYER_1).size)
-            // Boost Respect when in strike-stun & taking no damage
-            if (p1.isBurstEnabled()) p1.addRespect(8*p1.getAmunity())
             // Boost Atension when putting opponent into strike-stun
-            if (p2.isStunLocked()) {
-                p1.addAtension(p1.getRespect() * (p1.getAmunity()))
-                p1.addRespect(-p1.getAmunity())
+            if (opponent.isStunLocked()) {
+                player.addAtension(8 + player.getAmunity())
+                player.addAtension(player.getRespect())
             }
 
-
-            // Resolve full Respect
-            if (p1.getRespect() >= MAX_RESPECT) p1.setRespect(MAX_RESPECT)
             // Resolve full Atension
-            if (p1.getAtension() >= MAX_ATENSION) {
-                p1.setSignal(true)
-                p1.setAtension(0)
-                p1.setRespect(0)
-                p1.addSigns(1)
+            if (player.getAtension() >= MAX_ATENSION) {
+                player.setSignal(true)
+                player.setAtension(0)
+                player.addSigns(1)
             }
 
         }
+
+
     }
 
 
