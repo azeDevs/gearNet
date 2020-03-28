@@ -5,8 +5,6 @@ import memscan.GearNetShifter.Shift
 import memscan.MemHandler
 import memscan.XrdApi
 import models.Player
-import models.Player.Companion.MAX_ATENSION
-import models.Player.Companion.MAX_RESPECT
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import tornadofx.Controller
@@ -43,7 +41,7 @@ class Arcadia : Controller() {
     fun getPlayers() = getPlayersMap().values
     fun getWatchers() = getPlayers().filter { it.isWatcher() }.toList()
     fun getFighters() = getPlayers().filter { !it.isWatcher() }.toList()
-    fun getTeam(colorId: Int) = getPlayers().filter { it.isTeam(colorId) && it.isWatcher() }.toList()
+    fun getTeam(colorId: Int) = getPlayers().filter { it.isTeam(colorId) }.toList()
     fun getPlayersMap() = players
     fun getPlayersLoading() = gn.getFrame().playerData.filter { it.loadPercent in 1..99 }
     fun getPlayersActive() = getPlayers().filter { !it.isAbsent() }.toList()
@@ -106,37 +104,59 @@ class Arcadia : Controller() {
         }
     }
 
+    companion object {
+        const val MAX_MUNITY = 16
+        const val MAX_RESPECT = 160
+        const val MAX_ATENSION = 1600
+    }
+
     private fun processAtension(player: Player, opponent: Player) {
 
         player.setAmunity(getTeam(player.getTeamSeat()).size+1)
 
+        when(gn.getShift()) {
+            Shift.GEAR_MATCH -> {
 
-        if (gn.getShift() == Shift.GEAR_MATCH) {
+                // Boost Respect when in strike-stun & taking no damage
+                when {
+                    player.isStunLocked() && player.getTensionDelta() < 0 -> player.addRespect(7)
+                    player.isStunLocked() -> player.addRespect(3)
+                }
 
-            // Boost Respect when in strike-stun & taking no damage
-            if (player.isStunLocked() && player.getTensionDelta() < 0) {
-                player.addRespect(8 + opponent.getAmunity())
+
+                // Boost Atension when putting opponent into strike-stun
+                when {
+                    opponent.isStunLocked() -> {
+                        player.addAtension(player.getAmunity()+player.getRespect())
+                        player.addRespect(-2)
+                    }
+//                    player.getAmunity() > 0 -> player.addAtension(player.getAmunity())
+                }
+
+                // Resolve RESPECT
+                when {
+                    player.getRespect() >= MAX_RESPECT -> player.setRespect(MAX_RESPECT)
+                    player.getRespect() <= 0 -> player.setRespect(0)
+                }
+
+                // Resolve ATENSION
+                when {
+                    player.getAtension() >= MAX_ATENSION -> {
+                        player.setSignal(true)
+                        player.setAtension(0)
+                        player.addSigns(2)
+                        getTeam(player.getTeamSeat()).forEach { it.addSigns(1) }
+                    }
+                    player.getAtension() <= 0 -> player.setAtension(0)
+                }
+
             }
-
-
-            // Resolve full Respect
-            if (player.getRespect() >= MAX_RESPECT) player.setRespect(MAX_RESPECT)
-            if (player.getRespect() <= 0) player.setRespect(0)
-
-
-            // Boost Atension when putting opponent into strike-stun
-            if (opponent.isStunLocked()) {
-                player.addAtension(8 + player.getAmunity())
-                player.addAtension(player.getRespect())
-            }
-
-            // Resolve full Atension
-            if (player.getAtension() >= MAX_ATENSION) {
-                player.setSignal(true)
+            Shift.GEAR_SLASH -> {  }
+            Shift.GEAR_VICTORY -> { getPlayers().forEach { it.setTeam() } }
+            else -> {
                 player.setAtension(0)
-                player.addSigns(1)
+                player.setRespect(0)
             }
-
         }
 
 
@@ -167,7 +187,7 @@ class Arcadia : Controller() {
 
 
             val activePlayerCount = max(getPlayers().filter { !it.isAbsent() }.size, 1)
-            getPlayers().forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(activePlayerCount) }
+            getPlayers().forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(activePlayerCount, this) }
             println("Idle increment on ${getPlayers().filter { !it.hasPlayed() }.size} players")
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
 
@@ -203,10 +223,10 @@ class Arcadia : Controller() {
 
         if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
             getPlayer(loser).changeScore(bonusLoserPayout - payout)
-            getPlayer(loser).changeRating(-2)
+            getPlayer(loser).changeRating(-2, this)
         }
         getPlayer(winner).changeScore(bonusWinnerPayout + payout)
-        getPlayer(winner).changeRating(1)
+        getPlayer(winner).changeRating(1, this)
 
         /*
             ±0 NEUTRAL   =              (0± bountyInflate %, 0± betOnPayout %, 0± betOffPayout %)
@@ -222,7 +242,7 @@ class Arcadia : Controller() {
 
 
         getPlayers().filter { it.isWatcher() }.forEach {
-            var scoreChange = 0
+            var scoreChange = it.getSigns() * 8
             when(winnerSide) {
                 0 -> {
                     if(it.isTeam(PLAYER_1) && !it.isTeam(PLAYER_2)) scoreChange += ((100*riskModifier).toInt() + payout)
@@ -236,8 +256,9 @@ class Arcadia : Controller() {
                 }
             }
             it.changeScore(scoreChange)
-            it.setTeam()
         }
+
+        getPlayers().forEach { it.setTeam() }
 
 
     }

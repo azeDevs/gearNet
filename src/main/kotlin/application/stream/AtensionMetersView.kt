@@ -6,6 +6,8 @@ import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.image.ImageView
+import javafx.scene.layout.StackPane
+import memscan.GearNetShifter
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import tornadofx.Fragment
@@ -16,13 +18,14 @@ import utils.getRes
 class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
 
     private val a: Arcadia by inject()
+    private val container: StackPane
     private lateinit var atensionWheel: ImageView
     private lateinit var atensionGaugeR: AtensionGaugeView
     private lateinit var atensionGaugeB: AtensionGaugeView
 
     init {
         with(root) {
-            stackpane {
+            container = stackpane {
                 atensionWheel = imageview(getRes("atlas.png").toString()) { // WHEEL
                     viewport = Rectangle2D(832.0, 768.0, 256.0, 256.0)
                     fitWidth = 200.0
@@ -41,8 +44,13 @@ class AtensionMetersView(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun applyData() = Platform.runLater {
-        if (a.getPlayersStaged().p1.getSignal()) atensionWheel.rotate -= 3.33
-        if (a.getPlayersStaged().p2.getSignal()) atensionWheel.rotate += 3.33
+        if (a.getPlayersStaged().p1.getSignal()) {
+            atensionWheel.rotate -= 3.33
+        }
+        if (a.getPlayersStaged().p2.getSignal()) {
+            atensionWheel.rotate += 3.33
+        }
+        if (a.isShift(GearNetShifter.Shift.GEAR_LOBBY)) atensionWheel.rotate = 0.0
         atensionGaugeR.applyData()
         atensionGaugeB.applyData()
     }

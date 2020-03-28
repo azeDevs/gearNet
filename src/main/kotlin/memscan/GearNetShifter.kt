@@ -45,35 +45,22 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
             ) shift(GEAR_LOBBY)
 
 
-            // Shift GEAR_LOADING
-            if (!clientMatch.isTimeValid() &&
-                player1.isLoading() && player2.isLoading()
-            ) shift(GEAR_LOADING)
-
-
-            // Shift GEAR_VICTORY
-            if (clientMatch.isTimeValid() &&
-                clientMatch.winner != -1
-                && clientMatch.timer != -1
-            ) shift(GEAR_VICTORY)
-
+            if (getShift() == GEAR_LOBBY) {
+                // Shift GEAR_LOADING
+                if (!clientMatch.isTimeValid() &&
+                    player1.isLoading() && player2.isLoading()
+                ) shift(GEAR_LOADING)
+            }
 
             if (getShift() != GEAR_VICTORY && getShift() != GEAR_LOBBY) {
 
-
-                // Shift GEAR_INTRO
                 if (clientMatch.isTimeValid() &&
-                    (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer == 99)
+                    (clientMatch.player1.health > 0 || clientMatch.player2.health > 0)
                     && clientMatch.winner == -1
-                ) shift(GEAR_INTRO)
-
-
-                // Shift GEAR_MATCH
-                if (clientMatch.isTimeValid() &&
-                    (clientMatch.player1.health > 0 || clientMatch.player2.health > 0 && clientMatch.timer in 0..98)
-                    && clientMatch.winner == -1
-                ) shift(GEAR_MATCH)
-
+                ) {
+                    if (clientMatch.timer in 0..98) shift(GEAR_MATCH) // Shift GEAR_MATCH
+                    if (clientMatch.timer == 99) shift(GEAR_INTRO) // Shift GEAR_INTRO
+                }
 
                 // Shift GEAR_DRAWN
                 if (clientMatch.isTimeValid() &&
@@ -81,7 +68,6 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
                     (clientMatch.player1.health == clientMatch.player2.health && clientMatch.timer == 0))
                     && clientMatch.winner == -1
                 ) shift(GEAR_DRAWN)
-
 
                 // Shift GEAR_SLASH
                 if (clientMatch.isTimeValid() &&
@@ -91,7 +77,15 @@ class GearNetShifter(private val gnUpdates: GearNetUpdates) {
                     && clientMatch.winner == -1
                 ) shift(GEAR_SLASH)
 
+            }
 
+
+            if (getShift() == GEAR_MATCH || getShift() == GEAR_INTRO || getShift() == GEAR_SLASH || getShift() == GEAR_DRAWN) {
+                // Shift GEAR_VICTORY
+                if (clientMatch.isTimeValid() &&
+                    clientMatch.winner != -1
+                    && clientMatch.timer != -1
+                ) shift(GEAR_VICTORY)
             }
 
 

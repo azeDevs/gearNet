@@ -3,51 +3,46 @@ package application.stream
 import application.arcade.ArcadeView
 import application.arcade.Arcadia
 import javafx.application.Platform
+import javafx.geometry.Pos
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.control.Label
-import javafx.scene.effect.BlendMode
 import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import models.Player
+import models.Player.Companion.PLAYER_1
 import tornadofx.*
 import utils.XrdCharacter.getCharacterTrademark
-import utils.addCommas
-import utils.getRandomName
 import utils.getRes
-import kotlin.random.Random
 
 class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : Fragment(),
     ArcadeView {
 
     private val a: Arcadia by inject()
-    private var wholeThing: StackPane
+    private var container: StackPane
     private lateinit var character: ImageView
-    private lateinit var spirit: ImageView
-    private lateinit var handle1: Label
-    private lateinit var handle2: Label
+    private lateinit var handle: Label
     private lateinit var status: ImageView
 
     private lateinit var rating: ImageView
-    private lateinit var bounty1: Label
-    private lateinit var bounty2: Label
-
+    private lateinit var bounty: Label
+    private lateinit var signs: Label
     private lateinit var change: Label
 
 
     init {
         with(root) {
-            wholeThing = stackpane { isVisible = false
+            container = stackpane {
                 addClass(ScoreStyle.bountyContainer)
-                translateX += 444
+                translateX += 440
                 translateY -= 300
 
-                scaleX -= (scaleIndex*0.056)
-                scaleY -= (scaleIndex*0.056)
-                translateY += (scaleIndex*(120-scaleIndex*3.3))
+                scaleX -= (scaleIndex*0.042)
+                scaleY -= (scaleIndex*0.042)
+                translateY += (scaleIndex*(140-scaleIndex*3.3))
                 translateX -= (scaleIndex*9.6)
 
 
@@ -55,150 +50,100 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                 maxWidth = 1024.0
                 character = imageview(getRes("atlas.png").toString()) {
                     viewport = getCharacterTrademark()
-                    translateX -= 209
-                    translateY += 18
-                    fitWidth = 64.0
-                    fitHeight = 64.0
+                    translateX -= 230
+                    translateY += 20
+                    fitWidth = 69.0
+                    fitHeight = 69.0
                 }
 
                 imageview(getRes("atlas.png").toString()) {
                     viewport = Rectangle2D(1280.0, 0.0, 768.0, 192.0)
                     translateX += 25
-                    fitWidth = 592.0
-                    fitHeight = 148.0
-                }
-
-                change = label {
-                    translateX += 252
-                    translateY -= 38
-                    addClass(ScoreStyle.bountyChangeText)
-                }
-
-                spirit = imageview(getRes("cb_spirit_red.gif").toString()) {
-                    viewport = Rectangle2D(0.0, 0.0, 128.0, 128.0)
-                    translateX += 252
-                    translateY += 8
-                    fitWidth = 80.0
-                    fitHeight = 80.0
-                    opacity = 0.96
-                    rotate += 9.6
-                    blendMode = BlendMode.LIGHTEN
+                    fitWidth = 640.0
+                    fitHeight = 160.0
                 }
 
                 rating = imageview(getRes("atlas.png").toString()) {
                     viewport = Player().getRatingImage()
-                    translateX += 252
-                    translateY += 16
-                    fitWidth = 52.0
-                    fitHeight = 52.0
-                    opacity = 0.88
-                    blendMode = BlendMode.HARD_LIGHT
+                    translateX += 272
+                    translateY -= 41
+                    scaleX *= 0.8
+                    scaleY *= 0.8
                 }
 
-                stackpane {
-                    translateX -= 44
-                    translateY -= 38
-                    scaleX *= 0.9
-                    opacity = 0.96
-
-                    handle2 = label { addClass(ScoreStyle.bountyHandleShadow)
-                        translateY += 3
-                        translateX += 2
-                        blendMode = BlendMode.HARD_LIGHT
-                        opacity = 0.01
-                    }
-                    handle1 = label { addClass(ScoreStyle.bountyHandleText) }
+                handle = label {
+                        addClass(ScoreStyle.bountyHandleText)
+                        translateX -= 64
+                        translateY -= 41
+                        scaleX *= 0.9
+                        opacity = 0.96
                 }
 
-                stackpane {
-                    translateX -= 32.0
-                    translateY += 12.0
-                    bounty2 = label {
-                        addClass(ScoreStyle.bountyBountyShadow)
-                        scaleX += 0.04
-                        scaleY += 0.18
-                        blendMode = BlendMode.ADD
-                    }
-                    bounty1 = label {
-                        addClass(ScoreStyle.bountyBountyText)
-                        translateY += 1.0
-                    }
+                bounty = label {
+                    addClass(ScoreStyle.bountyBountyText)
+                    translateX -= 48.0
+                    translateY += 13
                 }
 
                 status = imageview(getRes("atlas.png").toString()) {
                     viewport = Rectangle2D(0.0, 256.0, 128.0, 64.0)
-                    translateX += 134
-                    translateY += 16
-                    fitWidth = 80.0
-                    fitHeight = 40.0
+                    translateX += 271
+                    translateY += 18
+                    fitWidth = 128.0
+                    fitHeight = 64.0
+                }
+
+
+                signs = label {
+                    addClass(ScoreStyle.signsTurnedText)
+                    alignment = Pos.CENTER
+                    translateX += 271.0
+                    translateY += 18.0
+                    scaleX *= 1.1
+                }
+
+                change = label("9999") {
+                    translateX += 160
+                    translateY += 32
+                    addClass(ScoreStyle.bountyChangeText)
                 }
 
             }
         }
     }
 
-    fun setVisibility(flag: Boolean) = Platform.runLater {
-        wholeThing.isVisible = flag
-    }
-
     override fun applyData() = Platform.runLater {
-//        when {
-//            SIMULATION_MODE -> applyRandomData()
-//            p.getPlayerId() > 0L -> applyFighterData()
-//            else -> applyEmptyData()
-//        }
-    }
-
-    private fun applyEmptyData() {
-        character.viewport = getCharacterTrademark()
-        handle1.text = ""; handle1.isVisible = false
-        handle2.text = ""; handle2.isVisible = false
-        status.isVisible = false
-        bounty1.text = ""
-        bounty2.text = ""
-        change.text = ""
-        rating.isVisible = false
-        spirit.isVisible = false
-        wholeThing.isVisible = false
+        val fighters = a.getPlayers().toList()
+        if (fighters.size-1 >= scaleIndex) {
+            applyFighterData(fighters[scaleIndex])
+        } else applyEmptyData()
     }
 
     private fun applyFighterData(p: Player) {
         character.viewport = getCharacterTrademark(p.getPlayerData().characterId)
-        handle1.text = p.getUserName(); handle1.isVisible = true
-        handle2.text = p.getUserName(); handle2.isVisible = true
-        status.viewport = p.getStatusImage(); status.isVisible = true
-        rating.viewport = p.getRatingImage(p.getTeamSeat()); rating.isVisible = true
-        bounty1.text = p.getScoreTotalString()
-        bounty2.text = p.getScoreTotalString()
+        handle.text = p.getUserName(); handle.isVisible = true
+        status.viewport = p.getStatusImage()
+        status.isVisible = !p.isWatcher()
+        rating.viewport = p.getRatingImage(PLAYER_1)
+        rating.isVisible = !p.isWatcher()
+        bounty.text = p.getScoreTotalString()
         change.text = p.getScoreDeltaString()
         setChangeTextColor(p.getScoreDelta())
-        rating.fitWidth = 57.0 * (1 + p.getRating() * 0.033)
-        rating.fitHeight = 57.0 * (1 + p.getRating() * 0.033)
-        spirit.isVisible = p.getRating() > 0
-        spirit.fitWidth = 77.0 * (1 + p.getRating() * 0.33)
-        spirit.fitHeight = 77.0 * (1 + p.getRating() * 0.33)
-
-        wholeThing.isVisible = true
+        signs.text = p.getSigns().toString()
+        signs.isVisible = true
+        container.isVisible = true
     }
 
-    private fun applyRandomData(p: Player) {
-        val chainInt = Random.nextInt(9)
-        val bountyStr = addCommas(Random.nextInt(1222333).toString())
-        val changeInt = Random.nextInt(-444555, 666777)
-        val dispName = getRandomName()
-        character.viewport = Rectangle2D(Random.nextInt(8) * 64.0, Random.nextInt(4) * 64.0, 64.0, 64.0)
-        handle1.text = dispName
-        handle2.text = dispName
-        bounty1.text = "$bountyStr W$"
-        bounty2.text = "$bountyStr W$"
-        setChangeTextColor(changeInt)
-        change.text = p.getScoreDeltaString(changeInt)
-        status.viewport = p.getStatusImage(Random.nextInt(100), Random.nextDouble(2.0).toFloat())
-        rating.viewport = p.getRatingImage(p.getTeamSeat())
-        spirit.isVisible = chainInt > 0
-        spirit.fitWidth = 44.0 + ((8+chainInt) * chainInt)
-        spirit.fitHeight = 44.0 + ((8+chainInt) * chainInt)
-        wholeThing.isVisible = true
+    private fun applyEmptyData() {
+        character.viewport = getCharacterTrademark()
+        handle.text = ""; handle.isVisible = false
+        status.isVisible = false
+        bounty.text = ""
+        change.text = ""
+        rating.isVisible = false
+        signs.text = ""
+        signs.isVisible = false
+        container.isVisible = false
     }
 
     private fun setChangeTextColor(changeInt: Int) = when {

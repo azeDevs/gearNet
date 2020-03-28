@@ -1,5 +1,9 @@
 package models
 
+import application.arcade.Arcadia
+import application.arcade.Arcadia.Companion.MAX_ATENSION
+import application.arcade.Arcadia.Companion.MAX_MUNITY
+import application.arcade.Arcadia.Companion.MAX_RESPECT
 import javafx.geometry.Rectangle2D
 import memscan.GearNet.MatchupData
 import memscan.GearNet.PlayerData
@@ -44,9 +48,6 @@ class Player(
         const val PLAYER_1 = 0
         const val PLAYER_2 = 1
         const val PROSPECT = 2
-        const val MAX_MUNITY = 16
-        const val MAX_RESPECT = 1600
-        const val MAX_ATENSION = 16000
     }
 
 
@@ -126,10 +127,10 @@ class Player(
         8 -> "θ"
         else -> "Absent"
     }
-    fun incrementBystanding(activePlayerCount:Int) {
+    fun incrementBystanding(activePlayerCount:Int, arcadia: Arcadia) {
         changeScore(0)
         if (--bystanding <= 0) {
-            if (changeRating(-1) <= 0) {
+            if (changeRating(-1, arcadia) <= 0) {
                 bystanding = 0
             } else {
                 bystanding = max(1,activePlayerCount)
@@ -160,10 +161,15 @@ class Player(
     private var riskRating = 0 //Random.nextInt(0, 8)
 
     fun getRating() = this.riskRating
-    fun changeRating(amount:Int): Int {
-        riskRating += amount
-        if (riskRating < 0) riskRating = 0
+    fun changeRating(amount:Int, arcadia: Arcadia): Int {
+        if (riskRating > 0 && riskRating + amount <= 0) riskRating = 0
+        if (riskRating <= 0 && amount < -1) riskRating--
+        if (riskRating < 0 && amount > 0) {
+            riskRating = 1
+            arcadia.getPlayers().filter { it.getRating() < 0 }.forEach{ it.changeRating(-it.getRating(), arcadia) }
+        }
         if (riskRating > 8) riskRating = 8
+        if (riskRating < -8) riskRating = -8
         return riskRating
     }
     fun getRatingString():String = when(getRating()) {

@@ -6,7 +6,6 @@ import javafx.application.Platform
 import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.layout.StackPane
-import models.Player
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import tornadofx.Fragment
@@ -15,6 +14,9 @@ import tornadofx.stackpane
 import utils.getRes
 
 class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
+
+    private var animationFrameR: Int = -1
+    private var animationFrameB: Int = -1
 
     private val a: Arcadia by inject()
     private val container: StackPane
@@ -46,26 +48,44 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
                     scaleY *= 0.88
                 }
 
-                atensionMeters = AtensionMetersView(parent)
                 for (i in 0..15) {
                     viewersGuiR.add(ViewerScoreView(parent, i, 0))
                     viewersGuiB.add(ViewerScoreView(parent, i, 1))
                 }
+
+                atensionMeters = AtensionMetersView(parent)
             }
         }
     }
 
     override fun updateAnimation() {
+        val viewerTeamR = a.getTeam(PLAYER_1)
+        val viewerTeamB = a.getTeam(PLAYER_2)
+
+        if (animationFrameR == -1 && a.getPlayersStaged().p1.getSignal()) animationFrameR = 0
+        if (animationFrameB == -1 && a.getPlayersStaged().p2.getSignal()) animationFrameB = 0
+
+        if (animationFrameR > -1 && animationFrameR < viewerTeamR.size) {
+            viewersGuiR[animationFrameR].restartAnimation()
+            animationFrameR++
+        } else animationFrameR = -1
+
+        if (animationFrameB > -1 && animationFrameB < viewerTeamB.size) {
+            viewersGuiB[animationFrameB].restartAnimation()
+            animationFrameB++
+        } else animationFrameB = -1
+
+        for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].updateAnimation()
+        for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].updateAnimation()
+
         atensionMeters.updateAnimation()
     }
 
     override fun applyData() = Platform.runLater {
-        val viewerTeamR = a.getWatchers().filter { item -> item.isTeam(PLAYER_1) }.sortedByDescending { item -> item.getScoreTotal() }
-        val viewerTeamB = a.getWatchers().filter { item -> item.isTeam(PLAYER_2) }.sortedByDescending { item -> item.getScoreTotal() }
-        for (i in 0..15) if (viewerTeamR.size > i) viewersGuiR[i].applyData(viewerTeamR[i])
-        else viewersGuiR[i].applyData(Player())
-        for (i in 0..15) if (viewerTeamB.size > i) viewersGuiB[i].applyData(viewerTeamB[i])
-        else viewersGuiB[i].applyData(Player())
+        if (a.getPlayersStaged().p1.getSignal()) animationFrameR = 0
+        if (a.getPlayersStaged().p2.getSignal()) animationFrameB = 0
+        viewersGuiR.forEach { it.applyData() }
+        viewersGuiB.forEach { it.applyData() }
         atensionMeters.applyData()
     }
 

@@ -37,8 +37,10 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                     translateX -= 2
                 }
 
-                for (i in 0..7) bountiesGui.add(FighterScoreView(parent, i))
-                for (i in 0..15) viewersGuiC.add(ViewerScoreView(parent, i, 2))
+                stackpane {
+                    for (i in 0..2) bountiesGui.add(FighterScoreView(parent, i))
+                    for (i in 0..6) viewersGuiC.add(ViewerScoreView(parent, i, 2))
+                }
 
             }
         }
@@ -47,20 +49,8 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
     fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
 
     override fun applyData() = Platform.runLater {
-//        for (i in 0..7) {
-//            if (a.getPlayers().size > i) {
-//                bountiesGui[i].applyData(s, i)
-//                bountiesGui[i].setVisibility(true)
-//            }
-//        }
-//        val viewerTeamC = a.getWatchers().filter { item -> item.getScoreTotal() > -1 }.sortedByDescending { item -> item.getScoreTotal() }
-//
-//        for (i in 0..15) {
-//            if (viewerTeamC.size > i) {
-//                viewersGuiC[i].applyData(viewerTeamC[i])
-//                viewersGuiC[i].setVisibility(true)
-//            } else viewersGuiC[i].applyData(Player())
-//        }
+        bountiesGui.forEach { it.applyData() }
+        viewersGuiC.forEach { it.applyData() }
     }
 
 }

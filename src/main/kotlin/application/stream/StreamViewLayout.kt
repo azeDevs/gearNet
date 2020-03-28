@@ -3,28 +3,23 @@ package application.stream
 import application.ApplicationStyle
 import application.arcade.ArcadeView
 import application.arcade.Arcadia
-import application.debug.DebugStyle
 import javafx.application.Platform
-import javafx.geometry.Pos
 import javafx.scene.Parent
-import javafx.scene.control.Label
 import javafx.scene.layout.StackPane
 import memscan.GearNetShifter.Shift.*
 import tornadofx.Fragment
 import tornadofx.addClass
-import tornadofx.label
 import tornadofx.stackpane
 
 class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     private val a: Arcadia by inject()
-    private var showHud = true
-    var streamView: StackPane
+//    private var showHud = true
+    private var streamView: StackPane
 
     private lateinit var lobbyView: LobbyView
     private lateinit var inMatchView: InMatchView
     private lateinit var viewersView: ViewersView
-    private lateinit var gearNetLogs: Label
 
     override fun updateAnimation() {
         viewersView.updateAnimation()
@@ -32,51 +27,55 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
         when (a.getShift()) {
-            GEAR_OFFLINE -> {
-                lobbyView.setVisibility(showHud)
-                inMatchView.setVisibility(!showHud)
-            }
-            GEAR_VICTORY -> {
-                lobbyView.setVisibility(true)
-                inMatchView.setVisibility(false)
-                showHud = true
-            }
             GEAR_LOBBY -> {
                 lobbyView.setVisibility(true)
                 inMatchView.setVisibility(false)
-                showHud = true
+//                showHud = true
             }
             GEAR_LOADING -> {
-                lobbyView.setVisibility(false)
+                lobbyView.setVisibility(true)
                 inMatchView.setVisibility(false)
-                showHud = true
+//                showHud = true
             }
             GEAR_MATCH -> {
                 lobbyView.setVisibility(false)
                 inMatchView.setVisibility(true)
-                showHud = false
+//                showHud = false
             }
             GEAR_SLASH -> {
                 lobbyView.setVisibility(false)
-                inMatchView.setVisibility(false)
-                showHud = false
-            }
-            GEAR_TRAINER -> {
-                lobbyView.setVisibility(false)
                 inMatchView.setVisibility(true)
-                showHud = false
+//                showHud = false
             }
             GEAR_DRAWN -> {
                 lobbyView.setVisibility(false)
                 inMatchView.setVisibility(true)
-                showHud = false
+//                showHud = false
             }
+            GEAR_VICTORY -> {
+                lobbyView.setVisibility(true)
+                inMatchView.setVisibility(false)
+//                showHud = true
+            }
+            GEAR_TRAINER -> {
+                lobbyView.setVisibility(false)
+                inMatchView.setVisibility(true)
+//                showHud = false
+            }
+            GEAR_INTRO -> {
+                lobbyView.setVisibility(false)
+                inMatchView.setVisibility(true)
+//                showHud = false
+            }
+//            else -> {
+//                lobbyView.setVisibility(showHud)
+//                inMatchView.setVisibility(!showHud)
+//            }
         }
 
         inMatchView.applyData()
         lobbyView.applyData()
         viewersView.applyData()
-        gearNetLogs.text = a.getGNLogsString()
     }
 
     init {
@@ -87,20 +86,6 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                 inMatchView = InMatchView(parent)
                 viewersView = ViewersView(parent)
 
-//                imageview(getRes("atlas.png").toString()) { // BARC TITLE
-//                    viewport = Rectangle2D(1088.0, 768.0, 448.0, 128.0)
-//                    fitWidth = 448.0
-//                    fitHeight = 128.0
-//                    translateY -= 488
-//                }
-
-                gearNetLogs = label("GearNet.UpdateLogs") {
-                    isVisible = false
-                    addClass(DebugStyle.tempListYellow)
-                    alignment = Pos.TOP_LEFT
-                    translateX += 160
-                    translateY += 520
-                }
             }
         }
     }
