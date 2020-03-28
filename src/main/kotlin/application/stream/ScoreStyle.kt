@@ -73,6 +73,7 @@ class ScoreStyle : Stylesheet() {
                 maxWidth = 256.px
                 minWidth = 256.px
                 textFill = LinearGradient(0.0, -30.0, 0.0, 10.0, false, CycleMethod.NO_CYCLE, Stop(0.0, c(0.8, 0.8, 0.3)), Stop(0.48, c(0.9, 0.9, 0.4)), Stop(0.52, c(0.7, 0.5, 0.1)), Stop(1.0, c(0.9, 0.8, 0.2)))
+                effect = DropShadow(BlurType.ONE_PASS_BOX, c("#8f5400"), 8.0, 888.0, 0.0, 0.0)
             }
             and(bountyChangeText) {
                 fontRED?.let { font = it }

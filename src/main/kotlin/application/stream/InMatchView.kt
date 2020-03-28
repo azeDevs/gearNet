@@ -11,7 +11,6 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import memscan.GearNetShifter.Shift.GEAR_MATCH
 import models.Player
-import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import tornadofx.*
 import utils.getRes
@@ -20,11 +19,13 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
 
     private val a: Arcadia by inject()
     private val container: StackPane
+    private lateinit var backingR: ImageView
     private lateinit var stunGaugeR: StunGaugeView
     private lateinit var bountyR: Label
     private lateinit var statusR: ImageView
     private lateinit var ratingR: ImageView
 
+    private lateinit var backingB: ImageView
     private lateinit var stunGaugeB: StunGaugeView
     private lateinit var bountyB: Label
     private lateinit var statusB: ImageView
@@ -37,7 +38,7 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                 stunGaugeR = StunGaugeView(parent, 0) // STUN GAUGE RED
                 stunGaugeB = StunGaugeView(parent, 1) // STUN GAUGE BLUE
 
-                imageview(getRes("atlas.png").toString()) { // BACKING RED
+                backingR = imageview(getRes("atlas.png").toString()) { // BACKING RED
                     viewport = Rectangle2D(1344.0, 196.0, 704.0, 128.0)
                     fitWidth = 704.0
                     fitHeight = 128.0
@@ -47,7 +48,7 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                     scaleY *= 0.50
                 }
 
-                imageview(getRes("atlas.png").toString()) { // BACKING BLUE
+                backingB = imageview(getRes("atlas.png").toString()) { // BACKING BLUE
                     viewport = Rectangle2D(1344.0, 196.0, 704.0, 128.0)
                     fitWidth = 704.0
                     fitHeight = 128.0
@@ -107,56 +108,60 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
         }
     }
 
-    fun setVisibility(flag: Boolean) = Platform.runLater { container.isVisible = flag }
+    fun setVisibility(flag: Boolean) = Platform.runLater {
+        container.isVisible = flag
+//        ratingR.isVisible = flag
+//        ratingB.isVisible = flag
+    }
 
     override fun applyData() = Platform.runLater {
-        val p1 = a.getPlayers().firstOrNull { it.getTeamSeat() == PLAYER_1 } ?: Player()
-        val p2 = a.getPlayers().firstOrNull { it.getTeamSeat() == PLAYER_2 } ?: Player()
+        applyStagedFighterData(a.getPlayer(a.getClientMatch().player1.steamId))
+        applyStagedFighterData(a.getPlayer(a.getClientMatch().player2.steamId))
+    }
 
-        if (p1.getPlayerId() > 0L) {
-            bountyR.text = p1.getScoreTotalString()
-            bountyR.isVisible = true
-            if (a.isShift(GEAR_MATCH)) {
-                stunGaugeR.setVisibility(p1.isOnCabinet())
-                stunGaugeR.applyData()
-                ratingR.viewport = p1.getRatingImage(PLAYER_1)
-                ratingR.isVisible = p1.isOnCabinet()
-            } else {
-                stunGaugeR.setVisibility(false)
-                ratingR.isVisible = false
-            }
-            statusR.viewport = Rectangle2D(p1.getStatusImage().minX, p1.getStatusImage().minY, p1.getStatusImage().width, p1.getStatusImage().height)
-            statusR.isVisible = p1.isOnCabinet()
-
-        } else {
-            bountyR.text = ""
-            bountyR.isVisible = false
-            stunGaugeR.setVisibility(false)
-            statusR.isVisible = false
-            ratingR.isVisible = false
+    private fun applyStagedFighterData(p: Player) {
+        var backing = backingR
+        var bounty = bountyR
+        var stunGauge = stunGaugeR
+        var rating = ratingR
+        var status = statusR
+        if (p.getTeamSeat() == PLAYER_2) {
+            backing = backingB
+            bounty = bountyB
+            stunGauge = stunGaugeB
+            rating = ratingB
+            status = statusB
         }
 
-        if (p2.getPlayerId() > 0L) {
-            bountyB.text = p2.getScoreTotalString()
-            bountyB.isVisible = true
+
+        if (p.isValid()) {
+            backing.isVisible = true
+            bounty.text = p.getScoreTotalString()
+            bounty.isVisible = true
             if (a.isShift(GEAR_MATCH)) {
-                stunGaugeB.setVisibility(p2.isOnCabinet())
-                stunGaugeB.applyData()
-                ratingB.viewport = p2.getRatingImage(PLAYER_2)
-                ratingB.isVisible = p2.isOnCabinet()
+                stunGauge.setVisibility(p.isOnCabinet())
+                stunGauge.applyData()
+                rating.viewport = p.getRatingImage(p.getTeamSeat())
+                rating.isVisible = p.isOnCabinet()
             } else {
-                stunGaugeB.setVisibility(false)
-                ratingB.isVisible = false
+                stunGauge.setVisibility(false)
+                rating.isVisible = false
             }
-            statusB.viewport = Rectangle2D(p2.getStatusImage().minX, p2.getStatusImage().minY, p2.getStatusImage().width, p2.getStatusImage().height)
-            statusB.isVisible = p2.isOnCabinet()
+            status.viewport = Rectangle2D(
+                p.getStatusImage().minX,
+                p.getStatusImage().minY,
+                p.getStatusImage().width,
+                p.getStatusImage().height
+            )
+            status.isVisible = false //p.isOnCabinet()
 
         } else {
-            bountyB.text = ""
-            bountyB.isVisible = false
-            stunGaugeB.setVisibility(false)
-            statusB.isVisible = false
-            ratingB.isVisible = false
+            backing.isVisible = false
+            bounty.text = ""
+            bounty.isVisible = false
+            stunGauge.setVisibility(false)
+            status.isVisible = false
+            rating.isVisible = false
         }
     }
 

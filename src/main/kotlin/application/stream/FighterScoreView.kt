@@ -37,12 +37,12 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         with(root) {
             container = stackpane {
                 addClass(ScoreStyle.bountyContainer)
-                translateX += 420
+                translateX += 400
                 translateY -= 280
 
                 scaleX -= (scaleIndex*0.042)
                 scaleY -= (scaleIndex*0.042)
-                translateY += (scaleIndex*(120-scaleIndex*3.2))
+                translateY += (scaleIndex*(130-scaleIndex*4))
                 translateX -= (scaleIndex*9.6)
 
 
@@ -65,10 +65,10 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
                 rating = imageview(getRes("atlas.png").toString()) {
                     viewport = Player().getRatingImage()
-                    translateX += 272
-                    translateY -= 41
-                    scaleX *= 0.8
-                    scaleY *= 0.8
+                    translateX += 253
+                    translateY -= 40
+                    scaleX *= 0.77
+                    scaleY *= 0.77
                 }
 
                 handle = label {
@@ -97,9 +97,8 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
                 signs = label {
                     addClass(ScoreStyle.signsTurnedText)
                     alignment = Pos.CENTER
-                    translateX += 271.0
+                    translateX += 270.0
                     translateY += 18.0
-                    scaleX *= 1.1
                 }
 
                 change = label("9999") {
@@ -121,28 +120,30 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
 
     private fun applyFighterData(p: Player) {
         character.viewport = getCharacterTrademark(p.getPlayerData().characterId)
-        handle.text = p.getUserName(); handle.isVisible = true
+        handle.text = p.getUserName()
         status.viewport = p.getStatusImage()
-        status.isVisible = !p.isWatcher()
+        status.isVisible = false //!p.isWatcher()
         rating.viewport = p.getRatingImage(PLAYER_2)
         rating.isVisible = true
         bounty.text = p.getScoreTotalString()
+        if (p.getScoreTotal() == 0) bounty.opacity = 0.77
+        else bounty.opacity = 1.0
         change.text = p.getScoreDeltaString()
         setChangeTextColor(p.getScoreDelta())
         signs.text = p.getSigns().toString()
-        signs.isVisible = true
+        if (p.getSigns() == 0) signs.opacity = 0.77
+        else signs.opacity = 1.0
         container.isVisible = true
     }
 
     private fun applyEmptyData() {
         character.viewport = getCharacterTrademark()
-        handle.text = ""; handle.isVisible = false
+        handle.text = ""
         status.isVisible = false
+        rating.isVisible = false
         bounty.text = ""
         change.text = ""
-        rating.isVisible = false
         signs.text = ""
-        signs.isVisible = false
         container.isVisible = false
     }
 

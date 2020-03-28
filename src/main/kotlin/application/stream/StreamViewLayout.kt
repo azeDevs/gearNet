@@ -67,10 +67,10 @@ class StreamViewLayout(override val root: Parent) : Fragment(), ArcadeView {
                 inMatchView.setVisibility(true)
 //                showHud = false
             }
-//            else -> {
-//                lobbyView.setVisibility(showHud)
-//                inMatchView.setVisibility(!showHud)
-//            }
+            else -> {
+                lobbyView.setVisibility(true)
+                inMatchView.setVisibility(false)
+            }
         }
 
         inMatchView.applyData()

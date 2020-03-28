@@ -21,7 +21,7 @@ class ViewerScoreView(override val root: Parent, private val scaleIndex:Int, pri
     private var animationFrame: Int = 1
 
     private val a: Arcadia by inject()
-    private val scaleFactor: Float = 0.77f
+    private val scaleFactor: Float = 0.80f
     private var container: StackPane
     private lateinit var teamBackground: ImageView
     private lateinit var alias: Label

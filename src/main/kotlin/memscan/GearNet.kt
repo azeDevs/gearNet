@@ -140,7 +140,7 @@ class GearNet {
 
     fun getRedPlayer(): PlayerData = getClientMatchup().player1
     fun getBluePlayer(): PlayerData = getClientMatchup().player2
-    fun getClientMatchup(): MatchupData = frameData.lastFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
+    fun getClientMatchup(): MatchupData = if(getClientPlayer().cabinetId.toInt()>3) MatchupData() else frameData.lastFrame().matchupData.firstOrNull { it.isOnCabinet(getClientCabinet()) } ?: MatchupData()
     fun getClientCabinet(): Int = if(getClientPlayer().cabinetId.toInt()>3) -1 else getClientPlayer().cabinetId.toInt()
     fun getClientPlayer(): PlayerData = frameData.lastFrame().playerData.firstOrNull { it.steamId == xrdApi.getClientSteamId() } ?: PlayerData()
 
@@ -157,7 +157,6 @@ class GearNet {
         val timer: Int = -1
     ) {
         fun isTimeValid() = player1.isValid() && player2.isValid() && timer > -1
-        fun isConcluded() = player1.isValid() && player2.isValid() && winner > -1
         fun isOnCabinet(cabinetId: Int) = player1.isOnCabinet(cabinetId) && player2.isOnCabinet(cabinetId)
         fun equals(other: MatchupData) = timer == other.timer &&
                 player1.steamId == other.player1.steamId &&

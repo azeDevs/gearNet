@@ -41,7 +41,7 @@ class StunGaugeView(override val root: Parent, private val teamColor:Int) : Frag
                 }
                 progress = rectangle {
                     fill = c("#04d4f7")
-                    width = stunGaugeMaxWidth
+                    width = 0.0
                     height = 3.0
                 }
             }

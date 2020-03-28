@@ -206,21 +206,22 @@ class Player(
         else -> "-"
     }
     fun getRatingImage(side:Int = -1): Rectangle2D {
-        var rating = if (side == PLAYER_1) Rectangle2D(832.0, 704.0, 256.0, 64.0) else Rectangle2D(1088.0, 704.0, 256.0, 64.0)
+        var rating = if (side == PLAYER_1) Rectangle2D(640.0, 704.0, 256.0, 64.0) else Rectangle2D(896.0, 704.0, 256.0, 64.0)
+        if (isWatcher()) rating = Rectangle2D(1152.0, 704.0, 256.0, 64.0)
         when(getRating()) {
             8 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 0.0, 256.0, 64.0) else Rectangle2D(384.0, 0.0, 256.0, 64.0)
             7 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 64.0, 256.0, 64.0) else Rectangle2D(384.0, 64.0, 256.0, 64.0)
             6 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 128.0, 256.0, 64.0) else Rectangle2D(384.0, 128.0, 256.0, 64.0)
-            5 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 196.0, 256.0, 64.0) else Rectangle2D(384.0, 196.0, 256.0, 64.0)
+            5 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 192.0, 256.0, 64.0) else Rectangle2D(384.0, 192.0, 256.0, 64.0)
             4 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 256.0, 256.0, 64.0) else Rectangle2D(384.0, 256.0, 256.0, 64.0)
             3 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 320.0, 256.0, 64.0) else Rectangle2D(384.0, 320.0, 256.0, 64.0)
             2 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 384.0, 256.0, 64.0) else Rectangle2D(384.0, 384.0, 256.0, 64.0)
             1 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 448.0, 256.0, 64.0) else Rectangle2D(384.0, 448.0, 256.0, 64.0)
-            0 -> rating = if (side == PLAYER_1) Rectangle2D(832.0, 704.0, 256.0, 64.0) else Rectangle2D(1088.0, 704.0, 256.0, 64.0)
+//            0 -> rating = if (side == PLAYER_1) Rectangle2D(832.0, 704.0, 256.0, 64.0) else Rectangle2D(1088.0, 704.0, 256.0, 64.0)
             -1 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 512.0, 256.0, 64.0) else Rectangle2D(384.0, 512.0, 256.0, 64.0)
             -2 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 576.0, 256.0, 64.0) else Rectangle2D(384.0, 576.0, 256.0, 64.0)
             -3 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 640.0, 256.0, 64.0) else Rectangle2D(384.0, 640.0, 256.0, 64.0)
-            -4 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 704.0, 256.0, 64.0) else Rectangle2D(384.0, 740.0, 256.0, 64.0)
+            -4 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 704.0, 256.0, 64.0) else Rectangle2D(384.0, 704.0, 256.0, 64.0)
             -5 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 768.0, 256.0, 64.0) else Rectangle2D(384.0, 768.0, 256.0, 64.0)
             -6 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 832.0, 256.0, 64.0) else Rectangle2D(384.0, 832.0, 256.0, 64.0)
             -7 -> rating = if (side == PLAYER_1) Rectangle2D(128.0, 896.0, 256.0, 64.0) else Rectangle2D(384.0, 896.0, 256.0, 64.0)

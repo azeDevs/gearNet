@@ -38,7 +38,7 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                 }
 
                 stackpane {
-                    for (i in 0..6) bountiesGui.add(FighterScoreView(parent, i))
+                    for (i in 6 downTo 0) bountiesGui.add(FighterScoreView(parent, i))
                 }
 
             }
