@@ -47,10 +47,11 @@ class ViewersView(override val root: Parent) : Fragment(), ArcadeView {
                     scaleX *= 0.88
                     scaleY *= 0.88
                 }
-
-                for (i in 0..15) {
-                    viewersGuiR.add(ViewerScoreView(parent, i, 0))
-                    viewersGuiB.add(ViewerScoreView(parent, i, 1))
+                stackpane {
+                    for (i in 0..15) {
+                        viewersGuiR.add(ViewerScoreView(parent, i, PLAYER_1))
+                        viewersGuiB.add(ViewerScoreView(parent, i, PLAYER_2))
+                    }
                 }
 
                 atensionMeters = AtensionMetersView(parent)

@@ -5,13 +5,10 @@ import memscan.GearNetShifter.Shift
 import memscan.MemHandler
 import memscan.XrdApi
 import models.Player
-import models.Player.Companion.PLAYER_1
-import models.Player.Companion.PLAYER_2
 import tornadofx.Controller
 import twitch.RoboHandler
 import utils.Duo
 import utils.getIdString
-import utils.isInRange
 import kotlin.math.max
 
 class Arcadia : Controller() {
@@ -39,6 +36,12 @@ class Arcadia : Controller() {
     fun getPlayer(player: Player) = players[player.getPlayerId()] ?: Player()
     fun getPlayer(playerId: Long) = players[playerId] ?: Player()
     fun getPlayers() = getPlayersMap().values
+
+    fun getPlayersList(): List<Player> = getPlayers().toList()
+        .sortedByDescending { item -> item.getStatusFloat() }
+        .sortedByDescending { item -> item.getScoreTotal() }
+        .sortedByDescending { item -> if (!item.isAbsent()) 1 else 0 }
+
     fun getWatchers() = getPlayers().filter { it.isWatcher() }.toList()
     fun getFighters() = getPlayers().filter { !it.isWatcher() }.toList()
     fun getTeam(colorId: Int) = getPlayers().filter { it.isTeam(colorId) }.toList()
@@ -81,7 +84,7 @@ class Arcadia : Controller() {
             if (player.isStaged()) player.addMatchupData(gn.getClientMatchup())
 
             // Resolve if a game occured and what the reward will be
-            if (resolveEveryone(player)) somethingChanged = true
+            if (resolveEveryone()) somethingChanged = true
 
         }
 
@@ -106,8 +109,8 @@ class Arcadia : Controller() {
 
     companion object {
         const val MAX_MUNITY = 16
-        const val MAX_RESPECT = 160
-        const val MAX_ATENSION = 1600
+        const val MAX_RESPECT = 333
+        const val MAX_ATENSION = 3333
     }
 
     private fun processAtension(player: Player, opponent: Player) {
@@ -119,8 +122,8 @@ class Arcadia : Controller() {
 
                 // Boost Respect when in strike-stun & taking no damage
                 when {
-                    player.isStunLocked() && player.getTensionDelta() < 0 -> player.addRespect(7)
-                    player.isStunLocked() -> player.addRespect(3)
+                    player.isStunLocked() && player.getTensionDelta() < 0 -> player.addRespect(3)
+                    player.isStunLocked() -> player.addRespect(1)
                 }
 
 
@@ -128,9 +131,8 @@ class Arcadia : Controller() {
                 when {
                     opponent.isStunLocked() -> {
                         player.addAtension(player.getAmunity()+player.getRespect())
-                        player.addRespect(-2)
+                        player.addRespect(-3)
                     }
-//                    player.getAmunity() > 0 -> player.addAtension(player.getAmunity())
                 }
 
                 // Resolve RESPECT
@@ -144,15 +146,15 @@ class Arcadia : Controller() {
                     player.getAtension() >= MAX_ATENSION -> {
                         player.setSignal(true)
                         player.setAtension(0)
-                        player.addSigns(2)
+                        player.addSigns(1)
                         getTeam(player.getTeamSeat()).forEach { it.addSigns(1) }
                     }
                     player.getAtension() <= 0 -> player.setAtension(0)
                 }
 
             }
-            Shift.GEAR_SLASH -> {  }
-            Shift.GEAR_VICTORY -> { getPlayers().forEach { it.setTeam() } }
+//            Shift.GEAR_SLASH -> {  }
+//            Shift.GEAR_VICTORY -> { getPlayers().forEach { it.setTeam() } }
             else -> {
                 player.setAtension(0)
                 player.setRespect(0)
@@ -166,33 +168,28 @@ class Arcadia : Controller() {
     /**
      *
      */
-    private var loser = Player()
-    private var winner = Player()
-    fun resolveEveryone(data: Player): Boolean {
+    private fun resolveEveryone(): Boolean {
 
-        getPlayersStaged().p1.isLoser()
+        val winner = when {
+            getPlayersStaged().p1.isWinner() -> getPlayersStaged().p1
+            getPlayersStaged().p2.isWinner() -> getPlayersStaged().p2
+            else -> Player()
+        }
+        val loser = when {
+            getPlayersStaged().p1.isLoser() -> getPlayersStaged().p1
+            getPlayersStaged().p2.isLoser() -> getPlayersStaged().p2
+            else -> Player()
+        }
 
-        val loserPlayer = if(getPlayer(data).isLoser()) data else Player()
-        val winnerPlayer = if(getPlayer(data).isLoser()) data else Player()
+        if (winner.isValid() && loser.isValid()) {
 
-        if (loserPlayer.isValid()) loser = loserPlayer
-        if (winnerPlayer.isValid()) winner = winnerPlayer
-
-        if (loser.isValid() && winner.isValid()) {
-            println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
-            println("WINNER = ${winner.getUserName()} / LOSER = ${loser.getUserName()}")
-            println("WINNER Chain: ${getPlayer(winner).getRating()}")
-            println(" LOSER Chain: ${getPlayer(loser).getRating()}")
-            resolveLobbyMatchResults()
-
+            resolveLobbyMatchResults(winner, loser)
 
             val activePlayerCount = max(getPlayers().filter { !it.isAbsent() }.size, 1)
             getPlayers().forEach { p -> if (!p.hasPlayed()) p.incrementBystanding(activePlayerCount, this) }
             println("Idle increment on ${getPlayers().filter { !it.hasPlayed() }.size} players")
             println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
 
-            loser = Player()
-            winner = Player()
             return true
         }
         return false
@@ -202,63 +199,44 @@ class Arcadia : Controller() {
     /**
      *
      */
-    private fun resolveLobbyMatchResults() {
-        val winnerSide = winner.getTeamSeat()
+    private fun resolveLobbyMatchResults(winner:Player, loser:Player) {
+
+        println("⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ ᴍᴀᴛᴄʜ ʀᴇᴄᴏʀᴅ ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯")
+        println("WINNER = ${winner.getUserName()} / LOSER = ${loser.getUserName()}")
+        println("WINNER Chain: ${getPlayer(winner).getRating()}")
+        println(" LOSER Chain: ${getPlayer(loser).getRating()}")
+
         val loserBounty = getPlayer(loser).getScoreTotal()
         val winnerBounty = getPlayer(winner).getScoreTotal()
+        val winnerSide = winner.getTeamSeat()
 
         println("WINNER Bounty: $winnerBounty")
         println(" LOSER Bounty: $loserBounty")
 
-        val bonusLoserPayout = (getPlayer(loser).getRating() * getPlayer(loser).getMatchesWon()) + getPlayer(loser).getMatchesSum() + (getPlayer(loser).getRating() * 100)
-        val bonusWinnerPayout = ((getPlayer(winner).getRating()+1) * getPlayer(winner).getMatchesWon()) + getPlayer(winner).getMatchesSum() + ((getPlayer(winner).getRating()+1) * 1000)
+        val winnerModifier = if(getPlayer(winner).getRating()>0) {
+            -(0.01 * getPlayer(winner).getRating()) // 1% less if winner was high Risk
+        } else -(0.02 * getPlayer(winner).getRating()) // 2% more if winner was high Fury
 
-        println("WINNER Signing Bonus: $bonusWinnerPayout")
-        println(" LOSER Signing Bonus: $bonusLoserPayout")
+        val loserModifier = if(getPlayer(loser).getRating()>0) {
+            -(0.02 * getPlayer(loser).getRating()) // 2% more if loser was high Risk
+        } else (0.02 * getPlayer(loser).getRating()) // 1% less if loser was high Fury
 
-        val riskModifier = 0.32 + (0.02 * getPlayer(loser).getRating()) - (0.01 * getPlayer(winner).getRating())
-        val payout = (loserBounty * riskModifier).toInt()
+        val riskyModifier = 0.32 + loserModifier + winnerModifier
+        val payout = (loserBounty * riskyModifier).toInt()
 
-        println("RISK = $riskModifier / PAYOUT = $payout")
+        println("RISKY = $riskyModifier / PAYOUT = $payout")
 
-        if (!isInRange(bonusLoserPayout - payout, 0, 10)) {
-            getPlayer(loser).changeScore(bonusLoserPayout - payout)
-            getPlayer(loser).changeRating(-2, this)
-        }
-        getPlayer(winner).changeScore(bonusWinnerPayout + payout)
-        getPlayer(winner).changeRating(1, this)
-
-        /*
-            ±0 NEUTRAL   =              (0± bountyInflate %, 0± betOnPayout %, 0± betOffPayout %)
-            +1           = C            (+40 bountyInflate %, -8 betOnPayout %, +16 betOffPayout %)
-            +2           = C+           (+80 bountyInflate %, -16 betOnPayout %, +32 betOffPayout %)
-            +3           = B            (+160 bountyInflate %, -24 betOnPayout %, +64 betOffPayout %)
-            +4           = B+           (+320 bountyInflate %, -32 betOnPayout %, +128 betOffPayout %)
-            +5           = A            (+640 bountyInflate %, -40 betOnPayout %, +256 betOffPayout %)
-            +6           = A+           (+1280 bountyInflate %, -48 betOnPayout %, +512 betOffPayout %)
-            +7           = S            (+2560 bountyInflate %, -56 betOnPayout %, +1024 betOffPayout %)
-            +8 APEX      = BOSS         (+5120 bountyInflate %, -64 betOnPayout %, +2048 betOffPayout %)
-        */
-
-
-        getPlayers().filter { it.isWatcher() }.forEach {
-            var scoreChange = it.getSigns() * 8
-            when(winnerSide) {
-                0 -> {
-                    if(it.isTeam(PLAYER_1) && !it.isTeam(PLAYER_2)) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(!it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
-                }
-                1 -> {
-                    if(it.isTeam(PLAYER_1) && !it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + payout)
-                    if(!it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange += ((100*riskModifier).toInt() + payout)
-                    if(it.isTeam(PLAYER_1) && it.isTeam(PLAYER_2)) scoreChange -= ((100*riskModifier).toInt() + (payout*riskModifier).toInt())
-                }
+        getPlayers().forEach {
+            val signingBonus = (it.getSigns() * 8)
+            if (it.isTeam(winnerSide)) {
+                it.changeRating(1, this)
+                it.changeScore(signingBonus + payout)
+            } else {
+                it.changeRating(-2, this)
+                it.changeScore(signingBonus - payout)
             }
-            it.changeScore(scoreChange)
         }
 
-        getPlayers().forEach { it.setTeam() }
 
 
     }

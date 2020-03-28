@@ -16,7 +16,6 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
     private val a: Arcadia by inject()
     private val container: StackPane
     private val bountiesGui: MutableList<FighterScoreView> = ArrayList()
-    private val viewersGuiC: MutableList<ViewerScoreView> = ArrayList()
 
     init {
         with(root) {
@@ -29,6 +28,7 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                     translateY -= 282
                     translateX -= 2
                 }
+
                 imageview(getRes("atlas.png").toString()) { // LOWER GATE
                     viewport = Rectangle2D(384.0, 1280.0, 1664.0, 256.0)
                     fitWidth = 1664.0
@@ -38,8 +38,7 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
                 }
 
                 stackpane {
-                    for (i in 0..2) bountiesGui.add(FighterScoreView(parent, i))
-                    for (i in 0..6) viewersGuiC.add(ViewerScoreView(parent, i, 2))
+                    for (i in 0..6) bountiesGui.add(FighterScoreView(parent, i))
                 }
 
             }
@@ -50,7 +49,6 @@ class LobbyView(override val root: Parent) : Fragment(), ArcadeView {
 
     override fun applyData() = Platform.runLater {
         bountiesGui.forEach { it.applyData() }
-        viewersGuiC.forEach { it.applyData() }
     }
 
 }

@@ -54,3 +54,10 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     }
 
 }
+
+/*
+    fightID77150902 aze
+    fightID42759674 RTW
+
+    watchID45095285 cathaticus
+*/

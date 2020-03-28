@@ -13,7 +13,7 @@ import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
 import models.Player
-import models.Player.Companion.PLAYER_1
+import models.Player.Companion.PLAYER_2
 import tornadofx.*
 import utils.XrdCharacter.getCharacterTrademark
 import utils.getRes
@@ -37,12 +37,12 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         with(root) {
             container = stackpane {
                 addClass(ScoreStyle.bountyContainer)
-                translateX += 440
-                translateY -= 300
+                translateX += 420
+                translateY -= 280
 
                 scaleX -= (scaleIndex*0.042)
                 scaleY -= (scaleIndex*0.042)
-                translateY += (scaleIndex*(140-scaleIndex*3.3))
+                translateY += (scaleIndex*(120-scaleIndex*3.2))
                 translateX -= (scaleIndex*9.6)
 
 
@@ -113,7 +113,7 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
     }
 
     override fun applyData() = Platform.runLater {
-        val fighters = a.getPlayers().toList()
+        val fighters = a.getPlayersList()
         if (fighters.size-1 >= scaleIndex) {
             applyFighterData(fighters[scaleIndex])
         } else applyEmptyData()
@@ -124,8 +124,8 @@ class FighterScoreView(override val root: Parent, private val scaleIndex:Int) : 
         handle.text = p.getUserName(); handle.isVisible = true
         status.viewport = p.getStatusImage()
         status.isVisible = !p.isWatcher()
-        rating.viewport = p.getRatingImage(PLAYER_1)
-        rating.isVisible = !p.isWatcher()
+        rating.viewport = p.getRatingImage(PLAYER_2)
+        rating.isVisible = true
         bounty.text = p.getScoreTotalString()
         change.text = p.getScoreDeltaString()
         setChangeTextColor(p.getScoreDelta())

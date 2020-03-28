@@ -28,7 +28,7 @@ class GearNet {
      */
     fun start() = GlobalScope.launch {
         val startTime = timeMillis()
-        delay(7)
+        delay(24)
         if (xrdApi.isConnected()) generateFrameData(startTime)
         else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
         refreshGearNetUpdates()

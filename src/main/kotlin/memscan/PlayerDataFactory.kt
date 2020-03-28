@@ -4,6 +4,7 @@ import memscan.GearNetUpdates.Companion.IC_DATA_CHANGE
 import memscan.GearNetUpdates.Companion.IC_DATA_PLAYER
 import memscan.GearNetUpdates.GNLog
 import models.Player
+import utils.getIdString
 import utils.plural
 
 class PlayerDataFactory() {
@@ -139,7 +140,7 @@ class PlayerDataFactory() {
             oldData.guardGaugeDelta != newData.guardGaugeDelta -> updates.add(GNLog(IC_DATA_CHANGE, "guardGaugeDelta $ic ${oldData.guardGaugeDelta} → ${newData.guardGaugeDelta}"))
         }
         return if (updates.isNotEmpty()) {
-            val totalUpdates = mutableListOf(GNLog(IC_DATA_PLAYER, "Player ${newData.userName} got ${updates.size} ${plural("update", updates.size)}"))
+            val totalUpdates = mutableListOf(GNLog(IC_DATA_PLAYER, "Player ${newData.userName} [${getIdString(newData.steamId)}] got ${updates.size} ${plural("update", updates.size)}"))
             updates.forEach { totalUpdates.add(it) }
             totalUpdates
         } else emptyList()

@@ -162,12 +162,25 @@ class Player(
 
     fun getRating() = this.riskRating
     fun changeRating(amount:Int, arcadia: Arcadia): Int {
-        if (riskRating > 0 && riskRating + amount <= 0) riskRating = 0
-        if (riskRating <= 0 && amount < -1) riskRating--
-        if (riskRating < 0 && amount > 0) {
+        when(amount) {
+            -2 -> {
+                if (riskRating > 0) {
+                    if(riskRating + amount < 0) riskRating = 0
+                    else riskRating += amount
+                }
+                if (riskRating < -8) riskRating = -8 else riskRating--
+            }
+            -1 -> if (riskRating <= 0) riskRating = 0
+            1 -> if (riskRating > 8) riskRating = 8 else riskRating++
+
+        }
+
+        // RESET ALL FURY WHEN A STREAK IS ENDED
+        if (riskRating <= 0 && amount > 0) {
             riskRating = 1
             arcadia.getPlayers().filter { it.getRating() < 0 }.forEach{ it.changeRating(-it.getRating(), arcadia) }
         }
+
         if (riskRating > 8) riskRating = 8
         if (riskRating < -8) riskRating = -8
         return riskRating
@@ -230,13 +243,14 @@ class Player(
     fun getScoreDelta() = this.scoreDelta
     fun changeScore(amount:Int) {
         scoreDelta = if (scoreTotal + amount < 0) -scoreTotal else amount
-        scoreTotal += amount
-        if (scoreTotal < 10) scoreTotal = 0
+        scoreTotal += scoreDelta
+        if (scoreTotal < 0) scoreTotal = 0
+        setTeam()
     }
     fun getScoreTotalString() = if (scoreTotal > 0) "${addCommas("$scoreTotal")} W$" else "FREE"
     fun getScoreDeltaString(change:Int = scoreDelta) = when {
         change > 0 -> "+${addCommas(change.toString())}"
-        change < 0 -> "-${addCommas(change.toString())}"
+        change < 0 -> addCommas(change.toString())
         else -> ""
     }
 

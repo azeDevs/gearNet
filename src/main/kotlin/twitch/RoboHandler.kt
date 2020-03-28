@@ -9,6 +9,7 @@ import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
 import memscan.GearNetUpdates
 import models.Player
+import utils.getIdString
 import utils.getRandomName
 import utils.getTokenFromFile
 import kotlin.random.Random
@@ -66,11 +67,11 @@ class RoboHandler(private val a: Arcadia) : BotApi {
                 // RUN COMMAND IF THERE IS ONE
                 if (it.message.contains("azpngRC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_1)) {
                     a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_1)
-                    sendMessage("${it.displayName} joins red")
+                    sendMessage("${it.displayName} [${getIdString(it.twitchId)}] joins red")
                 }
                 if (it.message.contains("azpngBC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_2)) {
                     a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_2)
-                    sendMessage("${it.displayName} joins blue")
+                    sendMessage("${it.displayName} [${getIdString(it.twitchId)}] joins blue")
                 }
             }
         }
