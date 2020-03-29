@@ -1,7 +1,7 @@
 package models
 
-import memscan.FighterData
-import memscan.MatchData
+import gearnet.FighterData
+import gearnet.MatchData
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import utils.Duo

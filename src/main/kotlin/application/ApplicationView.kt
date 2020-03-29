@@ -1,10 +1,9 @@
 package application
 
-import MyApp.Companion.GEARNET_ENABLED
-import application.arcade.ArcadeView
-import application.arcade.Arcadia
-import application.debug.DebugViewLayout
-import application.stream.StreamViewLayout
+import application.arcadiaViews.ArcadiaLayout
+import application.gearnetViews.GearNetLayout
+import arcadia.ArcadeView
+import arcadia.Arcadia
 import javafx.scene.layout.StackPane
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -16,11 +15,13 @@ class ApplicationView : View() {
 
     private val arcadia: Arcadia by inject()
     override val root: StackPane = StackPane()
-    private lateinit var viewLayout: ArcadeView
+    private lateinit var arcadiaLayout: ArcadeView
+    private lateinit var gearNetLayout: ArcadeView
 
     init {
         stackpane {
-            viewLayout = if(GEARNET_ENABLED) DebugViewLayout(parent) else StreamViewLayout(parent)
+            arcadiaLayout = ArcadiaLayout(parent)
+            gearNetLayout = GearNetLayout(parent)
             cycleGameLoop()
         }
     }
@@ -29,8 +30,9 @@ class ApplicationView : View() {
         GlobalScope.launch {
             delay(48)
             arcadia.updatePlayers()
-            viewLayout.applyData()
-            viewLayout.updateAnimation()
+            gearNetLayout.update()
+            arcadiaLayout.update()
+            arcadiaLayout.animate()
             cycleGameLoop()
         }
     }

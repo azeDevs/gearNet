@@ -1,9 +1,9 @@
 import application.ApplicationStyle
 import application.ApplicationView
-import application.arcade.Arcadia
-import application.debug.DebugStyle
-import application.stream.InMatchStyle
-import application.stream.ScoreStyle
+import application.arcadiaViews.InMatchStyle
+import application.arcadiaViews.ScoreStyle
+import application.gearnetViews.GearNetStyle
+import arcadia.Arcadia
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.UIComponent
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     launch<MyApp>(args)
 }
 
-class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class, DebugStyle::class) {
+class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::class, InMatchStyle::class, GearNetStyle::class) {
 
     private val arcadia: Arcadia by inject()
 

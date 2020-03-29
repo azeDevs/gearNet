@@ -2,15 +2,14 @@ package twitch
 
 import MyApp.Companion.SIMULATION_MODE
 import MyApp.Companion.TWITCH_CHAT_BOT
-import application.arcade.Arcadia
+import arcadia.Arcadia
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential
 import com.github.twitch4j.TwitchClient
 import com.github.twitch4j.TwitchClientBuilder
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent
-import memscan.GearNetUpdates
+import gearnet.GearNetUpdates
 import models.Player
-import utils.getIdString
-import utils.getRandomName
+import utils.NameGen
 import utils.getTokenFromFile
 import kotlin.random.Random
 
@@ -51,9 +50,9 @@ class RoboHandler(private val a: Arcadia) : BotApi {
      */
     fun generateWatcherEvents() {
         if (SIMULATION_MODE) when (Random.nextInt(2560)) {
-            0 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngRC"))
-            1 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), getRandomName(), "azpngBC"))
-            2 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), getRandomName(), getRandomName()))
+            0 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), NameGen.getRandomName(), "azpngRC"))
+            1 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), NameGen.getRandomName(), "azpngBC"))
+            2 -> addWatcherData(WatcherData(Random.nextLong(1000000000, 9999999999), NameGen.getRandomName(), NameGen.getRandomName()))
         }
         getWatcherData().forEach {
             if (it.message.isNotEmpty()) {
@@ -62,16 +61,22 @@ class RoboHandler(private val a: Arcadia) : BotApi {
                 // ADD VIEWER IF THEY ARE NEW
                 if (!a.getPlayersMap().containsKey(it.twitchId)) {
                     a.getPlayersMap()[it.twitchId] = Player(it)
-                    println("${it.displayName} added to Viewers Map")
+                    println("${it.displayName} [${NameGen.getIdString(it.twitchId)}] added to Viewers Map")
                 }
                 // RUN COMMAND IF THERE IS ONE
-                if (it.message.contains("azpngRC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_1)) {
+                if (it.message.contains("azpngRC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_1) && it.message.contains("azpngBC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_2)) {
                     a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_1)
-                    sendMessage("${it.displayName} [${getIdString(it.twitchId)}] joins red")
-                }
-                if (it.message.contains("azpngBC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_2)) {
                     a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_2)
-                    sendMessage("${it.displayName} [${getIdString(it.twitchId)}] joins blue")
+                    sendMessage("${it.displayName} joins both red & blue")
+                } else {
+                    if (it.message.contains("azpngRC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_1)) {
+                        a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_1)
+                        sendMessage("${it.displayName} joins red")
+                    }
+                    if (it.message.contains("azpngBC") && !a.getPlayersMap()[it.twitchId]!!.isTeam(Player.PLAYER_2)) {
+                        a.getPlayersMap()[it.twitchId]!!.setTeam(Player.PLAYER_2)
+                        sendMessage("${it.displayName} joins blue")
+                    }
                 }
             }
         }

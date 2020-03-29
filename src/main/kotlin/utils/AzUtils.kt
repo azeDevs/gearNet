@@ -4,13 +4,13 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
-import java.util.concurrent.CompletableFuture
 import kotlin.math.abs
 
 
@@ -20,14 +20,7 @@ import kotlin.math.abs
  *
  * @return the Path to the application's root directory
  */
-val pathHome = Paths.get(System.getProperty("user.dir"))
-
-/**
- * A shortcut value for providing a completed CompletableFuture.
- *
- * @return a truely completed CompletableFuture
- */
-val trueFuture = CompletableFuture.completedFuture(true)
+val pathHome: Path = Paths.get(System.getProperty("user.dir"))
 
 
 fun stringToInt(param: String): Int {
@@ -37,6 +30,7 @@ fun stringToInt(param: String): Int {
     }
     return Integer.valueOf(param)
 }
+
 
 /**
  * Concatenate an "s" to the end of an existing String, based on
@@ -191,8 +185,8 @@ fun loopRun(interval: Long, runnable: Runnable) = Timer().schedule(object : Time
  */
 fun truncate(name: String, length: Int): String {
     val re = Regex("[^A-Za-z0-9_!@#$%^&*()`'~|.,\"\\-=+\\[\\]{}\\\\<>/「」 ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９]")
-    if (name.length > length) return re.replace(name, "?").substring(0, length)
-    else return re.replace(name, "?")
+    return if (name.length > length) re.replace(name, "?").substring(0, length)
+    else re.replace(name, "?")
 }
 fun truncateDecimal(value:Double): String = value.toString().substring(0, value.toString().lastIndexOf('.')-1)
 

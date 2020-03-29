@@ -1,12 +1,12 @@
 package models
 
-import application.arcade.Arcadia
-import application.arcade.Arcadia.Companion.MAX_ATENSION
-import application.arcade.Arcadia.Companion.MAX_MUNITY
-import application.arcade.Arcadia.Companion.MAX_RESPECT
+import arcadia.Arcadia
+import arcadia.Arcadia.Companion.MAX_ATENSION
+import arcadia.Arcadia.Companion.MAX_MUNITY
+import arcadia.Arcadia.Companion.MAX_RESPECT
+import gearnet.GearNet.MatchupData
+import gearnet.GearNet.PlayerData
 import javafx.geometry.Rectangle2D
-import memscan.GearNet.MatchupData
-import memscan.GearNet.PlayerData
 import twitch.WatcherData
 import utils.XrdCharacter
 import utils.addCommas
