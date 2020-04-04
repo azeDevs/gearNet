@@ -1,5 +1,6 @@
 package application.gearnetViews
 
+import MyApp.Companion.GEARNET_ENABLED
 import arcadia.ArcadeView
 import arcadia.Arcadia
 import javafx.application.Platform
@@ -46,6 +47,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                 shortpress { container.isVisible = !container.isVisible }
 
                 container = stackpane {
+                    if (GEARNET_ENABLED) addClass(GearNetStyle.debugContainer)
 
                     gearNetLogs = label("GearNet.UpdateLogs") {
                         addClass(GearNetStyle.tempListYellow)
