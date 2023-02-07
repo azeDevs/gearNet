@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.30"
+    kotlin("jvm") version "1.6.0"
     id("edu.sc.seis.launch4j") version "2.4.6"
     id("org.openjfx.javafxplugin") version "0.0.7"
 }
@@ -31,9 +31,9 @@ dependencies {
     implementation("org.jire.kotmem:Kotmem:0.86")
     implementation("net.java.dev.jna:jna:4.2.2")
     implementation("net.java.dev.jna:jna-platform:4.2.2")
-    
+
     // Twitch
-    implementation("com.github.twitch4j:twitch4j:1.0.0-alpha.13")
+    implementation("com.github.twitch4j:twitch4j:1.13.0")
 
     // Database
     implementation("org.jdbi:jdbi3-sqlobject:3.8.0")
