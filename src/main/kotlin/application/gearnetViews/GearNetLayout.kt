@@ -51,6 +51,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
 //                    if (GEARNET_ENABLED) addClass(GearNetStyle.debugContainer)
 
                     gearNetLogs = label("GearNet.UpdateLogs") {
+                        isVisible = false //TODO: REMOVE ME
                         addClass(GearNetStyle.tempListYellow)
                         alignment = Pos.TOP_LEFT
                         translateX += 64
@@ -58,6 +59,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                     }
 
                     modeLabel = label("OFFLINE_MODE") {
+                        isVisible = false //TODO: REMOVE ME
                         addClass(GearNetStyle.debugTextYellow)
                         alignment = Pos.CENTER
                         translateY += 388
@@ -87,6 +89,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                     }
 
                     fighterRidentification = label("RED STAGE...") {
+                        isVisible = false //TODO: REMOVE ME
                         addClass(GearNetStyle.debugTextRed)
                         textAlignment = TextAlignment.LEFT
                         alignment = Pos.CENTER_LEFT
@@ -95,6 +98,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                     }
 
                     fighterBidentification = label("BLUE STAGE...") {
+                        isVisible = false //TODO: REMOVE ME
                         addClass(GearNetStyle.debugTextBlue)
                         textAlignment = TextAlignment.RIGHT
                         alignment = Pos.CENTER_RIGHT
@@ -191,7 +195,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                     }
 
                     vbox {
-                        alignment = Pos.TOP_LEFT
+                        alignment = Pos.CENTER_RIGHT
                         translateY -= 0
                         translateX -= 0
                         debugList = label("DEBUG OUTPUT") {

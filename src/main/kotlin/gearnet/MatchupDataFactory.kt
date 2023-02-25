@@ -23,7 +23,7 @@ class MatchupDataFactory {
                     val oldData2 = frameData.lastFrame().playerData.firstOrNull { it.steamId == data2.steamId } ?: PlayerData()
                     val oldMatch = frameData.lastFrame().matchupData.firstOrNull { (it.player1.steamId == oldData1.steamId && it.player2.steamId == oldData2.steamId) || (it.player1.steamId == oldData2.steamId && it.player2.steamId == oldData1.steamId) } ?: MatchupData()
                     // FIXME: THIS IS CHAOS, PLS FIX
-                    // NOTE: INVALIDATE MATCHUPS WHEN cabinetId EXCEEDS 3
+                    // NOTE: INVALIDATE MATCHUPS WHEN cabinetId EXCEEDS 3 TO EXCLUDE TRAINING CAB
                     // NOTE: INVALIDATED MATCHUPS WITH A WINNER SHOULD BE ARCHIVED
                     val winner = if (oldMatch.winner != -1 && oldMatch.shift != Shift.GEAR_VICTORY) oldMatch.winner
                     else if (data1.matchesWon > oldData1.matchesWon && data2.matchesSum > oldData2.matchesSum) PLAYER_1
