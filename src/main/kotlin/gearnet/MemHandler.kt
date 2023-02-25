@@ -86,8 +86,8 @@ class MemHandler : XrdApi {
 
     override fun getMatchData(): MatchData {
         val sortedStructOffs = longArrayOf(0x9CCL, 0x2888L, 0xA0F4L, 0x22960, 0x2AC64, 0x7AF4, 0x7AF8)
-        val p1offs = longArrayOf(0x1B18C78L, 0L)
-        val p2offs = longArrayOf(0x1B18C78L, 0L)
+        val p1offs = longArrayOf(0x1B22358L, 0L)
+        val p2offs = longArrayOf(0x1B22358L, 0L)
         p2offs[0] += 4L
         val p1roundoffset = longArrayOf(0x1A3BA38L)
         val p2roundoffset = longArrayOf(0x1A3BA3CL)
@@ -116,9 +116,11 @@ class MemHandler : XrdApi {
             p1offs[1] = sortedStructOffs[6]
             p2offs[1] = sortedStructOffs[6]
             val maxStun = Pair(getByteBuffFromAddr(p1offs, 4)!!.int * 100, getByteBuffFromAddr(p2offs, 4)!!.int * 100)
-            val timer = getByteBuffFromAddr(timeroffs, 4)!!.int
-            val rounds =
-                Pair(getByteBuffFromAddr(p1roundoffset, 4)!!.int, getByteBuffFromAddr(p2roundoffset, 4)!!.int)
+//            val timer = getByteBuffFromAddr(timeroffs, 4)!!.int
+//            val rounds =
+//                Pair(getByteBuffFromAddr(p1roundoffset, 4)!!.int, getByteBuffFromAddr(p2roundoffset, 4)!!.int)
+            val timer = -1
+            val rounds = Pair(-1,-1)
             return MatchData(timer, health, rounds, tension, stunProgress, maxStun, canBurst, strikeStun, guardGauge)
         } catch (e: NullPointerException) {
             return MatchData()

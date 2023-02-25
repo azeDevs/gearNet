@@ -1,8 +1,10 @@
 package arcadia
 
+import MyApp.Companion.SIMULATION_MODE
 import gearnet.GearNet
 import gearnet.GearNetShifter.Shift
 import gearnet.MemHandler
+import gearnet.MemRandomizer
 import gearnet.XrdApi
 import models.Player
 import tornadofx.Controller
@@ -16,7 +18,7 @@ class Arcadia : Controller() {
     private val gn = GearNet()
     private val players: MutableMap<Long, Player> = mutableMapOf()
     private val roboApi = RoboHandler(this)
-    private val xrdApi: XrdApi = MemHandler()
+    private val xrdApi: XrdApi = if (SIMULATION_MODE) MemRandomizer() else MemHandler()
 
 
     /**

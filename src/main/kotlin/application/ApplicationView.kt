@@ -1,5 +1,6 @@
 package application
 
+import MyApp.Companion.GEARNET_ENABLED
 import application.arcadiaViews.ArcadiaLayout
 import application.gearnetViews.GearNetLayout
 import arcadia.ArcadeView
@@ -20,7 +21,7 @@ class ApplicationView : View() {
 
     init {
         stackpane {
-            arcadiaLayout = ArcadiaLayout(parent)
+            if (!GEARNET_ENABLED) arcadiaLayout = ArcadiaLayout(parent)
             gearNetLayout = GearNetLayout(parent)
             cycleGameLoop()
         }
@@ -31,8 +32,10 @@ class ApplicationView : View() {
             delay(48)
             arcadia.updatePlayers()
             gearNetLayout.update()
-            arcadiaLayout.update()
-            arcadiaLayout.animate()
+            if (!GEARNET_ENABLED)  {
+                arcadiaLayout.update()
+                arcadiaLayout.animate()
+            }
             cycleGameLoop()
         }
     }

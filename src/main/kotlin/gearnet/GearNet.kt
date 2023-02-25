@@ -1,5 +1,6 @@
 package gearnet
 
+import MyApp.Companion.SIMULATION_MODE
 import gearnet.GearNetFrameData.FrameData
 import gearnet.GearNetShifter.Shift
 import gearnet.GearNetUpdates.Companion.IC_COMPLETE
@@ -13,14 +14,17 @@ import kotlinx.coroutines.launch
 import models.Player.Companion.PLAYER_1
 import models.Player.Companion.PLAYER_2
 import utils.NameGen
+import utils.prLn
+import utils.prnt
 import utils.timeMillis
 
 class GearNet {
 
-    private val xrdApi: XrdApi = MemHandler()
+    private val xrdApi: XrdApi = if (SIMULATION_MODE) MemRandomizer() else MemHandler()
     private val gnUpdates = GearNetUpdates()
     private val frameData = GearNetFrameData()
     private val gearShift = GearNetShifter(gnUpdates)
+    private var xrdConnected = false
 
 
     /**
@@ -29,8 +33,20 @@ class GearNet {
     fun start() = GlobalScope.launch {
         val startTime = timeMillis()
         delay(24)
-        if (xrdApi.isConnected()) generateFrameData(startTime)
-        else gnUpdates.add(IC_SCAN, "Xrd Disconnected")
+        if (xrdApi.isConnected()) {
+            generateFrameData(startTime)
+            // Update console once when Xrd Connected
+            if (!xrdConnected) {
+                gnUpdates.add(IC_SCAN, "Xrd Connected")
+                xrdConnected = true
+            }
+        } else {
+            // Update console once when Xrd Disconnected
+            if (xrdConnected) {
+                gnUpdates.add(IC_SCAN, "Xrd Disconnected")
+                xrdConnected = false
+            }
+        }
         refreshGearNetUpdates()
     }
 
@@ -72,6 +88,7 @@ class GearNet {
     private fun update(): List<GNLog> {
         val totalUpdates = mutableListOf<GNLog>()
         val matchData = xrdApi.getMatchData()
+        logMatchData(matchData)
         val dataList: MutableList<PlayerData> = mutableListOf()
 
         xrdApi.getFighterData().filter { it.isValid() }.forEach { fighterData ->
@@ -105,8 +122,26 @@ class GearNet {
         return totalUpdates
     }
 
-
-
+    private fun logMatchData(matchData: MatchData) {
+        val timer = matchData.timer
+        val p1hp = matchData.health.first
+        val p2hp = matchData.health.second
+        val p1rnds = matchData.rounds.first
+        val p2rnds = matchData.rounds.second
+        val p1tens = matchData.tension.first
+        val p2tens = matchData.tension.second
+        val p1stun = matchData.stunCurrent.first
+        val p2stun = matchData.stunCurrent.second
+        val p1stmx = matchData.stunMaximum.first
+        val p2stmx = matchData.stunMaximum.second
+        val p1brst = matchData.burst.first
+        val p2brst = matchData.burst.second
+        val p1hit = matchData.struck.first
+        val p2hit = matchData.struck.second
+        val p1risc = matchData.guardGauge.first
+        val p2risc = matchData.guardGauge.second
+        prLn("$timer | hp:$p1hp $p2hp | rnds:$p1rnds $p2rnds | tens:$p1tens $p2tens | stun:$p1stun $p2stun | stmx:$p1stmx $p2stmx | brst:$p1brst $p2brst | hit:$p1hit $p2hit | risc:$p1risc $p2risc")
+    }
 
 
     /**

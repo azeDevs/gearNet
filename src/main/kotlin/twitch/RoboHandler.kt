@@ -28,7 +28,7 @@ class RoboHandler(private val a: Arcadia) : BotApi {
     init {
 //        twitchClient.chat.eventManager.onEvent(ChannelMessageEvent::class.java).subscribe { watcherData.add(WatcherData(it.user.id, it.user.name, it.message)) }
         twitchClient.chat.joinChannel("azeDevs")
-        sendMessage("Hello World!")
+//        sendMessage("Hello World!")
     }
 
 
