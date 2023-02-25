@@ -20,6 +20,8 @@ class Arcadia : Controller() {
     private val roboApi = RoboHandler(this)
     private val xrdApi: XrdApi = if (SIMULATION_MODE) MemRandomizer() else MemHandler()
 
+    // TODO: REMOVE THIS ONCE MEMHANDLER IS COMPLETE
+    fun getGearnet(): GearNet = gn
 
     /**
      *

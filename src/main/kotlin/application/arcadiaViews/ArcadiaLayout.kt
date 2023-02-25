@@ -25,7 +25,8 @@ class ArcadiaLayout(override val root: Parent) : Fragment(), ArcadeView {
     }
 
     override fun update() = Platform.runLater {
-        when (a.getShift()) {
+//        when (a.getShift()) {
+        when (GEAR_MATCH) {
             GEAR_LOBBY -> {
                 lobbyView.setVisibility(true)
                 inMatchView.setVisibility(false)

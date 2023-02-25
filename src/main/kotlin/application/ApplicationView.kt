@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tornadofx.View
+import tornadofx.addClass
 import tornadofx.stackpane
 
 class ApplicationView : View() {
@@ -21,6 +22,7 @@ class ApplicationView : View() {
 
     init {
         stackpane {
+            addClass(ApplicationStyle.streamContainer)
             if (!GEARNET_ENABLED) arcadiaLayout = ArcadiaLayout(parent)
             gearNetLayout = GearNetLayout(parent)
             cycleGameLoop()

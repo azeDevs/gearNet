@@ -17,6 +17,7 @@ import utils.NameGen
 import utils.prLn
 import utils.prnt
 import utils.timeMillis
+import java.lang.StringBuilder
 
 class GearNet {
 
@@ -88,7 +89,6 @@ class GearNet {
     private fun update(): List<GNLog> {
         val totalUpdates = mutableListOf<GNLog>()
         val matchData = xrdApi.getMatchData()
-        logMatchData(matchData)
         val dataList: MutableList<PlayerData> = mutableListOf()
 
         xrdApi.getFighterData().filter { it.isValid() }.forEach { fighterData ->
@@ -122,27 +122,56 @@ class GearNet {
         return totalUpdates
     }
 
-    private fun logMatchData(matchData: MatchData) {
-        val timer = matchData.timer
-        val p1hp = matchData.health.first
-        val p2hp = matchData.health.second
-        val p1rnds = matchData.rounds.first
-        val p2rnds = matchData.rounds.second
-        val p1tens = matchData.tension.first
-        val p2tens = matchData.tension.second
-        val p1stun = matchData.stunCurrent.first
-        val p2stun = matchData.stunCurrent.second
-        val p1stmx = matchData.stunMaximum.first
-        val p2stmx = matchData.stunMaximum.second
-        val p1brst = matchData.burst.first
-        val p2brst = matchData.burst.second
-        val p1hit = matchData.struck.first
-        val p2hit = matchData.struck.second
-        val p1risc = matchData.guardGauge.first
-        val p2risc = matchData.guardGauge.second
-        prLn("$timer | hp:$p1hp $p2hp | rnds:$p1rnds $p2rnds | tens:$p1tens $p2tens | stun:$p1stun $p2stun | stmx:$p1stmx $p2stmx | brst:$p1brst $p2brst | hit:$p1hit $p2hit | risc:$p1risc $p2risc")
+    fun getMatchDataString(): String {
+        val matchData = xrdApi.getMatchData()
+        val fighterData = xrdApi.getFighterData()
+        val sb = StringBuilder()
+        sb.append("GEARNET\n" +
+                "time:${matchData.timer} \n" +
+                "heal:${matchData.health.first}/${matchData.health.second}\n" +
+                "rnds:${matchData.rounds.first}/${matchData.rounds.second}\n" +
+                "tens:${matchData.tension.first}/${matchData.tension.second}\n" +
+                "stun:${matchData.stunCurrent.first}/${matchData.stunCurrent.second}\n" +
+                "stmx:${matchData.stunMaximum.first}/${matchData.stunMaximum.second}\n" +
+                "risc:${matchData.guardGauge.first}/${matchData.guardGauge.second}\n")
+
+        for (fd in fighterData) {
+            sb.append("\nFIGHTER\n" +
+                    "stid:${fd.steamId}\n" +
+                    "user:${fd.userName}\n" +
+                    "char:${fd.characterId}\n" +
+                    "cabi:${fd.cabinetId}\n" +
+                    "seat:${fd.seatingId}\n" +
+                    "wins:${fd.matchesWon}\n" +
+                    "mtch:${fd.matchesWon}\n" +
+                    "load:${fd.loadPercent}")
+        }
+        return sb.toString()
     }
 
+    /*
+    @Suppress("CovariantEquals")
+data class FighterData(
+    val steamId: Long = -1L,
+    val userName: String = "",
+    val characterId: Byte = -0x1,
+    val cabinetId: Byte = -0x1,
+    val seatingId: Byte = -0x1,
+    val matchesWon: Int = -1,
+    val matchesSum: Int = -1,
+    val loadPercent: Int = -1
+) { fun isValid() = steamId > 0
+    fun isOnCabinet(cabinetId: Int) = this.cabinetId.toInt() == cabinetId
+    fun isSeatedAt(seatingId: Int) = this.seatingId.toInt() == seatingId
+    fun equals(other: FighterData) = other.userName == userName &&
+                other.characterId == characterId &&
+                other.cabinetId == cabinetId &&
+                other.seatingId == seatingId &&
+                other.matchesWon == matchesWon &&
+                other.matchesSum == matchesSum &&
+                other.loadPercent == loadPercent
+}
+     */
 
     /**
      *

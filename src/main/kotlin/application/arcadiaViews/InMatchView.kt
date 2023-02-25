@@ -21,12 +21,14 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
     private val container: StackPane
     private lateinit var backingR: ImageView
     private lateinit var stunGaugeR: StunGaugeView
+    private lateinit var healthR: Label
     private lateinit var bountyR: Label
     private lateinit var statusR: ImageView
     private lateinit var ratingR: ImageView
 
     private lateinit var backingB: ImageView
     private lateinit var stunGaugeB: StunGaugeView
+    private lateinit var healthB: Label
     private lateinit var bountyB: Label
     private lateinit var statusB: ImageView
     private lateinit var ratingB: ImageView
@@ -56,6 +58,20 @@ class InMatchView(override val root: Parent) : Fragment(), ArcadeView {
                     translateY -= 410
                     scaleX *= -0.50
                     scaleY *= 0.50
+                }
+
+                healthR = label("-1") { // HEALTH RED
+                    alignment = Pos.CENTER_RIGHT
+                    addClass(InMatchStyle.matchHealthText)
+                    translateX -= 600
+                    translateY -= 419
+                }
+
+                healthB = label("-1") { // HEALTH BLUE
+                    alignment = Pos.CENTER_RIGHT
+                    addClass(InMatchStyle.matchHealthText)
+                    translateX -= 600
+                    translateY -= 419
                 }
 
                 bountyR = label("FREE") { // BOUNTY RED

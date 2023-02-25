@@ -33,7 +33,6 @@ class MemHandler : XrdApi {
         -1L
     }
 
-    @OptIn(ExperimentalUnsignedTypes::class)
     private fun getByteBuffFromAddr(offsets: LongArray, numBytes: Int): ByteBuffer? {
         if (!isConnected()) return null
         val procBaseAddr: Pointer = xrdProcess!!.modules["GuiltyGearXrd.exe"]!!.pointer

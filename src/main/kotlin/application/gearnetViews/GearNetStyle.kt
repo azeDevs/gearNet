@@ -103,8 +103,8 @@ class GearNetStyle : Stylesheet() {
                 backgroundColor += debugSimpYellow
                 borderColor += box(debugLiteYellow)
                 textFill = c("#000000") //debugLiteYellow
-                maxWidth = 160.px
-                minWidth = 160.px
+                maxWidth = 200.px
+                minWidth = 200.px
                 padding = box(8.px)
                 borderWidth += box(2.px)
                 borderStyle += BorderStrokeStyle(StrokeType.INSIDE, StrokeLineJoin.MITER, StrokeLineCap.BUTT, 10.0, 0.0, null)

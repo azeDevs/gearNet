@@ -18,7 +18,7 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
     private val arcadia: Arcadia by inject()
 
     companion object {
-        const val GEARNET_ENABLED = false
+        const val GEARNET_ENABLED = true
         const val SIMULATION_MODE = false
         const val BORDER_TRACINGS = false
         const val TWITCH_CHAT_BOT = true
@@ -27,25 +27,29 @@ class MyApp : App(ApplicationView::class, ApplicationStyle::class, ScoreStyle::c
 
     override fun onBeforeShow(view: UIComponent) {
         super.onBeforeShow(view)
-        when(GEARNET_ENABLED) {
-            true -> view.title = "ＧｅａｒＮｅｔ // $VERSION"
-            false -> view.title = "Gᴜɪʟᴛy Åʀᴄᴀᴅɪᴀ // $VERSION"
-        }
+        view.title = "Gᴜɪʟᴛy Åʀᴄᴀᴅɪᴀ // $VERSION"
+//        when(GEARNET_ENABLED) {
+//            true -> view.title = "ＧｅａｒＮｅｔ // $VERSION"
+//            false -> view.title = "Gᴜɪʟᴛy Åʀᴄᴀᴅɪᴀ // $VERSION"
+//        }
     }
 
     override fun start(stage: Stage) {
-        when(GEARNET_ENABLED) {
-            true -> {
-                stage.width  = 1600.0 + 16
-                stage.height = 900.0 + 39
-                stage.isFullScreen = false
-            }
-            false -> {
-                stage.width  = 1904.0 + 16
-                stage.height = 1041.0 + 39
-                stage.isFullScreen = true
-            }
-        }
+        stage.width  = 1904.0 + 16
+        stage.height = 1041.0 + 39
+        stage.isFullScreen = true
+//        when(GEARNET_ENABLED) {
+//            true -> {
+//                stage.width  = 1600.0 + 16
+//                stage.height = 900.0 + 39
+//                stage.isFullScreen = false
+//            }
+//            false -> {
+//                stage.width  = 1904.0 + 16
+//                stage.height = 1041.0 + 39
+//                stage.isFullScreen = true
+//            }
+//        }
         stage.isResizable = false
         super.start(stage)
         stage.toBack()

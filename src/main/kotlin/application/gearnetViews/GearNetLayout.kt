@@ -34,6 +34,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
     private lateinit var teamBPlayers: Label
     private lateinit var watchersList: Label
     private lateinit var fightersList: Label
+    private lateinit var debugList: Label
 
 
 
@@ -47,7 +48,7 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                 shortpress { container.isVisible = !container.isVisible }
 
                 container = stackpane {
-                    if (GEARNET_ENABLED) addClass(GearNetStyle.debugContainer)
+//                    if (GEARNET_ENABLED) addClass(GearNetStyle.debugContainer)
 
                     gearNetLogs = label("GearNet.UpdateLogs") {
                         addClass(GearNetStyle.tempListYellow)
@@ -188,6 +189,18 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
                             textAlignment = TextAlignment.RIGHT
                         }
                     }
+
+                    vbox {
+                        alignment = Pos.TOP_LEFT
+                        translateY -= 0
+                        translateX -= 0
+                        debugList = label("DEBUG OUTPUT") {
+                            addClass(GearNetStyle.debugListYellow)
+                            alignment = Pos.TOP_LEFT
+                            textAlignment = TextAlignment.LEFT
+                        }
+                    }
+
                 }
             }
 
@@ -196,6 +209,8 @@ class GearNetLayout(override val root: Parent) : Fragment(), ArcadeView {
 
 
     override fun update() = Platform.runLater {
+
+        debugList.text = a.getGearnet().getMatchDataString()
 
         val p1 = a.getPlayersStaged().p1
         val p2 = a.getPlayersStaged().p2
